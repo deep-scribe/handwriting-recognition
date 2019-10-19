@@ -9,6 +9,7 @@
 
  
 
+* ID: the same ID index means that this belongs to the same handwritting motion.
 * ax : acceleration on x-axis
 * ay : acceleration on y-axis
 * az : acceleration on z-axis
@@ -18,4 +19,5 @@
 * mx: magnetometer x-axis
 * my: magnetometer y-axis
 * mz: magnetometer z-axis
+
 * I forgot the rest three parameters....
