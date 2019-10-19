@@ -24,7 +24,7 @@ Capture the pen motion and convert it to digital texts
 
 * [**Wanze (Russell) Xie**](https://github.com/russellxie7)
 * **Yutong He**
-* **Junshen Kevin Chen**
+* [**Junshen Kevin Chen**](https://github.com/CniveK)
 
 
 
