@@ -41,8 +41,8 @@ More about Yaw Pitch Roll:
 2. keyboard control:
     1. “N”: save the motion data of the current letter to a file, and create a new file
     2. “D”: append a “#\n” string to the output buffer.
-    3. “P”: purify the output buffer, meaning to recollect the motion data for this character.
-    4. “R”: initiate new series of file, and restart collecting from letter ‘a’.
+    3. “P”: purify the output buffer, meaning to recollect the motion data for this current letter.
+    4. “R”: initiate a new series of file, and restart collecting from the letter ‘a’.
 
 关于Data 的注意事项：
 1. Index仅仅表示如果一行的index相同，那么他们属于同一个handwriting event，index并不是cumulative的，因为每个file的start index可以完全不一样，也有可能中间有一段index由于写错了被删除。
