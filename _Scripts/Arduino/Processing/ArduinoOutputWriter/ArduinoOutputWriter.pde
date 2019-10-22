@@ -3,6 +3,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date; 
 import java.lang.StringBuilder;
 
+boolean USE_SUBJECT_NAME = false;
+String SUBJECT_NAME = "Russell";
+String TRIAL_NUMBER = "1";
+
 Serial mySerial;
 Date date;
 PrintWriter output;
@@ -73,6 +77,12 @@ void keyReleased(){
     println("Marked the previous letter motion as invalid using #");
   }
   
+  if (key == 'p' || key == 'P'){
+    buffer.setLength(0);
+    char curr_char = (char)('a' + char_counter - 1);
+    println("Purified the buffer, recollect motion data for letter " + curr_char);
+  }
+  
   if (key == 'r' || key == 'R'){
     output.flush();
     output.close();
@@ -86,9 +96,13 @@ void keyReleased(){
 }
 
 char CreateNewFile(){
-  char curr_char = (char)('A' + char_counter);
+  char curr_char = (char)('a' + char_counter);
   SimpleDateFormat formatter = new SimpleDateFormat("MM_dd_HH_mm");  
-  String filename = "Raw_" + curr_char + "_" + formatter.format(date) + ".csv";  
+  String filename = "Raw_" + curr_char + "_" + formatter.format(date) + ".csv";
+  
+  if (USE_SUBJECT_NAME){
+    filename = "Raw_" + curr_char + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
+  }
   
   if (output != null){
     output.flush();
