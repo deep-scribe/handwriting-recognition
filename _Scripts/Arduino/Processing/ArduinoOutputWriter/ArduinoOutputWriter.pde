@@ -3,6 +3,7 @@ Serial mySerial;
 PrintWriter output;
 import java.text.SimpleDateFormat;  
 import java.util.Date;  
+boolean isReady;
 
 void setup() {
    SimpleDateFormat formatter = new SimpleDateFormat("MM_dd_HH_mm");  
@@ -12,20 +13,21 @@ void setup() {
    int last_idx = Serial.list().length - 1;
    mySerial = new Serial( this, Serial.list()[last_idx], 115200 );
    output = createWriter( filename );
-   println(mySerial);
+   println("Serial Port is: " + mySerial.toString());
+   isReady = false;
 }
 void draw() {
     if (mySerial.available() > 0 ) {
-         String value = mySerial.readStringUntil('\n');
+         String value = mySerial.readString();
          if ( value != null ) {
-              println(value);
-              output.println( value );
+              print(value);
+              if (!isReady){
+                if (value.indexOf("Ready to go!") != -1) isReady = true;
+              }
+              else{
+                output.print( value );
+                output.flush();
+              }
          }
     }
-}
-
-void keyPressed() {
-    output.flush();  // Writes the remaining data to the file
-    output.close();  // Finishes the file
-    exit();  // Stops the program
 }
