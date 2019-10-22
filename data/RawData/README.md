@@ -4,7 +4,6 @@
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 |      |      |      |      |      |      |      |      |      |      |      |      |      |      |
 | ID    |  TD  | yaw    | pitch   | raw    | ax     | ay      | az      | gx    | gy    | gz   | mx  | my  | mz  |
-| ----- | :--: | ------ | ------- | ------ | ------ | ------- | ------- | ----- | ----- | ---- | ---- | ---- | ---- |
 | **1** |  23  | 25.306 | -22.912 | -7.991 | 436.95 | -173.28 | 1092.65 | -5.17 | -10.1 | 1.24 | -243 | 386  | 93   |
 
 \[index, time_diff, yaw, pitch, roll, 1000\*ax, 1000\*ay, 1000\*az, gx, gy, gz, mx, my, mz\]
@@ -21,6 +20,9 @@
 * mx: magnetometer x-axis
 * my: magnetometer y-axis
 * mz: magnetometer z-axis
+* gx: gyroscope on x 
+* gy: gyroscope on y 
+* gz: gyroscope on z 
 
 
 More about Yaw Pitch Roll:
