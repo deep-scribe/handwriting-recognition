@@ -1,4 +1,4 @@
-# Data Processing and Visualisation
+# Data, Processing, Visualisation
 
 ## Data storage
 
