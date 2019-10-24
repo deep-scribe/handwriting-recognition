@@ -21,6 +21,9 @@ def load_one_char_csv(filename):
         header=None,
         names=RAW_COLUMNS
     )
+
+    # TODO: handle encountering '#' to remove the previous writing sequence
+
     return df
 
 
