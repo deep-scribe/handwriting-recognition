@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import string
 
-COLUMNS = [
+RAW_COLUMNS = [
     'id', 'td',
     'yaw', 'pitch', 'roll',
     'ax', 'ay', 'az',
@@ -19,7 +19,7 @@ def load_one_char_csv(filename):
     df = pd.read_csv(
         filename,
         header=None,
-        names=COLUMNS
+        names=RAW_COLUMNS
     )
     return df
 
