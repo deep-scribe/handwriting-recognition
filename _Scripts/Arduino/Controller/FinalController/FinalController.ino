@@ -549,11 +549,18 @@ void loop()
             Serial.print(", ");
             Serial.print( gz, 2);
             Serial.print(", ");
-            Serial.print( (int)mx );
+            Serial.print( q[0], 5);
             Serial.print(", ");
-            Serial.print( (int)my );
+            Serial.print( q[1], 5);
             Serial.print(", ");
-            Serial.println( (int)mz );
+            Serial.print( q[2], 5);
+            Serial.print(", ");
+            Serial.println( q[3], 5);
+//            Serial.print( (int)mx );
+//            Serial.print(", ");
+//            Serial.print( (int)my );
+//            Serial.print(", ");
+//            Serial.println( (int)mz );
 
           }
           else
