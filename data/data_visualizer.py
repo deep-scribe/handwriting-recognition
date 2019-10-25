@@ -7,10 +7,11 @@ import data_utils
 
 
 df = data_utils.load_all_subjects('raw_data')
-sampledf = data_utils.get_sample(df, 'o')
+sampledf = data_utils.get_random_sample_by_label(df, 'm')
 
 # think this should be velocity
 accelerations = sampledf[['ax', 'ay', 'az']].to_numpy()
+yprs = sampledf[['yaw', 'pitch', 'roll']].to_numpy()
 
 frame_durations = sampledf[['td']].to_numpy()
 
@@ -24,6 +25,33 @@ velocities = np.zeros((numkeypoint, accelerations.shape[1]))
 for i in range(numkeypoint-1):
     acceleration = accelerations[i]
     acceleration -= accelerations[0]
+    yaw, pitch, roll = (yprs[0]-yprs[i]).tolist()
+
+    sinalpha = np.sin(np.radians(yaw))
+    cosalpha = np.cos(np.radians(yaw))
+    sinbeta = np.sin(np.radians(pitch))
+    cosbeta = np.cos(np.radians(pitch))
+    singamma = np.sin(np.radians(roll))
+    cosgamma = np.cos(np.radians(roll))
+    rotationmatrix = np.array([
+        [
+            cosalpha*cosbeta,
+            cosalpha*sinbeta*singamma - sinalpha * singamma,
+            cosalpha*sinbeta*cosgamma + sinalpha*singamma
+        ],
+        [
+            sinalpha*cosbeta,
+            sinalpha*sinbeta*singamma + cosalpha*cosgamma,
+            sinalpha*sinbeta*cosgamma - cosalpha*singamma,
+        ],
+        [
+            -sinbeta,
+            cosbeta*singamma,
+            cosbeta*cosgamma
+        ]
+    ])
+    acceleration = np.matmul(rotationmatrix, acceleration, )
+
     old_velocity = velocities[i]
     old_position = positions[i]
     delta_t = frame_durations[i]
@@ -35,12 +63,18 @@ for i in range(numkeypoint-1):
     positions[i+1] = new_position
 
 
-print(velocities)
+# print(velocities)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 
-ax.scatter3D(velocities[:, 0], velocities[:, 1], velocities[:, 2])
+ax.scatter3D(
+    velocities[:, 0],
+    velocities[:, 1],
+    velocities[:, 2],
+    c=[i for i in range(velocities.shape[0])],
+    cmap='hot'
+)
 ax.set_xlabel('X-axis')
 ax.set_ylabel('Y-axis')
 ax.set_zlabel('Z-axis')

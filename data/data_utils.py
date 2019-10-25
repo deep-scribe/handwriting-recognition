@@ -74,9 +74,9 @@ def load_all_subjects(parent_path):
     return pd.concat(dfs, ignore_index=True)
 
 
-def get_sample(df, label):
+def get_random_sample_by_label(df, label):
     '''
-    one sample sequence matching the label
+    one random sample sequence matching the label
     return a pd dataframe with frames that share an id
     '''
     rows = df[df['label'] == label]
