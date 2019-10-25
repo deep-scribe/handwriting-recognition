@@ -3,8 +3,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date; 
 import java.lang.StringBuilder;
 
-boolean USE_SUBJECT_NAME = false;
-String SUBJECT_NAME = "Russell";
+boolean USE_SUBJECT_NAME = true;
+String SUBJECT_NAME = "Kelly";
 String TRIAL_NUMBER = "1";
 
 Serial mySerial;
