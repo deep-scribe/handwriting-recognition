@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import string
+import random
 
 RAW_COLUMNS = [
     'id', 'td',
@@ -73,9 +74,23 @@ def load_all_subjects(parent_path):
     return pd.concat(dfs, ignore_index=True)
 
 
+def get_sample(df, label):
+    '''
+    one sample sequence matching the label
+    return a pd dataframe with frames that share an id
+    '''
+    rows = df[df['label'] == label]
+    ids = list(set(rows['id'].tolist()))
+    sample = rows[rows['id'] == random.choice(ids)]
+    return sample
+
+
 # def main():
 #     df = load_all_subjects('raw_data')
 #     print(df)
+#     s = get_sample(df, 'a')
+#     print(s)
+#     print(s[['ax', 'ay', 'az']].to_numpy())
 
 
 # if __name__ == "__main__":
