@@ -85,6 +85,19 @@ def get_random_sample_by_label(df, label):
     return sample
 
 
+def get_all_samples_by_label(df, label):
+    '''
+    given by the label
+    return a dictionary of sample_id: sample pd dataframes
+    '''
+    rows = df[df['label'] == label]
+    ids = list(set(rows['id'].tolist()))
+    samples = {}
+    for i in ids:
+        samples[i] = rows[rows['id'] == i]
+    return samples
+
+
 # def main():
 #     df = load_all_subjects('raw_data')
 #     print(df)
