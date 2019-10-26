@@ -190,7 +190,7 @@ def get_calibrated_delta(initial_calibration_vec, sample_frames):
 
 def main():
     if len(sys.argv) != 2:
-        print('data_visualizer.py subject_path')
+        print('Usage: python data_visualizer.py <subject_path>')
         quit()
 
     subject_path = sys.argv[1]
