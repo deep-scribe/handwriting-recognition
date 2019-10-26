@@ -4,8 +4,8 @@ import java.util.Date;
 import java.lang.StringBuilder;
 
 boolean USE_SUBJECT_NAME = true;
-String SUBJECT_NAME = "Russell";
-String TRIAL_NUMBER = "2";
+String SUBJECT_NAME = "Kevin";
+String TRIAL_NUMBER = "1";
 
 Serial mySerial;
 Date date;
@@ -92,7 +92,6 @@ void keyReleased(){
     println("Started recollecting data.");
     println("Now writing for the letter " + curr_char);
   }
-    
 }
 
 char CreateNewFile(){
