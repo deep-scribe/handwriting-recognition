@@ -40,6 +40,52 @@ def rotate_to_world_axes(vector_to_rotate, yaw_pitch_roll_vec):
     return np.matmul(rotmat, vector_to_rotate)
 
 
+calibrationdf = data_utils.load_one_char_csv('Kevin/Kevin_Calibration.csv')
+yprs = calibrationdf[['yaw', 'pitch', 'roll']].to_numpy()
+yprs_calibration = np.mean(yprs, axis=0)
+
+for index in range(2, 21):
+    circledf = data_utils.load_one_char_csv('Kevin/Kevin_Circle.csv')
+    circlesampledf = circledf[circledf['id'] == index]
+    circleyprs = circlesampledf[['yaw', 'pitch', 'roll']].to_numpy()
+    circleyprs -= yprs_calibration
+    circleyprs -= circleyprs[0]
+
+    trace = []
+    for i in range(circleyprs.shape[0]):
+        trace.append(rotate_to_world_axes(
+            np.array([0, 0, 1]), circleyprs[i]
+        ))
+    trace = np.array(trace)
+    print(trace)
+
+    plt.clf()
+    fig = plt.figure()
+    ax = plt.axes(projection="3d")
+    ax.scatter3D(
+        trace[:, 0],
+        trace[:, 1],
+        trace[:, 2],
+        c=[i for i in range(trace.shape[0])],
+        cmap='hot'
+    )
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('Y-axis')
+    ax.set_zlabel('Z-axis')
+
+    plt.savefig(f'circle_{index}.png')
+
+    plt.clf()
+    fig = plt.figure()
+    plt.axes().scatter(
+        trace[:, 0],
+        trace[:, 1],
+        c=[i for i in range(trace.shape[0])],
+        cmap='hot'
+    )
+    plt.savefig(f'2d_{index}.png')
+quit()
+
 for ch in string.ascii_lowercase:
     # def plot_all_samples(sample_path, outpath):
     df = data_utils.load_all_subjects('raw_data')
