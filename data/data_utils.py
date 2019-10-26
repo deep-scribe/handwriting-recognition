@@ -8,7 +8,7 @@ RAW_COLUMNS = [
     'yaw', 'pitch', 'roll',
     'ax', 'ay', 'az',
     'gx', 'gy', 'gz',
-    'mx', 'my', 'mz',
+    'mx', 'my', 'mz', 'a'
 ]
 
 
