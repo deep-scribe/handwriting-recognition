@@ -8,8 +8,11 @@ RAW_COLUMNS = [
     'yaw', 'pitch', 'roll',
     'ax', 'ay', 'az',
     'gx', 'gy', 'gz',
-    'mx', 'my', 'mz', 'a'
+    'qx', 'qy', 'qz', 'qw'
 ]
+
+CALIBRATION_LABEL_NAME = 'calibration'
+CALIBRATION_FILENAME = CALIBRATION_LABEL_NAME + '.csv'
 
 
 def load_one_char_csv(filename):
@@ -23,7 +26,15 @@ def load_one_char_csv(filename):
         names=RAW_COLUMNS
     )
 
-    # TODO: handle encountering '#' to remove the previous writing sequence
+    # handle encountering '#' to remove the previous writing sequence
+    ids_to_remove = []
+    for row_number_of_pound in list(df[df.astype(str)['id'] == '#'].index):
+        if row_number_of_pound == 0:
+            continue
+        row_number_to_remove = row_number_of_pound - 1
+        ids_to_remove.append(df.iloc[row_number_to_remove]['id'])
+    for id_to_remove in ids_to_remove:
+        df = df[df['id'] != id_to_remove]
 
     return df
 
@@ -47,13 +58,16 @@ def load_subject(subject_path):
 
     dfs = []
 
-    for ch in string.ascii_lowercase:
-        filename = f'{ch}.csv'
-        chardf = load_one_char_csv(
-            os.path.join(subject_path, filename)
-        )
-        append_identifiers(chardf, label=ch, subject_id=subject_path)
-        dfs.append(chardf)
+    for root, dirs, files in os.walk(subject_path):
+        for filename in files:
+            if '.csv' not in filename:
+                continue
+            label = filename.replace('.csv', '')
+            chardf = load_one_char_csv(
+                os.path.join(subject_path, filename)
+            )
+            append_identifiers(chardf, label=label, subject_id=subject_path)
+            dfs.append(chardf)
 
     return pd.concat(dfs, ignore_index=True)
 
