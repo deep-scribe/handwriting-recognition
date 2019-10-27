@@ -40,7 +40,7 @@ def get_rotation_matrix(yaw, pitch, roll):
 
 def rotate_to_world_axes(vector_to_rotate, yaw_pitch_roll_vec):
     '''
-    rotate a vectory by a 3d vector denoting yaw pitch roll
+    rotate a vector by a 3d vector denoting yaw pitch roll
     '''
     yaw, pitch, roll = yaw_pitch_roll_vec.tolist()
     rotmat = get_rotation_matrix(yaw, pitch, roll)
@@ -67,7 +67,7 @@ def dump_yprs_pngs(subject_path):
     this path should also contain calibration.csv
 
     visualize yaw pitch roll by drawing scatter plot of the end of a unit vector
-    rotated by the delta yaw pitch roll with respect to each starting postiion of the 
+    rotated by the delta yaw pitch roll with respect to each starting postiion of the
     sample sequence
 
     dump 2D and 3D pngs to corresponding subdir inside subject_path

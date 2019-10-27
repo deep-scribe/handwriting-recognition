@@ -17,7 +17,7 @@ CALIBRATION_FILENAME = CALIBRATION_LABEL_NAME + '.csv'
 
 def load_one_char_csv(filename):
     '''
-    loads a {char}.csv 
+    loads a {char}.csv
     return a pandas dataframe
     '''
     df = pd.read_csv(
@@ -52,7 +52,7 @@ def append_identifiers(df, label, subject_id):
 
 def load_subject(subject_path):
     '''
-    load all {char}.csv from a directory, append label, 
+    load all {char}.csv from a directory, append label,
     return a merged pd dataframe
     '''
 
@@ -74,7 +74,7 @@ def load_subject(subject_path):
 
 def load_all_subjects(parent_path):
     '''
-    load csvs of all subdirs 
+    load csvs of all subdirs
     return one single pandas dataframe
     '''
     dfs = []
