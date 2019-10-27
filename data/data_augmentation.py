@@ -48,6 +48,19 @@ def rotate_by_vector(sample_yprs, theta, rotation_axis = [0,0,1]):
     # print(np.matmul(quaternion_to_rotation_matrix(q), sample_yprs.T).T.shape)
     return np.matmul(quaternion_to_rotation_matrix(q), sample_yprs.T).T
 
+def stretch(sample_yprs, ky, kp, kr):
+    '''
+    With an input matrix, stretch the object with constants ky, kp, kr
+
+    Parameter:
+        sample_yprs: input yall, pitch, roll matrix with dimension (N,3)
+        k*: stretching constants
+
+    Return:
+        the new matrix after stretching, dimension (N,3)
+    '''
+    return sample_yprs*np.array([ky,kp,kr])
+
 
 PNG_DIRNAME_YPRS_2D = 'yprs_2d_pngs_augmented'
 PNG_DIRNAME_YPRS_3D = 'yprs_3d_pngs_augmented'
@@ -98,10 +111,13 @@ YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 #                     samplesdf.to_csv(cal_file, header = False, index = False)
 
 
-def augment(sample_yprs, rotate = True, noise = True, theta_range = 5):
+def augment(sample_yprs, rotate = True, noise = True, stretching = True, theta_range = 5):
     if rotate:
         theta = np.random.randn()*theta_range
         sample_yprs = rotate_by_vector(sample_yprs, theta)
+    if stretching:
+        ky, kp, kr = np.random.randn(3)*0.3 + 1
+        sample_yprs = stretch(sample_yprs, ky, kp, kr)
     if noise:
         sample_yprs = add_noise(sample_yprs)
     # print(len(traces.keys()))
