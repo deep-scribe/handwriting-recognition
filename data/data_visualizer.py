@@ -1,13 +1,17 @@
 from mpl_toolkits import mplot3d
-
 import numpy as np
 import matplotlib.pyplot as plt
 import string
-
+import shutil
+import os
+import sys
 import data_utils
 
 
 def get_rotation_matrix(yaw, pitch, roll):
+    '''
+    return np.array: a rotation matrix given yaw pitch roll
+    '''
     sinalpha = np.sin(np.radians(yaw))
     cosalpha = np.cos(np.radians(yaw))
     sinbeta = np.sin(np.radians(pitch))
@@ -35,120 +39,163 @@ def get_rotation_matrix(yaw, pitch, roll):
 
 
 def rotate_to_world_axes(vector_to_rotate, yaw_pitch_roll_vec):
+    '''
+    rotate a vector by a 3d vector denoting yaw pitch roll
+    '''
     yaw, pitch, roll = yaw_pitch_roll_vec.tolist()
     rotmat = get_rotation_matrix(yaw, pitch, roll)
     return np.matmul(rotmat, vector_to_rotate)
 
 
-calibrationdf = data_utils.load_one_char_csv('Kevin/Kevin_Calibration.csv')
-yprs = calibrationdf[['yaw', 'pitch', 'roll']].to_numpy()
-yprs_calibration = np.mean(yprs, axis=0)
+def create_dir_remove_old(path):
+    '''
+    created directory denoted by string path, force remove old one if exist
+    '''
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
 
-for index in range(2, 21):
-    circledf = data_utils.load_one_char_csv('Kevin/Kevin_Circle.csv')
-    circlesampledf = circledf[circledf['id'] == index]
-    circleyprs = circlesampledf[['yaw', 'pitch', 'roll']].to_numpy()
-    circleyprs -= yprs_calibration
-    circleyprs -= circleyprs[0]
 
-    trace = []
-    for i in range(circleyprs.shape[0]):
-        trace.append(rotate_to_world_axes(
-            np.array([0, 0, 1]), circleyprs[i]
-        ))
-    trace = np.array(trace)
-    print(trace)
+PNG_DIRNAME_YPRS_2D = 'yprs_2d_pngs'
+PNG_DIRNAME_YPRS_3D = 'yprs_3d_pngs'
+YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 
+
+def dump_yprs_pngs(subject_path):
+    '''
+    subject_path: string of a path containing all csv recorded by a subject
+    this path should also contain calibration.csv
+
+    visualize yaw pitch roll by drawing scatter plot of the end of a unit vector
+    rotated by the delta yaw pitch roll with respect to each starting postiion of the
+    sample sequence
+
+    dump 2D and 3D pngs to corresponding subdir inside subject_path
+    '''
+    create_dir_remove_old(os.path.join(subject_path, PNG_DIRNAME_YPRS_2D))
+    create_dir_remove_old(os.path.join(subject_path, PNG_DIRNAME_YPRS_3D))
+
+    df = data_utils.load_subject(subject_path)
+    calibrationdf = df[df['label'] == data_utils.CALIBRATION_LABEL_NAME]
+    if calibrationdf.empty:
+        print('!' * 80)
+        print(
+            f'WARN: no {data_utils.CALIBRATION_FILENAME}, using default [0,0,0] to calibrate yprs.'
+        )
+        print('!' * 80)
+        calibrationyprs = np.zeros(3)
+    else:
+        calibrationyprs = calibrationdf[YPRS_COLUMNS].to_numpy()
+        calibrationyprs = np.mean(calibrationyprs, axis=0)
+
+    for root, dirs, files in os.walk(subject_path):
+        for filename in files:
+            if '.csv' not in filename:
+                continue
+            if filename == data_utils.CALIBRATION_FILENAME:
+                continue
+
+            label_name = filename.replace('.csv', '')
+            samplesdf = df[df['label'] == label_name]
+            sampleids = samplesdf.id.unique()
+
+            print(f'Processing label {label_name}...')
+
+            for sample_id in sampleids:
+                sampledf = samplesdf[samplesdf['id'] == sample_id]
+                sample_yprs = sampledf[YPRS_COLUMNS].to_numpy()
+                sample_yprs = get_calibrated_delta(
+                    calibrationyprs, sample_yprs
+                )
+
+                # TODO: this looks like a runtime bottleneck
+                # make this faster
+                trace = []
+                for i in range(sample_yprs.shape[0]):
+                    trace.append(rotate_to_world_axes(
+                        get_unit_vector(), sample_yprs[i]
+                    ))
+                trace = np.array(trace)
+
+                output_2d_scatter(
+                    trace[:, 0],
+                    trace[:, 1],
+                    os.path.join(
+                        subject_path,
+                        PNG_DIRNAME_YPRS_2D,
+                        f'{label_name}_{sample_id}.png'
+                    )
+                )
+
+                output_3d_scatter(
+                    trace[:, 0],
+                    trace[:, 1],
+                    trace[:, 2],
+                    os.path.join(
+                        subject_path,
+                        PNG_DIRNAME_YPRS_3D,
+                        f'{label_name}_{sample_id}.png'
+                    )
+                )
+
+
+def output_2d_scatter(xs, ys, path):
+    '''
+    draw a scatter plot given datapoints and output to path
+    '''
+    plt.clf()
+    fig = plt.figure()
+    plt.axes().scatter(
+        xs,
+        ys,
+        c=[i for i in range(xs.shape[0])],
+        cmap='hot'
+    )
+    fig.savefig(path)
+    plt.close(fig)
+
+
+def output_3d_scatter(xs, ys, zs, path):
+    '''
+    draw a scatter plot given datapoints and output to path
+    '''
     plt.clf()
     fig = plt.figure()
     ax = plt.axes(projection="3d")
     ax.scatter3D(
-        trace[:, 0],
-        trace[:, 1],
-        trace[:, 2],
-        c=[i for i in range(trace.shape[0])],
+        xs,
+        ys,
+        zs,
+        c=[i for i in range(xs.shape[0])],
         cmap='hot'
     )
     ax.set_xlabel('X-axis')
     ax.set_ylabel('Y-axis')
     ax.set_zlabel('Z-axis')
+    fig.savefig(path)
+    plt.close(fig)
 
-    plt.savefig(f'circle_{index}.png')
 
-    plt.clf()
-    fig = plt.figure()
-    plt.axes().scatter(
-        trace[:, 0],
-        trace[:, 1],
-        c=[i for i in range(trace.shape[0])],
-        cmap='hot'
-    )
-    plt.savefig(f'2d_{index}.png')
-quit()
+def get_unit_vector():
+    return np.array([0, 0, 1])
 
-for ch in string.ascii_lowercase:
-    # def plot_all_samples(sample_path, outpath):
-    df = data_utils.load_all_subjects('raw_data')
-    sampledfs = data_utils.get_all_samples_by_label(df, ch)
 
-    for sampleid in sampledfs:
-        sampledf = sampledfs[sampleid]
+def get_calibrated_delta(initial_calibration_vec, sample_frames):
+    '''
+    calibrate sample frames by subtracting calibration delta, then subtract
+    0th frame to get delta w.r.t to begin of sequence
+    '''
+    return (sample_frames - initial_calibration_vec) - sample_frames[0]
 
-        # think this should be velocity
-        accelerations = sampledf[['ax', 'ay', 'az']].to_numpy()
-        yprs = sampledf[['yaw', 'pitch', 'roll']].to_numpy()
 
-        frame_durations = sampledf[['td']].to_numpy()
+def main():
+    if len(sys.argv) != 2:
+        print('Usage: python data_visualizer.py <subject_path>')
+        quit()
 
-        numkeypoint = accelerations.shape[0]+1
+    subject_path = sys.argv[1]
+    dump_yprs_pngs(subject_path)
 
-        # think this should be integral of position
-        positions = np.zeros((numkeypoint, accelerations.shape[1]))
-        # think this should be position
-        velocities = np.zeros((numkeypoint, accelerations.shape[1]))
 
-        for i in range(accelerations.shape[0]):
-            accelerations[i] = rotate_to_world_axes(accelerations[i], yprs[i])
-
-        for i in range(1, numkeypoint-1):
-            acceleration = accelerations[i]
-            acceleration[2] -= 1000
-
-            old_velocity = velocities[i]
-            old_position = positions[i]
-            delta_t = frame_durations[i]
-
-            new_velocity = old_velocity + delta_t * \
-                (acceleration + (acceleration - accelerations[i-1] / 2))
-            velocities[i+1] = new_velocity
-
-            new_position = old_position + delta_t * \
-                (old_velocity + (old_velocity - velocities[i-1]) / 2)
-            positions[i+1] = new_position
-
-        # print(velocities)
-
-        plt.clf()
-        fig = plt.figure()
-        ax = plt.axes(projection="3d")
-        ax.scatter3D(
-            velocities[:, 0],
-            velocities[:, 1],
-            velocities[:, 2],
-            c=[i for i in range(velocities.shape[0])],
-            cmap='hot'
-        )
-        ax.set_xlabel('X-axis')
-        ax.set_ylabel('Y-axis')
-        ax.set_zlabel('Z-axis')
-        plt.savefig(f'3d_{ch}_{sampleid}.png')
-
-        plt.clf()
-        fig = plt.figure()
-        plt.axes().scatter(
-            velocities[:, 0],
-            velocities[:, 1],
-            c=[i for i in range(velocities.shape[0])],
-            cmap='hot'
-        )
-        plt.savefig(f'2d_{ch}_{sampleid}.png')
+if __name__ == "__main__":
+    main()
