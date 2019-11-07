@@ -5,7 +5,7 @@ import java.lang.StringBuilder;
 
 boolean USE_SUBJECT_NAME = true;
 String SUBJECT_NAME = "Russell";
-String TRIAL_NUMBER = "4";
+String TRIAL_NUMBER = "1";
 
 Serial mySerial;
 Date date;
@@ -24,7 +24,7 @@ void setup() {
    isReady = false;
    
    buffer = new StringBuilder();
-   char_counter = 0;
+   char_counter = -1;
 }
 
 void draw() {
@@ -86,7 +86,7 @@ void keyReleased(){
   if (key == 'r' || key == 'R'){
     output.flush();
     output.close();
-    char_counter = 0;
+    char_counter = -1;
     date = new Date();  
     char curr_char = CreateNewFile();
     println("Started recollecting data.");
@@ -100,7 +100,11 @@ char CreateNewFile(){
   String filename = "Raw_" + curr_char + "_" + formatter.format(date) + ".csv";
   
   if (USE_SUBJECT_NAME){
-    filename = "Raw_" + curr_char + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
+    if (char_counter == -1){
+      filename = "Calibration" + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
+    }else{
+      filename = "Raw_" + curr_char + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
+    }
   }
   
   if (output != null){
@@ -111,6 +115,9 @@ char CreateNewFile(){
   output = createWriter( filename );
   char_counter += 1;
   
+  if (char_counter == 0){
+    return '0';
+  }
   return curr_char;
 }
 
