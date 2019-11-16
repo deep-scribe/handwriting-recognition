@@ -13,7 +13,6 @@ YPRS_COLUMNS = [
     'yaw', 'pitch', 'roll',
 ]
 
-
 ##
 # Private Functions
 def __linear_interpolate_1d(sample_timestamp, sample_ypr, interpol_time_axis):
@@ -129,7 +128,7 @@ def load_data_dict_from_file(subject_path, calibrate=True):
 
     return dataset_dict
 
-def flatten_sequence(data_sequence, feature_num=100):
+def flatten_sequence(data_sequence, is_resample_only=False, feature_num=100):
     '''
     data_sequence: np.array with shape=(n_samples, 5),
     where 5 is for [index, time_delta, y, p, r]
@@ -152,10 +151,13 @@ def flatten_sequence(data_sequence, feature_num=100):
 
     merged_ypr = np.column_stack((interpol_yaw,interpol_pitch,interpol_roll))
 
+    if is_resample_only:
+        return merged_ypr
+
     return merged_ypr.flatten()
 
 
-def flatten_dataset(data, feature_num=100):
+def flatten_dataset(data, is_resample_only=False, feature_num=100):
     '''
     data: data dictionary as returned by load_data_dict_from_file
 
@@ -168,7 +170,7 @@ def flatten_dataset(data, feature_num=100):
 
         for data_seq in data_sequences:
             flat_sequences.append(
-                flatten_sequence(data_seq, feature_num)
+                flatten_sequence(data_seq, is_resample_only, feature_num)
             )
 
         flattened_dataset[label_name] = np.asarray(flat_sequences)
@@ -186,6 +188,10 @@ def example():
 
     subject_path = sys.argv[1]
 
+
+# Example 1:
+# If you want to resample and flatten the data
+# For each data sequence, you get shape=(20,300)
     loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True)
     flat_dataset = flatten_dataset(loaded_dataset, feature_num=100)
 
@@ -198,6 +204,21 @@ def example():
 
     # peek first three ypr from letter z
     print(flat_dataset['z'][19][:3])
+
+# Example 2:
+# If you only want to resample but don't flatten the data
+# For each data sequence, you get shape=(20,100,3)
+    resampled_dataset = flatten_dataset(loaded_dataset, is_resample_only=True, feature_num=100)
+
+    # the shape of should be (20, 100, 3)
+    assert(resampled_dataset['a'].shape == (20, 100, 3))
+    print (resampled_dataset['a'].shape)
+
+    # peek one data sequence from letter m, should be ypr in 100 rows
+    print(resampled_dataset['m'][10])
+
+    # peek first three ypr from letter z
+    print(resampled_dataset['z'][19][0])
 
 if __name__ == "__main__":
     example()
