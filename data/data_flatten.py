@@ -183,7 +183,7 @@ def example():
     In terminal, run {python data_flatten.py "flat_ypr_testdata"}
     '''
     if len(sys.argv) != 2:
-        print('Usage: python data_visualizer.py <subject_path>')
+        print('Usage: python data_flatten.py <subject_path>')
         quit()
 
     subject_path = sys.argv[1]
