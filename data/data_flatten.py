@@ -128,7 +128,7 @@ def load_data_dict_from_file(subject_path, calibrate=True):
 
     return dataset_dict
 
-def flatten_sequence(data_sequence, is_resample_only=False, feature_num=100):
+def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100):
     '''
     data_sequence: np.array with shape=(n_samples, 5),
     where 5 is for [index, time_delta, y, p, r]
@@ -151,31 +151,31 @@ def flatten_sequence(data_sequence, is_resample_only=False, feature_num=100):
 
     merged_ypr = np.column_stack((interpol_yaw,interpol_pitch,interpol_roll))
 
-    if is_resample_only:
+    if not is_flatten_ypr:
         return merged_ypr
 
     return merged_ypr.flatten()
 
 
-def flatten_dataset(data, is_resample_only=False, feature_num=100):
+def resample_dataset(data, is_flatten_ypr=True, feature_num=100):
     '''
     data: data dictionary as returned by load_data_dict_from_file
 
     return: data dictionary with flattened data, shape=(m, 3*feature_num)
     '''
-    flattened_dataset = {}
+    resampled_output = {}
 
     for label_name, data_sequences in data.items():
-        flat_sequences = []
+        new_sequences = []
 
         for data_seq in data_sequences:
-            flat_sequences.append(
-                flatten_sequence(data_seq, is_resample_only, feature_num)
+            new_sequences.append(
+                resample_sequence(data_seq, is_flatten_ypr, feature_num)
             )
 
-        flattened_dataset[label_name] = np.asarray(flat_sequences)
+        resampled_output[label_name] = np.asarray(new_sequences)
 
-    return flattened_dataset
+    return resampled_output
 
 
 def example():
@@ -193,22 +193,22 @@ def example():
 # If you want to resample and flatten the data
 # For each data sequence, you get shape=(20,300)
     loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True)
-    flat_dataset = flatten_dataset(loaded_dataset, feature_num=100)
+    flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=True, feature_num=100)
 
     # the shape of should be (20, 3 * 100)
-    assert(flat_dataset['a'].shape == (20, 300))
-    print (flat_dataset['a'].shape)
+    assert(flattened_dataset['a'].shape == (20, 300))
+    print (flattened_dataset['a'].shape)
 
     # peek one data sample from letter m
-    print(flat_dataset['m'][10])
+    print(flattened_dataset['m'][10])
 
     # peek first three ypr from letter z
-    print(flat_dataset['z'][19][:3])
+    print(flattened_dataset['z'][19][:3])
 
 # Example 2:
 # If you only want to resample but don't flatten the data
 # For each data sequence, you get shape=(20,100,3)
-    resampled_dataset = flatten_dataset(loaded_dataset, is_resample_only=True, feature_num=100)
+    resampled_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=False, feature_num=100)
 
     # the shape of should be (20, 100, 3)
     assert(resampled_dataset['a'].shape == (20, 100, 3))
