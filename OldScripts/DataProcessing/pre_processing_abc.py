@@ -49,6 +49,7 @@ def render_single_sample_with_reduction(sample, sample_rate_count):
     for index, value in enumerate(sample):
         current_sample = np.array(value).astype(None)
 
+        # increment time_delta
         if index > 0:
             current_sample[1] += float(sample[index - 1][1])
             sample[index] = current_sample
