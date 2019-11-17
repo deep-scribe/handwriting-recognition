@@ -98,8 +98,8 @@ def load_data_dict_from_file(subject_path, calibrate=True):
             total_lines = samplesdf.shape[0]
             num_samples = sampleids.shape[0]
 
-            print(f'Processing label {label_name}, with {num_samples} samples, '
-                  f'from {total_lines} lines...')
+            # print(f'Processing label {label_name}, with {num_samples} samples, '
+                  # f'from {total_lines} lines...')
 
             data_sequences = []
 
@@ -124,7 +124,7 @@ def load_data_dict_from_file(subject_path, calibrate=True):
             # each data sample has 5 columns [index, time, yaw, pitch, roll]
             dataset_dict[label_name] = np.asarray(data_sequences)
 
-    print("Successfully loaded yaw pitch roll data set in dictionary format from",len(dataset_dict),"files.\n")
+    print(f'Successfully loaded ypr data from',len(dataset_dict),f'files in folder {subject_path}.')
 
     return dataset_dict
 
