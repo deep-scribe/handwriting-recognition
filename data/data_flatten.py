@@ -193,8 +193,8 @@ def example():
 # For data for each label_name, you get shape=(20,300)
     loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True)
     flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=True, feature_num=100)
+    
     print ("Sanity check for Example 1, ypr data is flattened...")
-
     # the shape of should be (20, 3 * 100)
     assert(flattened_dataset['a'].shape == (20, 300))
     print (flattened_dataset['a'].shape)
@@ -210,8 +210,8 @@ def example():
 # If you only want to resample but don't flatten the data
 # For data for each label_name, you get shape=(20,100,3)
     resampled_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=False, feature_num=100)
+    
     print("\nSanity check for Example 2, ypr data is NOT flattened...")
-
     # the shape of should be (20, 100, 3)
     assert(resampled_dataset['a'].shape == (20, 100, 3))
     print (resampled_dataset['a'].shape)
