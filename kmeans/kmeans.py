@@ -10,7 +10,7 @@ class KMeans:
         self.data_length = None
         self.centroids = []
         self.clusters = {i:}[] for i in range(self.k)}
-        self.clusters_idx = {i:}[] for i in range(self.k)}
+        self.clusters_idx = {i:[] for i in range(self.k)}
         self.assignment = None
         self.labels = None
 
