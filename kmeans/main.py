@@ -4,6 +4,7 @@ import numpy as np
 from utils import dtw, l2
 from data import data_utils, data_visualizer, data_augmentation, data_flatten
 from data.data_flatten import load_data_dict_from_file, resample_dataset
+from kmeans import KMeans
 
 import os
 
@@ -17,7 +18,7 @@ test_data, test_labels = [],[]  # shape should roughly be (20*26, 100, 3)
 
 for dir in train_dirs:
     loaded_dataset = load_data_dict_from_file(dir, calibrate=True)
-    flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=True, feature_num=100)
+    flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=False, feature_num=100)
 
     for label_name, data_sequences in flattened_dataset.items():
     	train_data.extend(data_sequences)
@@ -32,14 +33,22 @@ print("train_labels", train_labels.shape)
 
 for dir in test_dirs:
     loaded_dataset = load_data_dict_from_file(dir, calibrate=True)
-    flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=True, feature_num=100)
+    flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=False, feature_num=100)
 
     for label_name, data_sequences in flattened_dataset.items():
     	test_data.extend(data_sequences)
-    	test_labels.extend([label_name]*len(data_sequences))    	
+    	test_labels.extend([label_name]*len(data_sequences))
 
 test_data = np.asarray(test_data)
 test_labels = np.asarray(test_labels)
 
 print("test_data", test_data.shape)
 print("test_labels", test_labels.shape)
+
+for k in range(26,52):
+    kmeans = KMeans(k, dtw, medoids = True)
+    kmeans.fit(train_data, train_labels, verbos = False)
+    label_prediction = kmeans.predict_labels(test_data)
+    # print(np.mean([kmeans.predict_labels(train_data)[i]==train_labels[i] for i in range(len(train_labels))]))
+    acc = np.mean([label_prediction[i]==test_labels[i] for i in range(len(test_labels))])
+    print("K: ", k, acc)
