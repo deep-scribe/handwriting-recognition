@@ -1,6 +1,6 @@
 import numpy as np
 import math
-import data_utils, data_visualizer
+from data import data_utils, data_visualizer
 import string
 import shutil
 import os

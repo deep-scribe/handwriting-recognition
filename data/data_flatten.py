@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import sys
-import data_utils
+from data import data_utils
 from scipy import interpolate
 
 
@@ -51,7 +51,7 @@ def load_data_dict_from_file(subject_path, calibrate=True):
     this path should also contain calibration.csv
 
     calibrate: most likely you want to deal with the calibrated data
-    
+
     return dictionary with len()=26, key is label, value is
         1D np.array with shape=(num_writing_events, ), and
         each element is 2D np.array with shape=(num_data_samples_of_event, 5)

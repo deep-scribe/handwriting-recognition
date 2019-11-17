@@ -1,20 +1,25 @@
 import numpy as np
 
 class KMeans:
-    def __init__(self, k, data, distance_function, medoids = True):
+    def __init__(self, k, distance_function, medoids = True):
         self.k = k
         self.distance_function = distance_function
         self.data = None
+        self.label_data = None
         self.data_shape = None
         self.data_length = None
         self.centroids = []
         self.clusters = {i:}[] for i in range(self.k)}
+        self.clusters_idx = {i:[] for i in range(self.k)}
         self.assignment = None
+        self.labels = None
 
-    def _load_data(data):
+    def _load_data(data, label_data):
         self.data = data
+        self.label_data = label_data
         self.data_shape = data.shape[1:]
         self.data_length = data.shape[0]
+        self.labels = [-1]*self.data_length
 
     def _initialization():
         self.centroids = [np.zeros(self.data_shape)]*self.k
@@ -32,8 +37,8 @@ class KMeans:
         return np.where(dist == np.amin(dist))
 
 
-    def fit(data, verbos = True, print_freq = 10):
-        self._load_data(data)
+    def fit(data, label_data, verbos = True, print_freq = 10):
+        self._load_data(data, label_data)
         self._initialization()
 
         iter = 0
@@ -58,6 +63,7 @@ class KMeans:
                         dist_min = dist_c
                         cluster_assignemnt = c
                 self.clusters[cluster_assignemnt].append(data[i])
+                self.clusters_idx[cluster_assignemnt].append(i)
                 self.assignment[i] = cluster_assignemnt
 
             for j in range(self.k):
@@ -85,3 +91,13 @@ class KMeans:
     def fit_predict(train_data, test_data, verbos = True, print_freq = 10):
         self.fit(train_data, verbos, print_freq)
         return(test_data)
+
+    def generate_label_for_clusters():
+        for j in range(self.k):
+            values,counts = np.unique(self.label_data[self.clusters_idx[j]], return_counts=True)
+            idx = np.argmax(counts)
+            self.labels[j] = values[idx]
+
+    def predict_labels(test_data):
+        assignments = self.predict(test_data)
+        return [self.labels[assignment] for assignment in assignments]

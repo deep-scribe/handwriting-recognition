@@ -5,7 +5,7 @@ import string
 import shutil
 import os
 import sys
-import data_utils
+from data import data_utils
 
 
 def get_rotation_matrix(yaw, pitch, roll):
