@@ -27,7 +27,7 @@ class KMeans:
         self.assignment = {i:-1 for i in range(self.data_length)}
         for i in range(self.k):
             rand_index = np.random.randint(0, self.data_length, 1)
-            self.centroids[i] = self.data[rand_index]
+            self.centroids[i] = self.data[rand_index].reshape(self.data_shape)
 
     def _calculate_medoid(self, data):
         dist = np.zeros((len(data), len(data)))
@@ -60,6 +60,7 @@ class KMeans:
                 cluster_assignemnt = -1
                 for c in range(self.k):
                     dist_c = self.distance_function(data[i], self.centroids[c])
+                    # print(dist_c)
                     if dist_c < dist_min:
                         dist_min = dist_c
                         cluster_assignemnt = c
