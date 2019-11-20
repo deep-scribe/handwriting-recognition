@@ -2,6 +2,7 @@ import os
 import numpy as np
 import sys
 from data import data_utils
+# import data_utils
 from scipy import interpolate
 
 
@@ -44,7 +45,7 @@ def __create_time_stamps(time_list):
 
 ##
 # Public Functions
-def load_data_dict_from_file(subject_path, calibrate=True):
+def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
     '''
     subject_path: string of a path containing all csv recorded by a subject,
     it is required that the file is named as {label_name}.csv
@@ -98,8 +99,9 @@ def load_data_dict_from_file(subject_path, calibrate=True):
             total_lines = samplesdf.shape[0]
             num_samples = sampleids.shape[0]
 
-            # print(f'Processing label {label_name}, with {num_samples} samples, '
-                  # f'from {total_lines} lines...')
+            if verbose:
+                print(f'Processing label {label_name}, with {num_samples} samples, '
+                  f'from {total_lines} lines...')
 
             data_sequences = []
 
@@ -191,20 +193,20 @@ def example():
 # Example 1:
 # If you want to resample and flatten the data
 # For data for each label_name, you get shape=(20,300)
-    loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True)
+    loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True, verbose=True)
     flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=True, feature_num=100)
     
-    print ("Sanity check for Example 1, ypr data is flattened...")
+    print ("\nSanity check for Example 1, ypr data is flattened...")
     # the shape of should be (20, 3 * 100)
     assert(flattened_dataset['a'].shape == (20, 300))
-    print (flattened_dataset['a'].shape)
+    print ("shape of letter a:",flattened_dataset['a'].shape)
 
     # peek one data sample from letter m
     assert(flattened_dataset['m'][10].shape == (300,))
-    print(flattened_dataset['m'][10])
+    print("one data sample from letter m:",flattened_dataset['m'][10].shape)
 
     # peek first three ypr from letter z
-    print(flattened_dataset['z'][19][:3])
+    print("first three ypr from letter z:",flattened_dataset['z'][19][:3].shape)
 
 # Example 2:
 # If you only want to resample but don't flatten the data
@@ -214,14 +216,14 @@ def example():
     print("\nSanity check for Example 2, ypr data is NOT flattened...")
     # the shape of should be (20, 100, 3)
     assert(resampled_dataset['a'].shape == (20, 100, 3))
-    print (resampled_dataset['a'].shape)
+    print ("shape a letter a:",resampled_dataset['a'].shape)
 
     # peek one data sequence from letter m, should be ypr in 100 rows
-    assert(resampled_dataset['m'][10].shape == (100,3))
-    print(resampled_dataset['m'][10])
+    assert(resampled_dataset['n'][10].shape == (100,3))
+    print("one data sequence from letter n:",resampled_dataset['n'][10].shape)
 
-    # peek first three ypr from letter z
-    print(resampled_dataset['z'][19][0])
+    # peek first three ypr from letter o
+    print("first three ypr from letter o:",resampled_dataset['o'][19][0].shape)
 
 if __name__ == "__main__":
     example()

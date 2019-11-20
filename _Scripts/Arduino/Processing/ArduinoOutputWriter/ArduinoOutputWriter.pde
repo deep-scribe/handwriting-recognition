@@ -4,7 +4,7 @@ import java.util.Date;
 import java.lang.StringBuilder;
 
 boolean USE_SUBJECT_NAME = true;
-String SUBJECT_NAME = "Kelly";
+String SUBJECT_NAME = "NEW_SUBJECT";
 String TRIAL_NUMBER = "1";
 
 Serial mySerial;
@@ -46,6 +46,11 @@ void draw() {
     }
 }
 
+
+// Key Board Control Explained:
+// D: "Delete" You just wrote a letter and released the arduino button, but you want to mark the previous data sequence as invalid.
+// P: "Purify" You want to clear all data about this current letter before writing to file, e.g. because you suddenly notice that you should write letter 'b' but not 'a'
+// R: "Recollect" You want to re-start from the very beginning, and overwrite everything you've collected so far in that folder.
 void keyReleased(){
   
   // Upon completing writing a letter, flush the buffer to the outputfile, and Next
@@ -95,17 +100,32 @@ void keyReleased(){
 }
 
 char CreateNewFile(){
+  
   char curr_char = (char)('a' + char_counter);
   SimpleDateFormat formatter = new SimpleDateFormat("MM_dd_HH_mm");  
-  String filename = "Raw_" + curr_char + "_" + formatter.format(date) + ".csv";
+  //String filename = "Raw_" + curr_char + "_" + formatter.format(date) + ".csv";
+  String filename = curr_char + ".csv";
+  String directoryName = SUBJECT_NAME;
   
-  if (USE_SUBJECT_NAME){
-    if (char_counter == -1){
-      filename = "Calibration" + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
-    }else{
-      filename = "Raw_" + curr_char + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
-    }
+  if (char_counter == -1){
+    filename = "calibration.csv";
   }
+  
+  
+  //if (USE_SUBJECT_NAME){
+  //  if (char_counter == -1){
+  //    filename = "Calibration" + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
+  //  }else{
+  //    filename = "Raw_" + curr_char + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
+  //  }
+  //}
+  
+  File directory = new File(directoryName);
+  if (! directory.exists()){
+    directory.mkdir();
+  }
+  
+  filename = directoryName + "/" + filename;
   
   if (output != null){
     output.flush();
