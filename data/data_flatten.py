@@ -1,8 +1,8 @@
 import os
 import numpy as np
 import sys
-from data import data_utils
-# import data_utils
+# from data import data_utils
+import data_utils
 from scipy import interpolate
 
 
