@@ -16,10 +16,13 @@ YPRS_COLUMNS = [
 
 ##
 # Private Functions
+
+
 def __linear_interpolate_1d(sample_timestamp, sample_ypr, interpol_time_axis):
     interpol_function = interpolate.interp1d(sample_timestamp, sample_ypr)
     interpol_ypr = interpol_function(interpol_time_axis)
     return interpol_ypr
+
 
 def __get_calibrated_delta(initial_calibration_vec, sample_frames):
     '''
@@ -27,6 +30,7 @@ def __get_calibrated_delta(initial_calibration_vec, sample_frames):
     0th frame to get delta w.r.t to begin of sequence
     '''
     return (sample_frames - initial_calibration_vec) - sample_frames[0]
+
 
 def __create_time_stamps(time_list):
     '''
@@ -45,6 +49,8 @@ def __create_time_stamps(time_list):
 
 ##
 # Public Functions
+
+
 def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
     '''
     subject_path: string of a path containing all csv recorded by a subject,
@@ -101,7 +107,7 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
 
             if verbose:
                 print(f'Processing label {label_name}, with {num_samples} samples, '
-                  f'from {total_lines} lines...')
+                      f'from {total_lines} lines...')
 
             data_sequences = []
 
@@ -111,10 +117,12 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
                 sample_yprs = sampledf[YPRS_COLUMNS].to_numpy()
 
                 if calibrate:
-                    sample_yprs = __get_calibrated_delta(calibrationyprs, sample_yprs)
+                    sample_yprs = __get_calibrated_delta(
+                        calibrationyprs, sample_yprs)
 
                 sample_idx_td = sampledf[INDEX_TIME_COLUMNS].to_numpy()
-                sample_idx_td_yprs = np.concatenate((sample_idx_td, sample_yprs), axis=1)
+                sample_idx_td_yprs = np.concatenate(
+                    (sample_idx_td, sample_yprs), axis=1)
 
                 # print("yprs",sample_yprs.shape)
                 # print("idx_td_yprs",sample_idx_td_yprs.shape)
@@ -126,9 +134,11 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
             # each data sample has 5 columns [index, time, yaw, pitch, roll]
             dataset_dict[label_name] = np.asarray(data_sequences)
 
-    print(f'Successfully loaded ypr data from',len(dataset_dict),f'files in folder {subject_path}.')
+    print(f'Successfully loaded ypr data from', len(
+        dataset_dict), f'files in folder {subject_path}.')
 
     return dataset_dict
+
 
 def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100):
     '''
@@ -145,13 +155,15 @@ def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100):
     time_stamps = __create_time_stamps(data_sequence.T[1])
     time_lower_bound = time_stamps[0]
     time_upper_bound = time_stamps[-1]
-    time_axis = np.linspace(time_lower_bound, time_upper_bound, num=feature_num)
+    time_axis = np.linspace(
+        time_lower_bound, time_upper_bound, num=feature_num)
 
     interpol_yaw = __linear_interpolate_1d(time_stamps, yaw_list, time_axis)
-    interpol_pitch = __linear_interpolate_1d(time_stamps, pitch_list, time_axis)
+    interpol_pitch = __linear_interpolate_1d(
+        time_stamps, pitch_list, time_axis)
     interpol_roll = __linear_interpolate_1d(time_stamps, roll_list, time_axis)
 
-    merged_ypr = np.column_stack((interpol_yaw,interpol_pitch,interpol_roll))
+    merged_ypr = np.column_stack((interpol_yaw, interpol_pitch, interpol_roll))
 
     if not is_flatten_ypr:
         return merged_ypr
@@ -193,37 +205,43 @@ def example():
 # Example 1:
 # If you want to resample and flatten the data
 # For data for each label_name, you get shape=(20,300)
-    loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True, verbose=True)
-    flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=True, feature_num=100)
-    
-    print ("\nSanity check for Example 1, ypr data is flattened...")
+    loaded_dataset = load_data_dict_from_file(
+        subject_path, calibrate=True, verbose=True)
+    flattened_dataset = resample_dataset(
+        loaded_dataset, is_flatten_ypr=True, feature_num=100)
+
+    print("\nSanity check for Example 1, ypr data is flattened...")
     # the shape of should be (20, 3 * 100)
     assert(flattened_dataset['a'].shape == (20, 300))
-    print ("shape of letter a:",flattened_dataset['a'].shape)
+    print("shape of letter a:", flattened_dataset['a'].shape)
 
     # peek one data sample from letter m
     assert(flattened_dataset['m'][10].shape == (300,))
-    print("one data sample from letter m:",flattened_dataset['m'][10].shape)
+    print("one data sample from letter m:", flattened_dataset['m'][10].shape)
 
     # peek first three ypr from letter z
-    print("first three ypr from letter z:",flattened_dataset['z'][19][:3].shape)
+    print("first three ypr from letter z:",
+          flattened_dataset['z'][19][:3].shape)
 
 # Example 2:
 # If you only want to resample but don't flatten the data
 # For data for each label_name, you get shape=(20,100,3)
-    resampled_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=False, feature_num=100)
-    
+    resampled_dataset = resample_dataset(
+        loaded_dataset, is_flatten_ypr=False, feature_num=100)
+
     print("\nSanity check for Example 2, ypr data is NOT flattened...")
     # the shape of should be (20, 100, 3)
     assert(resampled_dataset['a'].shape == (20, 100, 3))
-    print ("shape a letter a:",resampled_dataset['a'].shape)
+    print("shape a letter a:", resampled_dataset['a'].shape)
 
     # peek one data sequence from letter m, should be ypr in 100 rows
-    assert(resampled_dataset['n'][10].shape == (100,3))
-    print("one data sequence from letter n:",resampled_dataset['n'][10].shape)
+    assert(resampled_dataset['n'][10].shape == (100, 3))
+    print("one data sequence from letter n:", resampled_dataset['n'][10].shape)
 
     # peek first three ypr from letter o
-    print("first three ypr from letter o:",resampled_dataset['o'][19][0].shape)
+    print("first three ypr from letter o:",
+          resampled_dataset['o'][19][0].shape)
+
 
 if __name__ == "__main__":
     example()

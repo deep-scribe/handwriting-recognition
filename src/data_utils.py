@@ -83,7 +83,7 @@ def load_all_subjects(parent_path):
         for subject_path in dirs:
             dfs.append(load_subject(
                 os.path.join(parent_path, subject_path)
-            ))    
+            ))
 
     return pd.concat(dfs, ignore_index=True)
 
@@ -113,9 +113,9 @@ def get_all_samples_by_label(df, label):
 
 
 def main():
-    df = load_all_subjects('kelly_11_7')
+    df = load_subject('../data/kelly_11_7')
     print(df)
-    s = get_sample(df, 'a')
+    s = get_random_sample_by_label(df, 'a')
     print(s)
     print(s[['ax', 'ay', 'az']].to_numpy())
 
