@@ -38,5 +38,3 @@ if __name__ == "__main__":
     xs, ys = verified_subjects_calibrated_yprs(resampled=True, flatten=False)
     print(xs[0])
     print(xs[0].shape)
-
-    print(train_dev_test_split(xs, ys, 0.8, 0.2))
