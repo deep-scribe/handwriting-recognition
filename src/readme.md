@@ -1,10 +1,1 @@
-# Data, Processing, Visualisation
-
-## Data storage
-
-- Directory name must be unique and should be reasonably descriptive
-- Each directory should contain 26 csv files only, with names being `{character}.csv`
-
-## Visualizer
-
-Under construction.
+Don't make folders, just prefix your files well. Handling relative import is a pain in the butt.
