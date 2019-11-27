@@ -5,10 +5,10 @@ import data_flatten
 
 VERIFIED_SUBJECTS = [
     'haobin_11_22',
-    # 'kevin_11_7',
-    # 'russell_11_7',
-    # 'kelly_11_7',
-    # 'russell_11_20_stand',
+    'kevin_11_7',
+    'russell_11_7',
+    'kelly_11_7',
+    'russell_11_20_stand',
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
