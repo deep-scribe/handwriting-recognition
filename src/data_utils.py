@@ -3,6 +3,7 @@ import os
 import string
 import random
 import numpy as np
+import data_flatten
 
 RAW_COLUMNS = [
     'id', 'td',
@@ -15,6 +16,8 @@ RAW_COLUMNS = [
 CALIBRATION_LABEL_NAME = 'calibration'
 CALIBRATION_FILENAME = CALIBRATION_LABEL_NAME + '.csv'
 
+ID_COLUMN = RAW_COLUMNS[0]
+TIME_DELTA_COLUMN = RAW_COLUMNS[1]
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 
 LEGAL_LABELS = 'abcdefghijklmnopqrstuvwxyz'
@@ -142,7 +145,7 @@ def get_yprs_calibration_vector(df):
     return calibrationyprs
 
 
-def get_calibrated_yprs_samples(df):
+def get_calibrated_yprs_samples(df, resampled, flatten):
     '''
     given a df of a subject (i.e. df returned by load_subject())
     return (xs, ys)
@@ -164,6 +167,20 @@ def get_calibrated_yprs_samples(df):
             sample_yprs = sampledf[YPRS_COLUMNS].to_numpy()
             # calibrate
             sample_yprs = sample_yprs - calibrationyprs - sample_yprs[0]
+
+            if resampled:
+                sample_id_col = sampledf[ID_COLUMN].to_numpy().reshape((-1, 1))
+                sample_td_col = sampledf[TIME_DELTA_COLUMN].to_numpy().reshape(
+                    (-1, 1))
+                sequence = np.hstack(
+                    (sample_id_col, sample_td_col, sample_yprs))
+
+                if sequence.shape[0] <= 2:
+                    continue
+
+                sample_yprs = data_flatten.resample_sequence(
+                    sequence, is_flatten_ypr=flatten
+                )
 
             xs.append(sample_yprs)
             ys.append(label_idx)

@@ -1,20 +1,21 @@
 import pandas as pd
 import os
 import data_utils
+import data_flatten
 
 VERIFIED_SUBJECTS = [
     'haobin_11_22',
-    'kevin_11_7',
-    'russell_11_7',
-    'kelly_11_7',
-    'russell_11_20_stand',
+    # 'kevin_11_7',
+    # 'russell_11_7',
+    # 'kelly_11_7',
+    # 'russell_11_20_stand',
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 DATA_PATH = '../data/'
 
 
-def load_verified_subjects_calibrated_yprs():
+def verified_subjects_calibrated_yprs(resampled=False, flatten=False):
     allxs = []
     allys = []
 
@@ -23,7 +24,8 @@ def load_verified_subjects_calibrated_yprs():
     for subject in dfs:
         print(subject)
         df = dfs[subject]
-        xs, ys = data_utils.get_calibrated_yprs_samples(df)
+        xs, ys = data_utils.get_calibrated_yprs_samples(
+            df, resampled=resampled, flatten=flatten)
 
         allxs.extend(xs)
         allys.extend(ys)
@@ -32,8 +34,6 @@ def load_verified_subjects_calibrated_yprs():
 
 
 if __name__ == "__main__":
-    xs, ys = load_verified_subjects_calibrated_yprs()
+    xs, ys = verified_subjects_calibrated_yprs(resampled=True, flatten=False)
     print(xs[0])
-    print(ys)
-    print(len(xs))
-    print(len(ys))
+    print(xs[0].shape)
