@@ -72,18 +72,17 @@ def load_subject(subject_path):
     return pd.concat(dfs, ignore_index=True)
 
 
-def load_all_subjects(parent_path):
+def load_all_subjects(parent_path, subject_paths):
     '''
     load csvs of all subdirs
     return one single pandas dataframe
     '''
     dfs = []
 
-    for root, dirs, files in os.walk(parent_path):
-        for subject_path in dirs:
-            dfs.append(load_subject(
-                os.path.join(parent_path, subject_path)
-            ))
+    for subject_path in subject_paths:
+        dfs.append(load_subject(
+            os.path.join(parent_path, subject_path)
+        ))
 
     return pd.concat(dfs, ignore_index=True)
 
@@ -95,7 +94,13 @@ def get_random_sample_by_label(df, label):
     '''
     rows = df[df['label'] == label]
     ids = list(set(rows['id'].tolist()))
-    sample = rows[rows['id'] == random.choice(ids)]
+    subjects = list(set(rows['subject_id'].tolist()))
+    sample = rows[
+        rows['id'] == random.choice(ids)
+    ]
+    sample = sample[
+        sample['subject_id'] == random.choice(subjects)
+    ]
     return sample
 
 
