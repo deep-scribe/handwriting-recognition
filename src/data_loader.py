@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import data_utils
 import data_flatten
+import random
 
 VERIFIED_SUBJECTS = [
     'haobin_11_22',
@@ -37,3 +38,5 @@ if __name__ == "__main__":
     xs, ys = verified_subjects_calibrated_yprs(resampled=True, flatten=False)
     print(xs[0])
     print(xs[0].shape)
+
+    print(train_dev_test_split(xs, ys, 0.8, 0.2))
