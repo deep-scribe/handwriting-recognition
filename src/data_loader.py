@@ -16,11 +16,13 @@ YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 DATA_PATH = '../data/'
 
 
-def verified_subjects_calibrated_yprs(resampled=False, flatten=False):
+def verified_subjects_calibrated_yprs(resampled=False, flatten=False, subjects=None):
+    if subjects == None:
+        subjects = VERIFIED_SUBJECTS
+    dfs = data_utils.load_all_subjects(DATA_PATH, subjects)
+
     allxs = []
     allys = []
-
-    dfs = data_utils.load_all_subjects(DATA_PATH, VERIFIED_SUBJECTS)
 
     for subject in dfs:
         print(subject)
