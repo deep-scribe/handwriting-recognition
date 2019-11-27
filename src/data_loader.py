@@ -10,14 +10,30 @@ VERIFIED_SUBJECTS = [
     'russell_11_20_stand',
 ]
 
+YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 DATA_PATH = '../data/'
 
 
-def load_verified_subjcects():
-    df = data_utils.load_all_subjects(DATA_PATH, VERIFIED_SUBJECTS)
-    return df
+def load_verified_subjects_calibrated_yprs():
+    allxs = []
+    allys = []
+
+    dfs = data_utils.load_all_subjects(DATA_PATH, VERIFIED_SUBJECTS)
+
+    for subject in dfs:
+        print(subject)
+        df = dfs[subject]
+        xs, ys = data_utils.get_calibrated_yprs_samples(df)
+
+        allxs.extend(xs)
+        allys.extend(ys)
+
+    return allxs, allys
 
 
 if __name__ == "__main__":
-    df = load_verified_subjcects()
-    print(data_utils.get_random_sample_by_label(df, 'a'))
+    xs, ys = load_verified_subjects_calibrated_yprs()
+    print(xs[0])
+    print(ys)
+    print(len(xs))
+    print(len(ys))

@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import string
 import random
+import numpy as np
 
 RAW_COLUMNS = [
     'id', 'td',
@@ -13,6 +14,13 @@ RAW_COLUMNS = [
 
 CALIBRATION_LABEL_NAME = 'calibration'
 CALIBRATION_FILENAME = CALIBRATION_LABEL_NAME + '.csv'
+
+YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
+
+LEGAL_LABELS = 'abcdefghijklmnopqrstuvwxyz'
+LABEL_TO_INDEX = {
+    LEGAL_LABELS[i]: i for i in range(len(LEGAL_LABELS))
+}
 
 
 def load_one_char_csv(filename):
@@ -77,14 +85,14 @@ def load_all_subjects(parent_path, subject_paths):
     load csvs of all subdirs
     return one single pandas dataframe
     '''
-    dfs = []
+    dfs = {}
 
     for subject_path in subject_paths:
-        dfs.append(load_subject(
+        dfs[subject_path] = load_subject(
             os.path.join(parent_path, subject_path)
-        ))
+        )
 
-    return pd.concat(dfs, ignore_index=True)
+    return dfs
 
 
 def get_random_sample_by_label(df, label):
@@ -115,6 +123,52 @@ def get_all_samples_by_label(df, label):
     for i in ids:
         samples[i] = rows[rows['id'] == i]
     return samples
+
+
+def get_yprs_calibration_vector(df):
+    '''
+    given a df of a subject (i.e. df returned by load_subject())
+    return a vector of the mean of all calibration rows of yprs cols
+    '''
+    calibrationdf = df[df['label'] == CALIBRATION_LABEL_NAME]
+    if calibrationdf.empty:
+        print(
+            f'[WARN] data_utils.get_yprs_calibration_vector: no calibration data in df, returning [0,0,0]'
+        )
+        return np.zeros(3)
+
+    calibrationyprs = calibrationdf[YPRS_COLUMNS].to_numpy()
+    calibrationyprs = np.mean(calibrationyprs, axis=0)
+    return calibrationyprs
+
+
+def get_calibrated_yprs_samples(df):
+    '''
+    given a df of a subject (i.e. df returned by load_subject())
+    return (xs, ys)
+    where xs is a list of np.array((num_frames, 3)) of the yprs of the sequence
+    where ys is a list of int of labels (0-25)
+    '''
+
+    xs = []
+    ys = []
+
+    calibrationyprs = get_yprs_calibration_vector(df)
+
+    for label_idx in range(len(LEGAL_LABELS)):
+        label_ch = LEGAL_LABELS[label_idx]
+
+        samples = get_all_samples_by_label(df, label_ch)
+        for sample_id in samples:
+            sampledf = samples[sample_id]
+            sample_yprs = sampledf[YPRS_COLUMNS].to_numpy()
+            # calibrate
+            sample_yprs = sample_yprs - calibrationyprs - sample_yprs[0]
+
+            xs.append(sample_yprs)
+            ys.append(label_idx)
+
+    return xs, ys
 
 
 def main():
