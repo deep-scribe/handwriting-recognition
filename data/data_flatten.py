@@ -137,7 +137,6 @@ def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100):
 
     return np.array with shape=(3*feature_num,)
     '''
-
     yaw_list = data_sequence.T[2]
     pitch_list = data_sequence.T[3]
     roll_list = data_sequence.T[4]
@@ -190,10 +189,11 @@ def example():
 
     subject_path = sys.argv[1]
 
+    loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True, verbose=True)
+
 # Example 1:
 # If you want to resample and flatten the data
 # For data for each label_name, you get shape=(20,300)
-    loaded_dataset = load_data_dict_from_file(subject_path, calibrate=True, verbose=True)
     flattened_dataset = resample_dataset(loaded_dataset, is_flatten_ypr=True, feature_num=100)
     
     print ("\nSanity check for Example 1, ypr data is flattened...")
