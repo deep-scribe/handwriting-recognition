@@ -1,16 +1,19 @@
 import numpy as np
 import math
-from data import data_utils, data_visualizer
+import data_utils
+import data_visualizer
 import string
 import shutil
 import os
 import sys
 
+
 def quaternion_to_rotation_matrix(q):
-    a,b,c,d = q
+    a, b, c, d = q
     return np.array([[a**2+b**2-c**2-d**2, 2*b*c-2*a*d, 2*b*d+2*a*c],
-                    [2*b*c+2*a*d, a**2-b**2+c**2-d**2, 2*c*d-2*a*b],
-                    [2*b*d-2*a*c, 2*c*d+2*a*b, a**2-b**2-c**2+d**2]])
+                     [2*b*c+2*a*d, a**2-b**2+c**2-d**2, 2*c*d-2*a*b],
+                     [2*b*d-2*a*c, 2*c*d+2*a*b, a**2-b**2-c**2+d**2]])
+
 
 def add_noise(sample_yprs, noise_mean=0.0, noise_std=1.0):
     '''
@@ -29,7 +32,8 @@ def add_noise(sample_yprs, noise_mean=0.0, noise_std=1.0):
         sample_yprs[i] += eps
     return sample_yprs
 
-def rotate_by_vector(sample_yprs, theta, rotation_axis = [0,0,1]):
+
+def rotate_by_vector(sample_yprs, theta, rotation_axis=[0, 0, 1]):
     '''
     With an input matrix, rotate the object counter-clockwisely around the same rotation axis by the same angle at each time stamp
 
@@ -44,9 +48,11 @@ def rotate_by_vector(sample_yprs, theta, rotation_axis = [0,0,1]):
     '''
 
     rotation_axis = np.array(rotation_axis)
-    q = np.hstack([np.array(math.cos(np.radians(theta/2.0))), rotation_axis * math.sin(np.radians(theta/2.0))])
+    q = np.hstack([np.array(math.cos(np.radians(theta/2.0))),
+                   rotation_axis * math.sin(np.radians(theta/2.0))])
     # print(np.matmul(quaternion_to_rotation_matrix(q), sample_yprs.T).T.shape)
     return np.matmul(quaternion_to_rotation_matrix(q), sample_yprs.T).T
+
 
 def stretch(sample_yprs, ky, kp, kr):
     '''
@@ -59,7 +65,7 @@ def stretch(sample_yprs, ky, kp, kr):
     Return:
         the new matrix after stretching, dimension (N,3)
     '''
-    return sample_yprs*np.array([ky,kp,kr])
+    return sample_yprs*np.array([ky, kp, kr])
 
 
 PNG_DIRNAME_YPRS_2D = 'yprs_2d_pngs_augmented'
@@ -111,7 +117,7 @@ YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 #                     samplesdf.to_csv(cal_file, header = False, index = False)
 
 
-def augment(sample_yprs, rotate = True, noise = True, stretching = True, theta_range = 5):
+def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5):
     if rotate:
         theta = np.random.randn()*theta_range
         sample_yprs = rotate_by_vector(sample_yprs, theta)
@@ -181,8 +187,10 @@ def dump_augmented_yprs_pngs(subject_path):
 
     dump 2D and 3D pngs to corresponding subdir inside subject_path
     '''
-    data_visualizer.create_dir_remove_old(os.path.join(subject_path, PNG_DIRNAME_YPRS_2D))
-    data_visualizer.create_dir_remove_old(os.path.join(subject_path, PNG_DIRNAME_YPRS_3D))
+    data_visualizer.create_dir_remove_old(
+        os.path.join(subject_path, PNG_DIRNAME_YPRS_2D))
+    data_visualizer.create_dir_remove_old(
+        os.path.join(subject_path, PNG_DIRNAME_YPRS_3D))
     print(PNG_DIRNAME_YPRS_2D)
     print(PNG_DIRNAME_YPRS_3D)
 
@@ -230,7 +238,6 @@ def dump_augmented_yprs_pngs(subject_path):
                     ))
                 trace = np.array(trace)
 
-
                 data_visualizer.output_2d_scatter(
                     trace[:, 0],
                     trace[:, 1],
@@ -252,9 +259,27 @@ def dump_augmented_yprs_pngs(subject_path):
                     )
                 )
 
+
 def main():
-    # calibrate("./Kevin")
-    dump_augmented_yprs_pngs("./Kevin")
+    print('Loading one subject')
+    df = data_utils.load_subject('../data/kevin_11_7')
+
+    print('one sample sequence chosen in the pandas dataframe')
+    row = data_utils.get_random_sample_by_label(df, 'a')
+    print(row)
+
+    print('yprs of one sample sequence')
+    yprs = row[YPRS_COLUMNS].to_numpy()
+    print(yprs)
+
+    print('augmented yprs of one sample sequence')
+    augmented = augment(yprs)
+    print(augmented)
+
+    print('sum of squared distance from original to yprs')
+    sum_sq_dist = np.sum((yprs - augmented) ** 2)
+    print(sum_sq_dist)
+
 
 if __name__ == "__main__":
     main()
