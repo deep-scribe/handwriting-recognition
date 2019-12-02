@@ -108,6 +108,26 @@ def separate_ypr_data(dataset):
 
     return np.array(yaws), np.array(pitchs), np.array(rolls), np.array(labels)
 
+def restore_ypr_sample(yaws,pitchs,rolls):
+
+    restored_sequence = []
+
+    for i in range(len(yaws)):
+        restored_sequence.append(
+            np.column_stack((yaws[i], pitchs[i], rolls[i])))
+
+    return np.array(restored_sequence)
+
+def separate_ypr_sample(data_sequence):
+    yaws, pitchs, rolls, labels = [],[],[],[]
+
+    for sample in data_sequence:
+        # sample shape is [100,3]
+        yaws.append(sample.T[0])
+        pitchs.append(sample.T[1])
+        rolls.append(sample.T[2])
+
+    return np.array(yaws), np.array(pitchs), np.array(rolls)
 
 def __shallow_Autoencoder(input_size = 300, code_size = 64):
     '''
@@ -168,6 +188,34 @@ def Denoising_Autoencoder(ypr_train_noisy, input_size = 300, hidden_size = 128, 
 
     return new_ypr
 
+def autoencode_by_letter(dataset):
+    reconstructed_dataset = {}
+
+    for key in dataset:
+        yaws, pitchs, rolls = separate_ypr_sample(dataset[key])
+
+        print(yaws.shape, pitchs.shape, rolls.shape)
+
+        new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
+        new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
+        new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
+        reconstructed_dataset[key] = restore_ypr_sample(new_yaws, new_pitchs, new_rolls)
+
+    return reconstructed_dataset
+
+def autoencode_as_whole(dataset):
+
+    yaws, pitchs, rolls, labels = separate_ypr_data(dataset)
+
+    print(yaws.shape, pitchs.shape, rolls.shape, labels.shape)
+
+    new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
+    new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
+    new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
+
+    reconstructed_dataset = restore_ypr_data(new_yaws, new_pitchs, new_rolls, labels)
+
+    return reconstructed_dataset
 
 def main():
     '''
@@ -180,43 +228,42 @@ def main():
     subject_path = sys.argv[1]
     dataset = load_data(subject_path, feature_num=FEATURE_NUM)
 
-    yaws, pitchs, rolls, labels = separate_ypr_data(dataset)
-
-    print(yaws.shape, pitchs.shape, rolls.shape, labels.shape)
-
-    new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-    new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-    new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-
-    reconstructed_dataset = restore_ypr_data(new_yaws, new_pitchs, new_rolls, labels)
+    # reconstructed_dataset = autoencode_by_letter(dataset)
+    reconstructed_dataset = autoencode_as_whole(dataset)
 
     # if compare_dataset(restored_dataset, dataset):
     #     print('same!')
 
     print("shape of the reconstructed dataset:",reconstructed_dataset['a'].shape)
 
-    plt.subplot(2,2,1)
-    plt.plot(dataset['a'][2].T[1])
-    plt.ylabel('Degrees')
-    plt.subplot(2,2,2)
-    plt.plot(dataset['d'][2].T[1])
-    plt.subplot(2,2,3)
-    plt.plot(dataset['o'][2].T[1])
-    plt.subplot(2,2,4)
-    plt.plot(dataset['z'][2].T[1])
-    plt.suptitle('output/Compare original a, d, o, z. Pitch data')
+    for key in reconstructed_dataset:
+        plt.subplot(2,2,1)
+        plt.plot(dataset[key][2].T[1])
+        plt.ylabel('Degrees')
+        plt.subplot(2,2,2)
+        plt.plot(dataset[key][7].T[1])
+        plt.subplot(2,2,3)
+        plt.plot(dataset[key][12].T[1])
+        plt.ylabel('Degrees')
+        plt.subplot(2,2,4)
+        plt.plot(dataset[key][18].T[1])
 
-    plt.subplot(2,2,1)
-    plt.plot(reconstructed_dataset['a'][2].T[1])
-    plt.ylabel('Degrees')
-    plt.subplot(2,2,2)
-    plt.plot(reconstructed_dataset['d'][2].T[1])
-    plt.subplot(2,2,3)
-    plt.plot(reconstructed_dataset['o'][2].T[1])
-    plt.subplot(2,2,4)
-    plt.plot(reconstructed_dataset['z'][2].T[1])
-    plt.suptitle('Compare new a, d, o, z. Pitch data')
-    plt.savefig('output/autoencoder_generate.png')
+        plt.subplot(2,2,1)
+        plt.plot(reconstructed_dataset[key][2].T[1])
+        plt.subplot(2,2,2)
+        plt.plot(reconstructed_dataset[key][7].T[1])
+        plt.subplot(2,2,3)
+        plt.plot(reconstructed_dataset[key][12].T[1])
+        plt.subplot(2,2,4)
+        plt.plot(reconstructed_dataset[key][18].T[1])
+        sub_title = 'Letter ' + key + '. Pitch data'
+        plt.suptitle(sub_title)
+
+        file_name = 'DAE_output/letter_' + key + ".png"
+        plt.savefig(file_name)
+        plt.clf()
+
+
 
 if __name__ == "__main__":
     main()
