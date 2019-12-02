@@ -209,9 +209,9 @@ def autoencode_as_whole(dataset):
 
     print(yaws.shape, pitchs.shape, rolls.shape, labels.shape)
 
-    new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-    new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-    new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
+    new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = 256, code_size = 128, verbose=False)
+    new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = 256, code_size = 128, verbose=False)
+    new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = 256, code_size = 128, verbose=False)
 
     reconstructed_dataset = restore_ypr_data(new_yaws, new_pitchs, new_rolls, labels)
 
@@ -262,8 +262,6 @@ def main():
         file_name = 'DAE_output/letter_' + key + ".png"
         plt.savefig(file_name)
         plt.clf()
-
-
 
 if __name__ == "__main__":
     main()

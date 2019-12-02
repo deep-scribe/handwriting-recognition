@@ -4,6 +4,7 @@ import sys
 # from data import data_utils
 import data_utils
 from scipy import interpolate
+import matplotlib.pyplot as plt
 
 
 INDEX_TIME_COLUMNS = [
@@ -244,5 +245,35 @@ def example():
 
     print("\ndone.")
 
+# Example 3 generate comparison graph
+    for key in loaded_dataset:
+        plt.subplot(2,2,1)
+        plt.plot(loaded_dataset[key][2].T[3])
+        plt.ylabel('Degrees')
+        plt.subplot(2,2,2)
+        plt.plot(loaded_dataset[key][7].T[3])
+        plt.subplot(2,2,3)
+        plt.plot(loaded_dataset[key][12].T[3])
+        plt.ylabel('Degrees')
+        plt.subplot(2,2,4)
+        plt.plot(loaded_dataset[key][18].T[3])
+
+        plt.subplot(2,2,1)
+        plt.plot(resampled_dataset[key][2].T[1])
+        plt.subplot(2,2,2)
+        plt.plot(resampled_dataset[key][7].T[1])
+        plt.subplot(2,2,3)
+        plt.plot(resampled_dataset[key][12].T[1])
+        plt.subplot(2,2,4)
+        plt.plot(resampled_dataset[key][18].T[1])
+        sub_title = 'Letter ' + key + '. Pitch data'
+        plt.suptitle(sub_title)
+
+        file_name = 'flatten_output/letter_' + key + ".png"
+        plt.savefig(file_name)
+        plt.clf()
+
 if __name__ == "__main__":
     example()
+
+
