@@ -17,12 +17,17 @@ YPRS_COLUMNS = [
 
 ##
 # Private Functions
+def __linear_interpolate_1d(sample_timestamp, sample_ypr, interpol_time_axis, label_name):
 
-
-def __linear_interpolate_1d(sample_timestamp, sample_ypr, interpol_time_axis):
-    interpol_function = interpolate.interp1d(sample_timestamp, sample_ypr)
-    interpol_ypr = interpol_function(interpol_time_axis)
-    return interpol_ypr
+    try:
+        interpol_function = interpolate.interp1d(sample_timestamp, sample_ypr)
+        interpol_ypr = interpol_function(interpol_time_axis)
+        return interpol_ypr
+    except:
+        print("!"*80)
+        print("The data is corruptted. The corruptted letter is",label_name)
+        print("!"*80)
+        assert(False)
 
 
 def __get_calibrated_delta(initial_calibration_vec, sample_frames):
@@ -141,7 +146,7 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
     return dataset_dict
 
 
-def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100):
+def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100, label_name=""):
     '''
     data_sequence: np.array with shape=(n_samples, 5),
     where 5 is for [index, time_delta, y, p, r]
@@ -158,10 +163,10 @@ def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100):
     time_axis = np.linspace(
         time_lower_bound, time_upper_bound, num=feature_num)
 
-    interpol_yaw = __linear_interpolate_1d(time_stamps, yaw_list, time_axis)
+    interpol_yaw = __linear_interpolate_1d(time_stamps, yaw_list, time_axis, label_name)
     interpol_pitch = __linear_interpolate_1d(
-        time_stamps, pitch_list, time_axis)
-    interpol_roll = __linear_interpolate_1d(time_stamps, roll_list, time_axis)
+        time_stamps, pitch_list, time_axis, label_name)
+    interpol_roll = __linear_interpolate_1d(time_stamps, roll_list, time_axis, label_name)
 
     merged_ypr = np.column_stack((interpol_yaw, interpol_pitch, interpol_roll))
 
@@ -181,10 +186,13 @@ def resample_dataset(data, is_flatten_ypr=True, feature_num=100):
 
     for label_name, data_sequences in data.items():
         new_sequences = []
+        
+        CURR_LABEL_NAME = label_name
 
         for data_seq in data_sequences:
             new_sequences.append(
-                resample_sequence(data_seq, is_flatten_ypr, feature_num)
+                resample_sequence(data_sequence=data_seq, is_flatten_ypr=is_flatten_ypr, 
+                    feature_num=feature_num, label_name=label_name)
             )
 
         resampled_output[label_name] = np.asarray(new_sequences)
@@ -201,7 +209,6 @@ def example():
         quit()
 
     subject_path = sys.argv[1]
-
 
 # Example 1:
 # If you want to resample and flatten the data
@@ -269,7 +276,7 @@ def example():
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)
 
-        file_name = 'flatten_output/letter_' + key + ".png"
+        file_name = 'flatten_output_russell/letter_' + key + ".png"
         plt.savefig(file_name)
         plt.clf()
 

@@ -118,6 +118,9 @@ YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 
 
 def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5):
+    '''
+    sample_ypr shape=(N,3)
+    '''
     if rotate:
         theta = np.random.randn()*theta_range
         sample_yprs = rotate_by_vector(sample_yprs, theta)
