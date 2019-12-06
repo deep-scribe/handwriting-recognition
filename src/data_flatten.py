@@ -276,7 +276,7 @@ def example():
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)
 
-        file_name = 'flatten_output_russell/letter_' + key + ".png"
+        file_name = 'flatten_output/letter_' + key + ".png"
         plt.savefig(file_name)
         plt.clf()
 
