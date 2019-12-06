@@ -4,8 +4,7 @@ import java.util.Date;
 import java.lang.StringBuilder;
 
 boolean USE_SUBJECT_NAME = true;
-String SUBJECT_NAME = "temp";
-String TRIAL_NUMBER = "1";
+String SUBJECT_NAME = "chaonan";
 
 Serial mySerial;
 Date date;
