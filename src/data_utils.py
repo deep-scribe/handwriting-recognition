@@ -38,12 +38,17 @@ def load_one_char_csv(filename):
     )
 
     # handle encountering '#' to remove the previous writing sequence
-    ids_to_remove = []
+    ids_to_remove = set()
     for row_number_of_pound in list(df[df.astype(str)['id'] == '#'].index):
         if row_number_of_pound == 0:
             continue
         row_number_to_remove = row_number_of_pound - 1
-        ids_to_remove.append(df.iloc[row_number_to_remove]['id'])
+        ids_to_remove.add(df.iloc[row_number_to_remove]['id'])
+
+    for i in df.id.unique():
+        if len(df[df['id'] == i]) < 25:
+            ids_to_remove.add(i)
+
     for id_to_remove in ids_to_remove:
         df = df[df['id'] != id_to_remove]
 
