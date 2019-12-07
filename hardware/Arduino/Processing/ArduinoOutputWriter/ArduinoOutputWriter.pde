@@ -4,7 +4,7 @@ import java.util.Date;
 import java.lang.StringBuilder;
 
 boolean USE_SUBJECT_NAME = true;
-String SUBJECT_NAME = "test_r";
+String SUBJECT_NAME = "Jianhan";
 
 Serial mySerial;
 Date date;
@@ -24,7 +24,7 @@ void setup() {
    
    buffer = new StringBuilder();
    
-   char_counter = -1;
+   char_counter = 20;
 }
 
 void draw() {
