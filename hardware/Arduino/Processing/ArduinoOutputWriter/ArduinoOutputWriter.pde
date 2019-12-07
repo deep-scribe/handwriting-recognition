@@ -4,7 +4,7 @@ import java.util.Date;
 import java.lang.StringBuilder;
 
 boolean USE_SUBJECT_NAME = true;
-String SUBJECT_NAME = "jqu";
+String SUBJECT_NAME = "test_r";
 
 Serial mySerial;
 Date date;
@@ -23,7 +23,7 @@ void setup() {
    isReady = false;
    
    buffer = new StringBuilder();
-   char_counter = -1;
+   char_counter = 10;
 }
 
 void draw() {
@@ -35,7 +35,7 @@ void draw() {
                 if (value.indexOf("Ready to go!") != -1) {
                   isReady = true;
                   char curr_char = CreateNewFile();
-                  println("Now writing for the letter " + curr_char);
+                  println("Now writing for the letter " + curr_char + ", char_count " + (char_counter-1));
                 }
               }
               else{
@@ -72,7 +72,7 @@ void keyReleased(){
     
     if (char_counter < 26){
       char curr_char = CreateNewFile();
-      println("Now writing for the letter " + curr_char);
+      println("Now writing for the letter " + curr_char + ", char_count " + (char_counter-1));
     }
   }
   

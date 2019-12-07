@@ -229,7 +229,7 @@ def example():
 
     # peek first three ypr from letter z
     print("first three ypr from letter z:",
-          flattened_dataset['z'][19][:3].shape)
+          flattened_dataset['z'][18][:3].shape)
 
 # Example 2:
 # If you only want to resample but don't flatten the data
@@ -248,7 +248,7 @@ def example():
 
     # peek first three ypr from letter o
     print("first three ypr from letter o:",
-          resampled_dataset['o'][19][0].shape)
+          resampled_dataset['o'][18][0].shape)
 
     print("\ndone.")
 
@@ -276,7 +276,7 @@ def example():
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)
 
-        file_name = 'flatten_output/letter_' + key + ".png"
+        file_name = 'flatten_output_rusrand/letter_' + key + ".png"
         plt.savefig(file_name)
         plt.clf()
 
