@@ -23,7 +23,8 @@ void setup() {
    isReady = false;
    
    buffer = new StringBuilder();
-   char_counter = 10;
+   
+   char_counter = -1;
 }
 
 void draw() {
@@ -35,7 +36,7 @@ void draw() {
                 if (value.indexOf("Ready to go!") != -1) {
                   isReady = true;
                   char curr_char = CreateNewFile();
-                  println("Now writing for the letter " + curr_char + ", char_count " + (char_counter-1));
+                  println("Character count is " + char_counter + ". Now writing for the letter " + curr_char);
                 }
               }
               else{
@@ -72,7 +73,7 @@ void keyReleased(){
     
     if (char_counter < 26){
       char curr_char = CreateNewFile();
-      println("Now writing for the letter " + curr_char + ", char_count " + (char_counter-1));
+      println("Character count is " + char_counter + ". Now writing for the letter " + curr_char);
     }
   }
   
