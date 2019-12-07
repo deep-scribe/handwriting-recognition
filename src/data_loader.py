@@ -3,13 +3,25 @@ import os
 import data_utils
 import data_flatten
 import random
+import data_augmentation
 
 VERIFIED_SUBJECTS = [
+    'albert',
+    'chaonan_12_5',
+    'daniel',
     'haobin_11_22',
-    'kevin_11_7',
-    'russell_11_7',
+    'isa_12_5',
+    'janet',
+    'joanne',
     'kelly_11_7',
+    'kevin_11_7',
+    'ruocheng',
     'russell_11_20_stand',
+    'russell_11_7',
+    'solomon',
+    'wenzhou_12_5',
+    'yiheng_11_30',
+    'yongxu_11_30',
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
