@@ -16,7 +16,13 @@ from tensorflow.keras.regularizers import l1
 from tensorflow.keras.optimizers import Adam
 
 
-FEATURE_NUM = 300
+# FEATURE_NUM = 300
+# HIDDEN_SIZE = 256
+# CODE_SIZE = 128
+FEATURE_NUM = 100
+HIDDEN_SIZE = 128
+CODE_SIZE = 64
+
 # if you want to use logistic regression
 AUTOENCODER_LOSS ='binary_crossentropy'
 # if you want to use linear regression   
@@ -99,11 +105,11 @@ def separate_ypr_data(dataset):
     yaws, pitchs, rolls, labels = [],[],[],[]
     
     for key in dataset:
-        for sample in dataset[key]:
-            # sample shape is [100,3]
-            yaws.append(sample.T[0])
-            pitchs.append(sample.T[1])
-            rolls.append(sample.T[2])
+        for sequence in dataset[key]:
+            # Sequence shape is [100,3]
+            yaws.append(sequence.T[0])
+            pitchs.append(sequence.T[1])
+            rolls.append(sequence.T[2])
             labels.append(key)
 
     return np.array(yaws), np.array(pitchs), np.array(rolls), np.array(labels)
@@ -156,8 +162,6 @@ def Denoising_Autoencoder(ypr_train_noisy, input_size = 300, hidden_size = 128, 
 
     normalized_train_noisy = normalize_ypr(ypr_train_noisy)
 
-    input_ypr = Input(shape=(input_size,))
-
     if verbose:
         print("Creating Autoencoder model")
 
@@ -203,19 +207,41 @@ def autoencode_by_letter(dataset):
 
     return reconstructed_dataset
 
+
 def autoencode_as_whole(dataset):
 
     yaws, pitchs, rolls, labels = separate_ypr_data(dataset)
 
-    print(yaws.shape, pitchs.shape, rolls.shape, labels.shape)
+    print("yprl shapes:",yaws.shape, pitchs.shape, rolls.shape, labels.shape)
 
-    new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = 256, code_size = 128, verbose=False)
-    new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = 256, code_size = 128, verbose=False)
-    new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = 256, code_size = 128, verbose=False)
+    new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = HIDDEN_SIZE, code_size = CODE_SIZE, verbose=False)
+    new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = HIDDEN_SIZE, code_size = CODE_SIZE, verbose=False)
+    new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = HIDDEN_SIZE, code_size = CODE_SIZE, verbose=False)
+
+    print("after: yprl shapes:",new_yaws.shape, new_pitchs.shape, new_rolls.shape, labels.shape)
 
     reconstructed_dataset = restore_ypr_data(new_yaws, new_pitchs, new_rolls, labels)
 
     return reconstructed_dataset
+
+
+def ae_denoise(yaws, pitchs, rolls, feature_num=100, hidden_size=128, code_size=64):
+    '''
+    yaws: shape = (total_sequences, feature_num)
+    pitch: shape = (total_sequences, feature_num)
+    rolls: shape = (total_sequences, feature_num)
+
+    total_sequences means the numebr of all data sequences in entire dataset, regardless of the labels.
+    feature_num is the data samples per sequence, after resampling.
+
+    return: denoised data with exactly same shape
+    '''
+
+    new_yaws = Denoising_Autoencoder(yaws, input_size=feature_num, hidden_size = hidden_size, code_size = code_size, verbose=False)
+    new_pitchs = Denoising_Autoencoder(pitchs, input_size=feature_num, hidden_size = hidden_size, code_size = code_size, verbose=False)
+    new_rolls = Denoising_Autoencoder(rolls, input_size=feature_num, hidden_size = hidden_size, code_size = code_size, verbose=False)
+
+    return new_yaws, new_pitchs, new_rolls
 
 def main():
     '''
@@ -259,7 +285,7 @@ def main():
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)
 
-        file_name = 'DAE_output/letter_' + key + ".png"
+        file_name = 'DAE_output_2/letter_' + key + ".png"
         plt.savefig(file_name)
         plt.clf()
 
