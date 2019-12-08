@@ -9,8 +9,8 @@ dependencies:
   - basemap=1.2.0=py37h0acbc05_0
   - blas=1.0=mkl
   - bleach=3.1.0=py37_0
-  - ca-certificates=2019.10.16=0
-  - certifi=2019.9.11=py37_0
+  - ca-certificates=2019.11.27=0
+  - certifi=2019.11.28=py37_0
   - cffi=1.13.2=py37hb5b8e2f_0
   - cycler=0.10.0=py37_0
   - dbus=1.13.12=h90a0687_0
@@ -106,6 +106,7 @@ dependencies:
   - tk=8.6.8=ha441bb4_0
   - torchvision=0.4.2=py37_cpu
   - tornado=6.0.3=py37h1de35cc_0
+  - tqdm=4.40.0=py_0
   - traitlets=4.3.3=py37_0
   - wcwidth=0.1.7=py37_0
   - webencodings=0.5.1=py37_1
