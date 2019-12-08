@@ -102,7 +102,7 @@ def load_all_subject_split(resampled=True, flatten=True):
     return trainx, devx, testx, trainy, devy, testy
 
 
-def augment_train_set(train_x, train_y, augment_prop=1):
+def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True):
     # use default data augmentation setting to append to the TRAIN_SET
     # augment_prop * len(train_set) number of samples
     # please augment TRAIN_SET only
@@ -112,14 +112,22 @@ def augment_train_set(train_x, train_y, augment_prop=1):
     augmented_xs = []
     augmented_ys = []
 
-    for i in range(train_x.shape[0]):
-        x = train_x[i]
-        y = train_y[i]
+    for p in range(augment_prop):
+        for i in range(train_x.shape[0]):
+            x = train_x[i]
+            y = train_y[i]
 
-        unflattened_x = x.reshape(int(x.shape[0] / 3), 3)
-        augmented_x = data_augmentation.augment(unflattened_x)
-        augmented_xs.append(augmented_x.flatten())
-        augmented_ys.append(y)
+            if is_flattened:
+                unflattened_x = x.reshape(int(x.shape[0] / 3), 3)
+            else:
+                unflattened_x = x
+            augmented_x = data_augmentation.augment(unflattened_x)
+
+            if is_flattened:
+                augmented_xs.append(augmented_x.flatten())
+            else:
+                augmented_xs.append(augmented_x)
+            augmented_ys.append(y)
 
     return np.vstack((train_x, np.array(augmented_xs))), np.append(train_y, np.array(augmented_ys))
 
@@ -128,11 +136,12 @@ if __name__ == "__main__":
     # xs, ys = verified_subjects_calibrated_yprs(resampled=True, flatten=False)
     # print(xs[0])
     # print(xs[0].shape)
-    trainx, devx, testx, trainy, devy, testy = load_all_classic_random_split()
+    trainx, devx, testx, trainy, devy, testy = load_all_classic_random_split(
+        flatten=False)
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
-    trainx, trainy = augment_train_set(trainx, trainy)
+    trainx, trainy = augment_train_set(trainx, trainy, is_flattened=False)
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
