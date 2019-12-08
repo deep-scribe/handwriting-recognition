@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 VERIFIED_SUBJECTS = [
     'albert',
     'canon_12_5',
+    'chen_12_7',
     'daniel',
     'haobin_11_22',
     'isa_12_5',
@@ -27,6 +28,7 @@ VERIFIED_SUBJECTS = [
     'yiheng_11_30',
     'yiheng_12_5',
     'yongxu_11_30',
+    'zhaoye_12_7',
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
