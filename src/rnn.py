@@ -64,7 +64,7 @@ class Net(nn.Module):
     def forward(self, x):
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (self.init_h, self.init_c))
-        # print("inter: ", out.shape)
+        print("inter: ", out.shape)
         out = self.fc(out.view(x.shape[0], -1))
         # print("out: ", out.shape)
         return out
