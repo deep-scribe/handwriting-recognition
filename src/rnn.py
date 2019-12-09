@@ -12,7 +12,7 @@ print(torch.cuda.is_available())
 trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(flatten=False)
 
 #cell 3
-trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
+# trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
 #cell 4
