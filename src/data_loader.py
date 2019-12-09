@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 VERIFIED_SUBJECTS = [
     'albert',
     'canon_12_5',
-    'chen_12_7',
+    'Chen_12_7',
     'daniel',
     'haobin_11_22',
     'isa_12_5',
