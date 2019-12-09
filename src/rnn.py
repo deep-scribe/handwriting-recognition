@@ -55,7 +55,6 @@ def acc(data_loader):
 class Net(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_layers):
         super(Net, self).__init__()
-        self.batch_size = batch_size
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True)
         self.fc = nn.Linear(hidden_dim, 26, bias = True)
 
