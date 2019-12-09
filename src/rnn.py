@@ -28,8 +28,8 @@ devloader = get_dataloader(devx, devy, BATCH_SIZE)
 testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
 #cell 5
-_, num_feature, num_channel = trainx.shape
-print(num_feature, num_channel)
+sample_size, num_feature, num_channel = trainx.shape
+print(sample_size, num_feature, num_channel)
 
 #cell 6
 def acc(data_loader):
@@ -65,7 +65,7 @@ class Net(nn.Module):
         out = self.fc(out)
         return out
 
-net = Net(3, 100, 5, BATCH_SIZE)
+net = Net(num_channel, 100, 5, BATCH_SIZE)
 if torch.cuda.is_available():
     net.cuda()
 
