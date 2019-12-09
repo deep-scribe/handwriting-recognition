@@ -55,8 +55,8 @@ def acc(data_loader):
 class Net(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_layers, batch_size):
         super(Net, self).__init__()
-        self.init_h = torch.randn(n_layers, batch_size, hidden_dim)
-        self.init_c = torch.randn(n_layers, batch_size, hidden_dim)
+        self.init_h = torch.randn(n_layers, batch_size, hidden_dim).cuda()
+        self.init_c = torch.randn(n_layers, batch_size, hidden_dim).cuda()
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True)
         self.fc = nn.Linear(hidden_dim, 26)
 
