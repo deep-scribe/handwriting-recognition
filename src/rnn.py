@@ -66,8 +66,8 @@ class Net(nn.Module):
         out, _ = self.lstm(x, (self.init_h, self.init_c))
         # print("inter: ", out.shape)
         out = self.fc(out[:,-1,:])
-        print("out: ", out.shape)
-        return out.unsqueeze()
+        # print("out: ", out.shape)
+        return out
 
 net = Net(num_channel, 100, 5, BATCH_SIZE)
 if torch.cuda.is_available():
