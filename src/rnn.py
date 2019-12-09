@@ -9,7 +9,7 @@ import torch.optim as optim
 print(torch.cuda.is_available())
 
 #cell 2
-trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(flatten=False)
+trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(flatten=False)
 
 #cell 3
 # trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
