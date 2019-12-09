@@ -63,7 +63,7 @@ class Net(nn.Module):
     def forward(self, x):
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (self.init_h, self.init_c))
-        out = self.fc(out.reshape(-1))
+        out = self.fc(out)
         pritn(out.shape)
         return out
 
