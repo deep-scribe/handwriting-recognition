@@ -141,7 +141,7 @@ testacc, testloss
 hist['testacc'] = testacc
 hist['testloss'] = testloss
 
-with open('rnn_hist_random.json', 'w') as f:
+with open('../output/rnn/rnn_hist_random.json', 'w') as f:
     json.dump(hist, f)
 
 #cell 9
