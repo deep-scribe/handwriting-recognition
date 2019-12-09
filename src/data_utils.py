@@ -96,7 +96,7 @@ def load_all_subjects(parent_path, subject_paths):
     dfs = {}
 
     for subject_path in subject_paths:
-        print(subject_path)
+        # print(subject_path)
         dfs[subject_path] = load_subject(
             os.path.join(parent_path, subject_path)
         )

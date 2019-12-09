@@ -28,7 +28,7 @@ VERIFIED_SUBJECTS = [
     'yiheng_11_30',
     'yiheng_12_5',
     'yongxu_11_30',
-    'zhaoye_12_7',
+    'Zhaoye_12_7',
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
@@ -36,7 +36,7 @@ DATA_PATH = '../data/'
 
 
 def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=None):
-    print("start")
+    # print("start")
     if subjects == None:
         subjects = VERIFIED_SUBJECTS
     dfs = data_utils.load_all_subjects(DATA_PATH, subjects)
