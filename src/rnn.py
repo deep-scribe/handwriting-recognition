@@ -53,23 +53,23 @@ def acc(data_loader):
 
 #cell 7
 class Net(nn.Module):
-    def __init__(self, input_dim, hidden_dim, n_layers, batch_size):
+    def __init__(self, input_dim, hidden_dim, n_layers):
         super(Net, self).__init__()
         self.batch_size = batch_size
-        self.init_h = torch.randn(n_layers, batch_size, hidden_dim).cuda()
-        self.init_c = torch.randn(n_layers, batch_size, hidden_dim).cuda()
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True)
         self.fc = nn.Linear(hidden_dim, 26, bias = True)
 
     def forward(self, x):
+        init_h = torch.randn(n_layers, x.shape[0], hidden_dim).cuda()
+        init_c = torch.randn(n_layers, x.shape[0], hidden_dim).cuda()
         x = x.permute(0, 2, 1)
-        out, _ = self.lstm(x, (self.init_h, self.init_c))
+        out, _ = self.lstm(x, (init_h, init_c))
         # print("inter: ", out.shape)
         out = self.fc(out[:,-1,:])
         # print("out: ", out.shape)
         return out
 
-net = Net(num_channel, 100, 5, BATCH_SIZE)
+net = Net(num_channel, 100, 5)
 if torch.cuda.is_available():
     net.cuda()
 
