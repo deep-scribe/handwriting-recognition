@@ -80,7 +80,7 @@ criterion = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
 optimizer = optim.Adam(net.parameters(), lr=0.0001)
 
-for epoch in range(20):  # loop over the dataset multiple times
+for epoch in range(100):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader):
         print(f'{i if i%20==0 else ""}.', end='')
