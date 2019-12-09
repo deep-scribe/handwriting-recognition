@@ -12,7 +12,7 @@ print(torch.cuda.is_available())
 trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(flatten=False)
 
 #cell 3
-# trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
+trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
 #cell 4
@@ -51,6 +51,28 @@ def acc(data_loader):
             total += len(y)
     return correct / total
 
+def acc_loss(data_loader, criterion):
+    correct = 0
+    total = 0
+    total_loss = 0.0
+    with torch.no_grad():
+        for data in data_loader:
+            x, y = data
+            if torch.cuda.is_available():
+                x = x.cuda()
+                y = y.cuda()
+
+            outputs = net(x.float())
+            _, predicted = torch.max(outputs.data, 1)
+
+            w = torch.sum((predicted - y) != 0).item()
+            r = len(y) - w
+            correct += r
+            total += len(y)
+
+            total_loss += criterion(outputs, y.long()).item() * len(x)
+    return correct / total, total_loss / total
+
 #cell 7
 class Net(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_layers):
@@ -80,6 +102,7 @@ criterion = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
 optimizer = optim.Adam(net.parameters(), lr=0.0001)
 
+hist = defaultdict(list)
 for epoch in range(500):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader):
@@ -101,16 +124,27 @@ for epoch in range(500):  # loop over the dataset multiple times
         loss.backward()
         optimizer.step()
 
-    trainacc = acc(trainloader)
-    devacc = acc(devloader)
+    trainacc, trainloss = acc_loss(trainloader, criterion)
+    devacc, devloss = acc_loss(devloader, criterion)
+    hist['trainacc'].append(trainacc)
+    hist['trainloss'].append(trainloss)
+    hist['devacc'].append(devacc)
+    hist['devloss'].append(devloss)
 
-    print('')
     print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
+    print(f'        trainloss={trainloss} devloss={devloss}')
 
 print('Finished Training')
 
+testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
+testacc, testloss
+hist['testacc'] = testacc
+hist['testloss'] = testloss
+
+with open('../output/rnn/rnn_hist_random.json', 'w') as f:
+    json.dump(hist, f)
+
 #cell 9
-print(acc(testloader))
 
 #cell 10
 
