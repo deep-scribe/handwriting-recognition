@@ -53,8 +53,8 @@ def acc(data_loader):
 
 #cell 7
 class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__(input_dim, hidden_dim, n_layers, batch_size)
+    def __init__(self, input_dim, hidden_dim, n_layers, batch_size):
+        super(Net, self).__init__()
         self.init_h = torch.randn(n_layers, batch_size, hidden_dim)
         self.init_c = torch.randn(n_layers, batch_size, hidden_dim)
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True)
