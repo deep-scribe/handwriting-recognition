@@ -61,6 +61,7 @@ class Net(nn.Module):
         self.fc = nn.Linear(hidden_dim, 26)
 
     def forward(self, x):
+        print(x.shape)
         out, _ = self.lstm(x, (self.init_h, self.init_c))
         out = self.fc(out)
         return out
