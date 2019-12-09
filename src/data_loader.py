@@ -36,6 +36,7 @@ DATA_PATH = '../data/'
 
 
 def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=None):
+    print("start")
     if subjects == None:
         subjects = VERIFIED_SUBJECTS
     dfs = data_utils.load_all_subjects(DATA_PATH, subjects)
