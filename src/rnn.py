@@ -59,14 +59,14 @@ class Net(nn.Module):
         self.init_h = torch.randn(n_layers, batch_size, hidden_dim).cuda()
         self.init_c = torch.randn(n_layers, batch_size, hidden_dim).cuda()
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, 26)
+        self.fc = nn.Linear(hidden_dim, 26, bias = True)
 
     def forward(self, x):
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (self.init_h, self.init_c))
         # print("inter: ", out.shape)
-        out = self.fc(out.contiguous().view(x.shape[0], -1))
-        # print("out: ", out.shape)
+        out = self.fc(out)
+        print("out: ", out.shape)
         return out
 
 net = Net(num_channel, 100, 5, BATCH_SIZE)
@@ -95,7 +95,7 @@ for epoch in range(20):  # loop over the dataset multiple times
         # forward + backward + optimize
 
         outputs = net(inputs.float())
-        loss = criterion(outputs, labels)
+        loss = criterion(outputs, labels.long())
         loss.backward()
         optimizer.step()
 
