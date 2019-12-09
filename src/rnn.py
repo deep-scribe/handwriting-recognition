@@ -106,7 +106,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
 hist = defaultdict(list)
-for epoch in range(1):  # loop over the dataset multiple times
+for epoch in range(500):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader):
         print(f'{i if i%20==0 else ""}.', end='')
