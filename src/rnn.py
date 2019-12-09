@@ -63,8 +63,9 @@ class Net(nn.Module):
     def forward(self, x):
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (self.init_h, self.init_c))
+        print("inter: "out.shape)
         out = self.fc(out)
-        print(out.shape)
+        print("out: "out.shape)
         return out
 
 net = Net(num_channel, 100, 5, BATCH_SIZE)
