@@ -64,7 +64,7 @@ class Net(nn.Module):
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (self.init_h, self.init_c))
         out = self.fc(out)
-        out = F.log_softmax(out, dim=1)
+        print(out.shape)
         return out
 
 net = Net(num_channel, 100, 5, BATCH_SIZE)
@@ -72,7 +72,7 @@ if torch.cuda.is_available():
     net.cuda()
 
 #cell 8
-criterion = nn.NLLLoss()
+criterion = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
 optimizer = optim.Adam(net.parameters(), lr=0.0001)
 
