@@ -33,6 +33,7 @@ _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
 trainx = encode(trainx, encoder)
 devx = encode(devx, encoder)
 testx = encode(testx, encoder)
+print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
 #cell 4
 BATCH_SIZE = 500
