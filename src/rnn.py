@@ -9,10 +9,6 @@ import json
 from collections import defaultdict
 import autoencoder
 import numpy as np
-from tensorflow.keras.backend.tensorflow_backend import set_session
-from tensorflow.keras.backend.tensorflow_backend import clear_session
-from tensorflow.keras.backend.tensorflow_backend import get_session
-# import tensorflow as tf
 
 #cell 1
 print(torch.cuda.is_available())
@@ -38,13 +34,10 @@ trainx = encode(trainx, encoder)
 devx = encode(devx, encoder)
 testx = encode(testx, encoder)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-sess = get_session()
-clear_session()
-sess.close()
 del encoder
 
 #cell 4
-BATCH_SIZE = 500
+BATCH_SIZE = 450
 
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
