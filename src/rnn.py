@@ -7,16 +7,31 @@ import torch.optim as optim
 import os
 import json
 from collections import defaultdict
+import autoencoder
 
 #cell 1
 print(torch.cuda.is_available())
 
+def split_ypr(x):
+    return x[:,:,0],x[:,:,1], x[:,:,2]
+
+def encode(x, encoder):
+    y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
+    return np.stack((y,p,r), axis=2)
+
 #cell 2
-trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(flatten=False)
+trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(flatten=False)
 
 #cell 3
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+
+_,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
+
+
+trainx = encode(trainx, encoder)
+devx = encode(devx, encoder)
+testx = encode(testx, encoder)
 
 #cell 4
 BATCH_SIZE = 500
@@ -144,7 +159,7 @@ testacc, testloss
 hist['testacc'] = testacc
 hist['testloss'] = testloss
 
-with open('../output/rnn/rnn_hist_subject.json', 'w') as f:
+with open('../output/rnn/rnn_hist_random_ae.json', 'w') as f:
     json.dump(hist, f)
 
 #cell 9
