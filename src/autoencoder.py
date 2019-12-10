@@ -257,6 +257,10 @@ def ae_denoise(yaws, pitchs, rolls, feature_num=100, hidden_size=128, code_size=
     return: denoised data with exactly same shape
     '''
 
+    yaws = np.copy(yaws)
+    pitchs = np.copy(pitchs)
+    rolls = np.copy(rolls)
+
     new_yaws, yaws_encoder = Denoising_Autoencoder(yaws, input_size=feature_num, hidden_size = hidden_size, code_size = code_size, verbose=False)
     
     # yaws_encoder.save('yaw.h5')
@@ -292,7 +296,7 @@ def ae_predict(yaws, pitchs, rolls, ypr_encoder):
     # pitchs_encoder = load_model('pitch.h5')
     # rolls_encoder = load_model('roll.h5')
 
-    for encoder, ypr_noisy in [(yaws_encoder, yaws), (pitchs_encoder,pitchs), (rolls_encoder,rolls)]:
+    for encoder, ypr_noisy in [(yaws_encoder, np.copy(yaws)), (pitchs_encoder, np.copy(pitchs)), (rolls_encoder, np.copy(rolls))]:
         normalized_noisy = normalize_ypr(ypr_noisy)
         res = encoder.predict(normalized_noisy)
         new_ypr = restore_ypr(res)
@@ -337,53 +341,55 @@ def main():
     #     print('same!')
 
     print("shape of the reconstructed dataset:",reconstructed_dataset[0].shape)
+    print(dataset[0][0])
+    print(reconstructed_dataset[0][0])
 
-    for key in reconstructed_dataset:
+    # for key in reconstructed_dataset:
 
-        plt.subplot(2,2,1)
-        plt.plot(dataset[key][2].T[1])
-        plt.ylabel('Degrees')
-        plt.subplot(2,2,2)
-        plt.plot(dataset[key][7].T[1])
-        plt.subplot(2,2,3)
-        plt.plot(dataset[key][12].T[1])
-        plt.ylabel('Degrees')
-        plt.subplot(2,2,4)
-        plt.plot(dataset[key][18].T[1])
+    #     plt.subplot(2,2,1)
+    #     plt.plot(dataset[key][2].T[1])
+    #     plt.ylabel('Degrees')
+    #     plt.subplot(2,2,2)
+    #     plt.plot(dataset[key][7].T[1])
+    #     plt.subplot(2,2,3)
+    #     plt.plot(dataset[key][12].T[1])
+    #     plt.ylabel('Degrees')
+    #     plt.subplot(2,2,4)
+    #     plt.plot(dataset[key][18].T[1])
 
-        plt.subplot(2,2,1)
-        plt.plot(reconstructed_dataset[key][2].T[1])
-        plt.xlim(0, 100)
-        plt.ylim(-40, 60)
-        plt.gca().set_aspect('equal', adjustable='box')
+    #     plt.subplot(2,2,1)
+    #     plt.plot(reconstructed_dataset[key][2].T[1])
+    #     plt.xlim(0, 100)
+    #     plt.ylim(-40, 60)
+    #     plt.gca().set_aspect('equal', adjustable='box')
 
-        plt.subplot(2,2,2)
-        plt.plot(reconstructed_dataset[key][7].T[1])
-        plt.xlim(0, 100)
-        plt.ylim(-40, 60)
-        plt.gca().set_aspect('equal', adjustable='box')
+    #     plt.subplot(2,2,2)
+    #     plt.plot(reconstructed_dataset[key][7].T[1])
+    #     plt.xlim(0, 100)
+    #     plt.ylim(-40, 60)
+    #     plt.gca().set_aspect('equal', adjustable='box')
         
-        plt.subplot(2,2,3)
-        plt.plot(reconstructed_dataset[key][12].T[1])
-        plt.xlim(0, 100)
-        plt.ylim(-40, 60)
-        plt.gca().set_aspect('equal', adjustable='box')
+    #     plt.subplot(2,2,3)
+    #     plt.plot(reconstructed_dataset[key][12].T[1])
+    #     plt.xlim(0, 100)
+    #     plt.ylim(-40, 60)
+    #     plt.gca().set_aspect('equal', adjustable='box')
 
-        plt.subplot(2,2,4)
-        plt.plot(reconstructed_dataset[key][18].T[1])
+    #     plt.subplot(2,2,4)
+    #     plt.plot(reconstructed_dataset[key][18].T[1])
 
-        letter_name = chr(key + 97)
+    #     letter_name = chr(key + 97)
 
-        sub_title = 'Letter ' + letter_name + '. Pitch data'
-        plt.suptitle(sub_title)
+    #     sub_title = 'Letter ' + letter_name + '. Pitch data'
+    #     plt.suptitle(sub_title)
 
-        plt.xlim(0, 100)
-        plt.ylim(-40, 60)
-        plt.gca().set_aspect('equal', adjustable='box')
+    #     plt.xlim(0, 100)
+    #     plt.ylim(-40, 60)
+    #     plt.gca().set_aspect('equal', adjustable='box')
 
-        file_name = 'DAE/letter_' + letter_name + ".png"
-        plt.savefig(file_name)
-        plt.clf()
+    #     file_name = 'DAE/letter_' + letter_name + ".png"
+    #     plt.savefig(file_name)
+    #     plt.clf()
 
 if __name__ == "__main__":
     main()
