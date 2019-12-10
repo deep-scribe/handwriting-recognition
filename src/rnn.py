@@ -34,6 +34,7 @@ trainx = encode(trainx, encoder)
 devx = encode(devx, encoder)
 testx = encode(testx, encoder)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+del encoder
 
 #cell 4
 BATCH_SIZE = 500
