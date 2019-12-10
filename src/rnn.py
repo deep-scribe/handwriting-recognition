@@ -9,6 +9,10 @@ import json
 from collections import defaultdict
 import autoencoder
 import numpy as np
+from keras.backend.tensorflow_backend import set_session
+from keras.backend.tensorflow_backend import clear_session
+from keras.backend.tensorflow_backend import get_session
+import tensorflow as tf
 
 #cell 1
 print(torch.cuda.is_available())
@@ -34,6 +38,9 @@ trainx = encode(trainx, encoder)
 devx = encode(devx, encoder)
 testx = encode(testx, encoder)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+sess = get_session()
+clear_session()
+sess.close()
 del encoder
 
 #cell 4
