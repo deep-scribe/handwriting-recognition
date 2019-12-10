@@ -9,10 +9,10 @@ import json
 from collections import defaultdict
 import autoencoder
 import numpy as np
-from keras.backend.tensorflow_backend import set_session
-from keras.backend.tensorflow_backend import clear_session
-from keras.backend.tensorflow_backend import get_session
-import tensorflow as tf
+from tensorflow.keras.backend.tensorflow_backend import set_session
+from tensorflow.keras.backend.tensorflow_backend import clear_session
+from tensorflow.keras.backend.tensorflow_backend import get_session
+# import tensorflow as tf
 
 #cell 1
 print(torch.cuda.is_available())
