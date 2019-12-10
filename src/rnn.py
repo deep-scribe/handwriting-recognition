@@ -37,7 +37,7 @@ print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.sha
 del encoder
 
 #cell 4
-BATCH_SIZE = 450
+BATCH_SIZE = 250
 
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
