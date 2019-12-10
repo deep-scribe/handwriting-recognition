@@ -12,23 +12,23 @@ VERIFIED_SUBJECTS = [
     'canon_12_5',
     'chen',
     'daniel',
-    'haobin_11_22',
     'isa_12_5',
-    'janet',
     'joanne',
     'jq_12_6',
     'kelly_11_7',
     'kevin_11_7',
     'ruocheng',
     'russell_11_20_stand',
-    'russell_11_7',
     'russell_random_12_7',
     'solomon',
-    'wenzhou_12_5',
     'yiheng_11_30',
     'yiheng_12_5',
     'yongxu_11_30',
     'zhaoye',
+    'wenzhou_12_5',
+    'haobin_11_22',
+    'janet',
+    'russell_11_7',
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
@@ -79,7 +79,7 @@ def load_all_classic_random_split(resampled=True, flatten=True):
 # use two subjects as test and two subjects as dev
 def load_all_subject_split(resampled=True, flatten=True):
     shuffled_subjects = VERIFIED_SUBJECTS[:]
-    random.shuffle(shuffled_subjects)
+    # random.shuffle(shuffled_subjects)
     train_subjects = shuffled_subjects[:-4]
     dev_subjects = shuffled_subjects[-4:-2]
     test_subjects = shuffled_subjects[-2:]
