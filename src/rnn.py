@@ -8,6 +8,7 @@ import os
 import json
 from collections import defaultdict
 import autoencoder
+import numpy as np
 
 #cell 1
 print(torch.cuda.is_available())
