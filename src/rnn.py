@@ -21,7 +21,7 @@ def encode(x, encoder):
     return np.stack((y,p,r), axis=2)
 
 #cell 2
-trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(flatten=False)
+trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(flatten=False)
 
 #cell 3
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
@@ -162,7 +162,7 @@ testacc, testloss
 hist['testacc'] = testacc
 hist['testloss'] = testloss
 
-with open('../output/rnn/rnn_hist_random_ae.json', 'w') as f:
+with open('../output/rnn/rnn_hist_subject_ae.json', 'w') as f:
     json.dump(hist, f)
 
 #cell 9
