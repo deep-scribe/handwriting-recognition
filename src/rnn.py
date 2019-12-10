@@ -24,20 +24,20 @@ def encode(x, encoder):
 trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(flatten=False)
 
 #cell 3
-trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
+# trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
-_,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
+# _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
 
 
-trainx = encode(trainx, encoder)
-devx = encode(devx, encoder)
-testx = encode(testx, encoder)
-print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-del encoder
+# trainx = encode(trainx, encoder)
+# devx = encode(devx, encoder)
+# testx = encode(testx, encoder)
+# print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+# del encoder
 
 #cell 4
-BATCH_SIZE = 250
+BATCH_SIZE = 500
 
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
@@ -162,7 +162,7 @@ testacc, testloss
 hist['testacc'] = testacc
 hist['testloss'] = testloss
 
-with open('../output/rnn/rnn_hist_subject_ae.json', 'w') as f:
+with open('../output/rnn/rnn_hist_subject_noaug.json', 'w') as f:
     json.dump(hist, f)
 
 #cell 9
