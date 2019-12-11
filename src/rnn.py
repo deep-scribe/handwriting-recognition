@@ -24,20 +24,20 @@ def encode(x, encoder):
 trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(flatten=False)
 
 #cell 3
-# trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
+trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
-# _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
+_,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
 
 
-# trainx = encode(trainx, encoder)
-# devx = encode(devx, encoder)
-# testx = encode(testx, encoder)
-# print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-# del encoder
+trainx = encode(trainx, encoder)
+devx = encode(devx, encoder)
+testx = encode(testx, encoder)
+print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+del encoder
 
 #cell 4
-BATCH_SIZE = 500
+BATCH_SIZE = 250
 
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
@@ -124,7 +124,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
 hist = defaultdict(list)
-for epoch in range(250):  # loop over the dataset multiple times
+for epoch in range(0):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader):
         print(f'{i if i%20==0 else ""}.', end='')
@@ -156,6 +156,7 @@ for epoch in range(250):  # loop over the dataset multiple times
     print(f'        trainloss={trainloss} devloss={devloss}')
 
 print('Finished Training')
+torch.save(net.state_dict(), "rnn.pth")
 
 testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
 testacc, testloss
