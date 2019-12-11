@@ -253,31 +253,50 @@ def example():
     print("\ndone.")
 
 # Example 3 generate comparison graph
+# color_red = '#008000'
+# color_blue = ''
+    color_red = '#980000'
+    color_blue = '#003262'
+
     for key in loaded_dataset:
         plt.subplot(2,2,1)
-        plt.plot(loaded_dataset[key][2].T[3])
+        plt.plot(loaded_dataset[key][2].T[3], label = 'Original', color = color_blue)
+        plt.legend(loc="upper right")
         plt.ylabel('Degrees')
         plt.subplot(2,2,2)
-        plt.plot(loaded_dataset[key][7].T[3])
+        plt.plot(loaded_dataset[key][7].T[3], label = 'Original', color = color_blue)
+        plt.legend(loc="upper right")
+        plt.xlim(0, 200)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
         plt.subplot(2,2,3)
-        plt.plot(loaded_dataset[key][12].T[3])
+        plt.plot(loaded_dataset[key][12].T[3], label = 'Original', color = color_blue)
+        plt.legend(loc="upper right")
         plt.ylabel('Degrees')
         plt.subplot(2,2,4)
-        plt.plot(loaded_dataset[key][18].T[3])
+        plt.plot(loaded_dataset[key][18].T[3], label = 'Original', color = color_blue)
+        plt.legend(loc="upper right")
 
         plt.subplot(2,2,1)
-        plt.plot(resampled_dataset[key][2].T[1])
+        plt.plot(resampled_dataset[key][2].T[1], label = 'Resampled', color = color_red)
+        plt.legend(loc="upper right")
         plt.subplot(2,2,2)
-        plt.plot(resampled_dataset[key][7].T[1])
+        plt.plot(resampled_dataset[key][7].T[1], label = 'Resampled', color = color_red)
+        plt.xlim(0, 200)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
+        plt.legend(loc="upper right")
         plt.subplot(2,2,3)
-        plt.plot(resampled_dataset[key][12].T[1])
+        plt.plot(resampled_dataset[key][12].T[1], label = 'Resampled', color = color_red)
+        plt.legend(loc="upper right")
         plt.subplot(2,2,4)
-        plt.plot(resampled_dataset[key][18].T[1])
+        plt.plot(resampled_dataset[key][18].T[1], label = 'Resampled', color = color_red)
+        plt.legend(loc="upper right")
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)
 
-        file_name = 'flatten_output_rusrand/letter_' + key + ".png"
-        plt.savefig(file_name)
+        file_name = 'flatten_vis/letter_' + key + ".png"
+        plt.savefig(file_name, dpi=200)
         plt.clf()
 
 if __name__ == "__main__":
