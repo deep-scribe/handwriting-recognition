@@ -35,7 +35,7 @@ void draw() {
               if (!isReady){
                 if (value.indexOf("Ready to go!") != -1) {
                   isReady = true;
-                  println("Now please collect Calibration data. Press N when done.");
+                  println("\nNow please collect Calibration data. Press N when done.");
                 }
               }
               else{
@@ -56,14 +56,14 @@ void keyReleased(){
   if(key == 'n' || key == 'N'){
     
     SaveBufferToFile();
-    println("You saved the previous data to file and now write the " + char_counter + "th character");
+    println("\nSaved data to file. Please now write the " + char_counter + "th character. Press N to save.");
     
   }
   
   // Purify:
   if (key == 'p' || key == 'P'){
     buffer.setLength(0);
-    println("Purified the buffer, You may now rewrite the letter.");
+    println("\nPurified the buffer, You may now rewrite the letter.");
   }
   
   // Stop:
@@ -72,7 +72,7 @@ void keyReleased(){
       output.flush();
       output.close();
     }
-    println("Confirmed exit. Unsaved data discarded.");
+    println("\nConfirmed exit. Unsaved data discarded.");
     exit();
   }
 }
@@ -84,7 +84,7 @@ boolean SaveBufferToFile(){
   String filename = "output.csv";
   
   if (char_counter == 0){
-    filename = "Calibration.csv";
+    filename = "calibration.csv";
   }
   
   File directory = new File(directoryName);
