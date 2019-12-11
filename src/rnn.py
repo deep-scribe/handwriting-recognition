@@ -7,9 +7,18 @@ import torch.optim as optim
 import os
 import json
 from collections import defaultdict
+import autoencoder
+import numpy as np
 
 #cell 1
 print(torch.cuda.is_available())
+
+def split_ypr(x):
+    return x[:,:,0],x[:,:,1], x[:,:,2]
+
+def encode(x, encoder):
+    y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
+    return np.stack((y,p,r), axis=2)
 
 #cell 2
 trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(flatten=False)
@@ -18,8 +27,17 @@ trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(fl
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
+_,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
+
+
+trainx = encode(trainx, encoder)
+devx = encode(devx, encoder)
+testx = encode(testx, encoder)
+print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+del encoder
+
 #cell 4
-BATCH_SIZE = 500
+BATCH_SIZE = 250
 
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
@@ -138,13 +156,14 @@ for epoch in range(250):  # loop over the dataset multiple times
     print(f'        trainloss={trainloss} devloss={devloss}')
 
 print('Finished Training')
+torch.save(net.state_dict(), "rnn.pth")
 
 testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
 testacc, testloss
 hist['testacc'] = testacc
 hist['testloss'] = testloss
 
-with open('../output/rnn/rnn_hist_subject.json', 'w') as f:
+with open('../output/rnn/rnn_hist_subject_ae_1.json', 'w') as f:
     json.dump(hist, f)
 
 #cell 9
