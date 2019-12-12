@@ -27,14 +27,14 @@ trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(fl
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
-_,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
-
-
-trainx = encode(trainx, encoder)
-devx = encode(devx, encoder)
-testx = encode(testx, encoder)
-print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-del encoder
+# _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
+#
+#
+# trainx = encode(trainx, encoder)
+# devx = encode(devx, encoder)
+# testx = encode(testx, encoder)
+# print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+# del encoder
 
 #cell 4
 BATCH_SIZE = 250
