@@ -19,8 +19,6 @@ from tensorflow.keras.models import load_model
 import data_loader
 
 
-
-
 # FEATURE_NUM = 300
 # HIDDEN_SIZE = 256
 # CODE_SIZE = 128
@@ -296,6 +294,7 @@ def ae_predict(yaws, pitchs, rolls, ypr_encoder):
     # pitchs_encoder = load_model('pitch.h5')
     # rolls_encoder = load_model('roll.h5')
 
+    # for encoder, ypr_noisy in [(yaws_encoder, yaws), (pitchs_encoder, pitchs), (rolls_encoder, rolls)]:
     for encoder, ypr_noisy in [(yaws_encoder, np.copy(yaws)), (pitchs_encoder, np.copy(pitchs)), (rolls_encoder, np.copy(rolls))]:
         normalized_noisy = normalize_ypr(ypr_noisy)
         res = encoder.predict(normalized_noisy)
@@ -335,61 +334,71 @@ def main():
     # reconstructed_dataset = autoencode_as_whole(dataset)
     # reconstructed_dataset = __as_denoise_test(dataset)
 
-    
+    color_red = '#980000'
+    color_blue = '#003262'
 
     # if compare_dataset(restored_dataset, dataset):
     #     print('same!')
 
     print("shape of the reconstructed dataset:",reconstructed_dataset[0].shape)
-    print(dataset[0][0])
-    print(reconstructed_dataset[0][0])
+    # print(dataset[0][0])
+    # print(reconstructed_dataset[0][0])
 
-    # for key in reconstructed_dataset:
+    for key in reconstructed_dataset:
 
-    #     plt.subplot(2,2,1)
-    #     plt.plot(dataset[key][2].T[1])
-    #     plt.ylabel('Degrees')
-    #     plt.subplot(2,2,2)
-    #     plt.plot(dataset[key][7].T[1])
-    #     plt.subplot(2,2,3)
-    #     plt.plot(dataset[key][12].T[1])
-    #     plt.ylabel('Degrees')
-    #     plt.subplot(2,2,4)
-    #     plt.plot(dataset[key][18].T[1])
+        plt.subplot(2,2,1)
+        plt.plot(dataset[key][2].T[1], label = 'Original', color = color_blue)
+        # plt.legend(loc="upper right")
+        plt.ylabel('Degrees')
+        plt.subplot(2,2,2)
+        plt.plot(dataset[key][7].T[1], label = 'Original', color = color_blue)
+        # plt.legend(loc="upper right")
+        plt.subplot(2,2,3)
+        plt.plot(dataset[key][12].T[1], label = 'Original', color = color_blue)
+        # plt.legend(loc="upper right")
+        plt.ylabel('Degrees')
+        plt.subplot(2,2,4)
+        plt.plot(dataset[key][18].T[1], label = 'Original', color = color_blue)
+        # plt.legend(loc="upper right")
 
-    #     plt.subplot(2,2,1)
-    #     plt.plot(reconstructed_dataset[key][2].T[1])
-    #     plt.xlim(0, 100)
-    #     plt.ylim(-40, 60)
-    #     plt.gca().set_aspect('equal', adjustable='box')
+        plt.subplot(2,2,1)
+        plt.plot(reconstructed_dataset[key][2].T[1], label = 'Denoised', color = color_red)
+        # plt.legend(loc="upper right")
+        # plt.xlim(0, 100)
+        # plt.ylim(-40, 60)
+        # plt.gca().set_aspect('equal', adjustable='box')
 
-    #     plt.subplot(2,2,2)
-    #     plt.plot(reconstructed_dataset[key][7].T[1])
-    #     plt.xlim(0, 100)
-    #     plt.ylim(-40, 60)
-    #     plt.gca().set_aspect('equal', adjustable='box')
+
+        plt.subplot(2,2,2)
+        plt.plot(reconstructed_dataset[key][7].T[1], label = 'Denoised', color = color_red)
+        # plt.legend(loc="upper right")
+        # plt.xlim(0, 100)
+        # plt.ylim(-40, 60)
+        # plt.gca().set_aspect('equal', adjustable='box')
         
-    #     plt.subplot(2,2,3)
-    #     plt.plot(reconstructed_dataset[key][12].T[1])
-    #     plt.xlim(0, 100)
-    #     plt.ylim(-40, 60)
-    #     plt.gca().set_aspect('equal', adjustable='box')
+        plt.subplot(2,2,3)
+        plt.plot(reconstructed_dataset[key][12].T[1], label = 'Denoised', color = color_red)
+        # plt.legend(loc="upper right")
+        # plt.xlim(0, 100)
+        # plt.ylim(-40, 60)
+        # plt.gca().set_aspect('equal', adjustable='box')
 
-    #     plt.subplot(2,2,4)
-    #     plt.plot(reconstructed_dataset[key][18].T[1])
+        plt.subplot(2,2,4)
+        plt.plot(reconstructed_dataset[key][18].T[1], label = 'Denoised', color = color_red)
+        # plt.legend(loc="upper right")
 
-    #     letter_name = chr(key + 97)
+        letter_name = chr(key + 97)
 
-    #     sub_title = 'Letter ' + letter_name + '. Pitch data'
-    #     plt.suptitle(sub_title)
+        sub_title = 'Letter ' + letter_name + '. Pitch data'
+        plt.suptitle(sub_title)
 
-    #     plt.xlim(0, 100)
-    #     plt.ylim(-40, 60)
-    #     plt.gca().set_aspect('equal', adjustable='box')
+        plt.xlim(0, 100)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
 
-    #     file_name = 'DAE/letter_' + letter_name + ".png"
-    #     plt.savefig(file_name)
-    #     plt.clf()
+        file_name = 'DAE/letter_' + letter_name + ".png"
+        plt.savefig(file_name, dpi=200)
+        plt.clf()
 
 if __name__ == "__main__":
     main()
