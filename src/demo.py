@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from art import tprint, text2art
 import time
 
 DEMO_FILEPATH = 'demo_data'
@@ -59,7 +60,8 @@ def re_eval():
             output = MODEL(x.float())
             _, pred = torch.max(output.data, 1)
             char = data_utils.LEGAL_LABELS[pred.data]
-            print(char)
+            art = text2art(char)
+            print(art)
 
 
 if __name__ == "__main__":
