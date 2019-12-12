@@ -51,20 +51,24 @@ def re_eval():
     if len(x) != 1 or len(y) != 1:
         s = 'Error, try again.'
 
-    dataloader = torch.utils.data.DataLoader(
-        [(x[0].T, y[0])], batch_size=1, shuffle=False
-    )
+    try:
+        dataloader = torch.utils.data.DataLoader(
+            [(x[0].T, y[0])], batch_size=1, shuffle=False
+        )
 
-    with torch.no_grad():
-        for x, y in dataloader:
-            output = MODEL(x.float())
-            _, pred = torch.max(output.data, 1)
-            char = data_utils.LEGAL_LABELS[pred.data]
-            art = text2art(char)
-            s = str(art)
+        with torch.no_grad():
+            for x, y in dataloader:
+                output = MODEL(x.float())
+                _, pred = torch.max(output.data, 1)
+                char = data_utils.LEGAL_LABELS[pred.data]
+                art = text2art(char)
+                s = str(art)
 
-    print('\n' * 100)
-    print(s)
+        print('\n' * 100)
+        print(s)
+
+    except:
+        print("Empty File")
 
 
 if __name__ == "__main__":
