@@ -49,7 +49,7 @@ def re_eval():
     x, y = data_utils.get_calibrated_yprs_samples(
         df, resampled=True, flatten=False)
     if len(x) != 1 or len(y) != 1:
-        raise AssertionError()
+        s = 'Error, try again.'
 
     dataloader = torch.utils.data.DataLoader(
         [(x[0].T, y[0])], batch_size=1, shuffle=False
@@ -61,7 +61,10 @@ def re_eval():
             _, pred = torch.max(output.data, 1)
             char = data_utils.LEGAL_LABELS[pred.data]
             art = text2art(char)
-            print(art)
+            s = str(art)
+
+    print('\n' * 100)
+    print(s)
 
 
 if __name__ == "__main__":
