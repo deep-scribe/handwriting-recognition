@@ -1,6 +1,6 @@
 # Motion-Based Handwriting Recognition
 
-A novel real-time handwriting-to-text system for entire lower-case English alphabet based on motion sensing and deep learning.
+A novel real-time handwriting-to-text system for lower-case English alphabet based on motion sensing and deep learning.
 
 ## Demo Link:
 * [Youtube Demo](https://www.youtube.com/watch?v=SGBSVo2U12s}{https://youtu.be/SGBSVo2U12s)
