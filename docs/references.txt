@@ -1,7 +1,0 @@
-
-Relevant Works
-https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1699862
-
-
-Autoencoder:
-https://www.cs.toronto.edu/~larocheh/publications/icml-2008-denoising-autoencoders.pdf

@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Motivation}{}% 1
+\BOOKMARK [1][-]{section.2}{Data Collection}{}% 2
+\BOOKMARK [1][-]{section.3}{Data Exploratory Analysis}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Data Interpolation and Re-sampling}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Data Visualization}{section.3}% 5
+\BOOKMARK [1][-]{section.4}{Baseline Model: K-means and K-Medoids for Classification}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Methods and Motivation}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.2}{Preliminary Results and Analysis}{section.4}% 8
+\BOOKMARK [1][-]{section.5}{Next Steps}{}% 9
+\BOOKMARK [2][-]{subsection.5.1}{Data Collection}{section.5}% 10
+\BOOKMARK [2][-]{subsection.5.2}{Neural Network}{section.5}% 11
+\BOOKMARK [2][-]{subsection.5.3}{Evaluation}{section.5}% 12
+\BOOKMARK [1][-]{appendix.A}{Data Collection Hardware}{}% 13
+\BOOKMARK [1][-]{appendix.B}{Data Format}{}% 14
+\BOOKMARK [1][-]{appendix.C}{Calibration and Normalization}{}% 15
+\BOOKMARK [1][-]{appendix.D}{Data Augmentation}{}% 16
+\BOOKMARK [1][-]{appendix.E}{Preliminary Experiment Comprehensive Results}{}% 17
