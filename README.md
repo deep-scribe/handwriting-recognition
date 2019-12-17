@@ -14,7 +14,7 @@ To tackle this problem, we first collected our own dataset by building the hardw
 ## Experiments and Result
 Our best model using RNN (LSTM) achieves 86.6% accuracy in the random split experiment and 53.6% in the subject split experiment. We reach the conclusion based on our technique and experiments that, albeit having a noisy small dataset, it is possible to achieve high accuracy in handwriting recognition based on rotation sensor data, given the user calibrates the model with its handwriting habits before it makes predictions. 
 
-See our [report](https://github.com/RussellXie7/cs229_Final/blob/master/docs/report.pdf) for more information.
+See our [report](https://github.com/RussellXie7/cs229_Final/blob/master/docs/final-report/main.pdf) and poster for more information.
 
 
 ## Built With
