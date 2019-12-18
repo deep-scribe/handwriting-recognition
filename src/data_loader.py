@@ -7,6 +7,8 @@ import data_augmentation
 import numpy as np
 from sklearn.model_selection import train_test_split
 
+# modify this list to match dirs in ../data that contain
+# valid data, one subject per dir
 VERIFIED_SUBJECTS = [
     'albert',
     'canon_12_5',
@@ -36,7 +38,11 @@ DATA_PATH = '../data/'
 
 
 def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=None):
-    # print("start")
+    '''
+    load yaw, pitch, roll with verified subjects
+    use param subjects to override
+    return (xs, ys), lists of all samples correspondingly
+    '''
     if subjects == None:
         subjects = VERIFIED_SUBJECTS
     dfs = data_utils.load_all_subjects(DATA_PATH, subjects)
@@ -56,7 +62,6 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=Non
     return allxs, allys
 
 
-# TRAIN_PROP = 0.8
 DEV_PROP = 0.1
 TRAIN_PROP = 0.1
 
@@ -79,7 +84,6 @@ def load_all_classic_random_split(resampled=True, flatten=True):
 # use two subjects as test and two subjects as dev
 def load_all_subject_split(resampled=True, flatten=True):
     shuffled_subjects = VERIFIED_SUBJECTS[:]
-    # random.shuffle(shuffled_subjects)
     train_subjects = shuffled_subjects[:-4]
     dev_subjects = shuffled_subjects[-4:-2]
     test_subjects = shuffled_subjects[-2:]
@@ -104,10 +108,12 @@ def load_all_subject_split(resampled=True, flatten=True):
 
 
 def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True):
-    # use default data augmentation setting to append to the TRAIN_SET
-    # augment_prop * len(train_set) number of samples
-    # please augment TRAIN_SET only
-    # return the augmented x and ys
+    '''
+    use default data augmentation setting to append to the TRAIN_SET
+    augment_prop * len(train_set) number of samples
+    please augment TRAIN_SET only
+    return the augmented x and ys
+    '''
     print(f'Augmenting TRAIN set with proportion {augment_prop}')
 
     augmented_xs = []

@@ -8,6 +8,14 @@ import os
 import sys
 
 
+'''
+data augmentation pipeline to construct more training samples by applying
+- noise to each frame
+- stretch to each axis to all frames in axis
+- rotation to all frames in sequence
+'''
+
+
 def quaternion_to_rotation_matrix(q):
     a, b, c, d = q
     return np.array([[a**2+b**2-c**2-d**2, 2*b*c-2*a*d, 2*b*d+2*a*c],
@@ -72,50 +80,6 @@ PNG_DIRNAME_YPRS_2D = 'yprs_2d_pngs_augmented'
 PNG_DIRNAME_YPRS_3D = 'yprs_3d_pngs_augmented'
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 
-# def calibrate(subject_path, save_to_files = True):
-#     calibration_path = subject_path + "/cal/"
-#     try:
-#         os.mkdir(calibration_path)
-#     except OSError:
-#         print ("Creation of the directory %s failed" % calibration_path)
-#     else:
-#         print ("Successfully created the directory %s " % calibration_path)
-#
-#     df = data_utils.load_subject(subject_path)
-#     calibrationdf = df[df['label'] == data_utils.CALIBRATION_LABEL_NAME]
-#     if calibrationdf.empty:
-#         print('!' * 80)
-#         print(
-#             f'WARN: no {data_utils.CALIBRATION_FILENAME}, using default [0,0,0] to calibrate yprs.'
-#         )
-#         print('!' * 80)
-#         calibrationyprs = np.zeros(3)
-#     else:
-#         calibrationyprs = calibrationdf[YPRS_COLUMNS].to_numpy()
-#         calibrationyprs = np.mean(calibrationyprs, axis=0)
-#
-#     for root, dirs, files in os.walk(subject_path):
-#         for filename in files:
-#             if '.csv' not in filename:
-#                 continue
-#             if filename == data_utils.CALIBRATION_FILENAME:
-#                 continue
-#
-#             label_name = filename.replace('.csv', '')
-#             samplesdf = df[df['label'] == label_name]
-#
-#             print(f'Processing label {label_name}...')
-#
-#             if save_to_files:
-#                 with open(calibration_path + filename, "w") as cal_file:
-#                     sample_yprs = samplesdf[YPRS_COLUMNS].to_numpy()
-#                     sample_yprs = data_visualizer.get_calibrated_delta(
-#                         calibrationyprs, sample_yprs
-#                     )
-#                     samplesdf.loc[:,YPRS_COLUMNS] = sample_yprs
-#                     print(samplesdf)
-#                     samplesdf.to_csv(cal_file, header = False, index = False)
-
 
 def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5):
     '''
@@ -132,52 +96,6 @@ def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5
     # print(len(traces.keys()))
     return sample_yprs
 
-
-# def visualize_augmentation(subject_path):
-#     '''
-#     DO NOT USE THIS METHOD
-#     BUGGGGGGGGG
-#     '''
-#     data_visualizer.create_dir_remove_old(os.path.join(subject_path, PNG_DIRNAME_YPRS_2D))
-#     data_visualizer.create_dir_remove_old(os.path.join(subject_path, PNG_DIRNAME_YPRS_3D))
-#
-#     df = data_utils.load_subject(subject_path)
-#     # print(df)
-#     for root, dirs, files in os.walk(subject_path):
-#         for filename in files:
-#             if '.csv' not in filename:
-#                 continue
-#             if filename == data_utils.CALIBRATION_FILENAME:
-#                 continue
-#
-#             label_name = filename.replace('.csv', '')
-#             samplesdf = df[df['label'] == label_name]
-#             traces = augment(samplesdf, label_name)
-#
-#             print(f'Processing label {label_name}...')
-#
-#             for sample_id in traces.keys():
-#                 trace = traces[sample_id]
-#                 data_visualizer.output_2d_scatter(
-#                     trace[:, 0],
-#                     trace[:, 1],
-#                     os.path.join(
-#                         subject_path,
-#                         PNG_DIRNAME_YPRS_2D,
-#                         f'{label_name}_{sample_id}_cal.png'
-#                     )
-#                 )
-#
-#                 data_visualizer.output_3d_scatter(
-#                     trace[:, 0],
-#                     trace[:, 1],
-#                     trace[:, 2],
-#                     os.path.join(
-#                         subject_path,
-#                         PNG_DIRNAME_YPRS_3D,
-#                         f'{label_name}_{sample_id}_cal.png'
-#                     )
-#                 )
 
 def dump_augmented_yprs_pngs(subject_path):
     '''

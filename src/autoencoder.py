@@ -1,3 +1,9 @@
+import data_loader
+from tensorflow.keras.models import load_model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l1
+from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.models import Model
 import os
 import sys
 import numpy as np
@@ -10,26 +16,23 @@ import data_flatten
 import warnings
 warnings.filterwarnings('ignore')
 
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, Input
-from tensorflow.keras.regularizers import l1
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.models import load_model
 
-import data_loader
+'''
+autoencoder to smoothen data
+given a list of training samples, train one model for each of yaw, pitch, roll
+use that model to pre-process all training / testing data
+'''
 
-
-# FEATURE_NUM = 300
-# HIDDEN_SIZE = 256
-# CODE_SIZE = 128
+# change these param for input data, make sure CODE_SIZE < FEATURE_NUM
 FEATURE_NUM = 100
 HIDDEN_SIZE = 128
 CODE_SIZE = 64
 
 # if you want to use logistic regression
 # AUTOENCODER_LOSS ='binary_crossentropy'
-# if you want to use linear regression   
-AUTOENCODER_LOSS ='mean_squared_error'
+# if you want to use linear regression
+AUTOENCODER_LOSS = 'mean_squared_error'
+
 
 def restore_ypr(ypr_sequence):
     '''
@@ -61,6 +64,7 @@ def normalize_ypr(ypr_sequence):
 
     return ypr_sequence
 
+
 def compare_dataset(d1, d2, verbose=False):
     for key in d1:
         if not np.array_equal(d1[key], d2[key]):
@@ -74,7 +78,8 @@ def load_data(subject_path, is_flatten_ypr=False, feature_num=300, preprocess=Tr
     '''
     If proprocess = True, then call data_flatten
     '''
-    loaded_dataset = data_flatten.load_data_dict_from_file(subject_path, calibrate=True, verbose=False)
+    loaded_dataset = data_flatten.load_data_dict_from_file(
+        subject_path, calibrate=True, verbose=False)
 
     if preprocess:
         loaded_dataset = data_flatten.resample_dataset(
@@ -87,7 +92,7 @@ def restore_ypr_data(yaws, pitchs, rolls, labels):
     '''
     Invert function of separate ypr data
     '''
-  
+
     restored_dataset = collections.defaultdict(list)
 
     i = 0
@@ -105,8 +110,8 @@ def restore_ypr_data(yaws, pitchs, rolls, labels):
 
 def separate_ypr_data(dataset):
 
-    yaws, pitchs, rolls, labels = [],[],[],[]
-    
+    yaws, pitchs, rolls, labels = [], [], [], []
+
     for key in dataset:
         for sequence in dataset[key]:
             # Sequence shape is [100,3]
@@ -117,7 +122,8 @@ def separate_ypr_data(dataset):
 
     return np.array(yaws), np.array(pitchs), np.array(rolls), np.array(labels)
 
-def restore_ypr_sample(yaws,pitchs,rolls):
+
+def restore_ypr_sample(yaws, pitchs, rolls):
 
     restored_sequence = []
 
@@ -127,8 +133,9 @@ def restore_ypr_sample(yaws,pitchs,rolls):
 
     return np.array(restored_sequence)
 
+
 def separate_ypr_sample(data_sequence):
-    yaws, pitchs, rolls, labels = [],[],[],[]
+    yaws, pitchs, rolls, labels = [], [], [], []
 
     for sample in data_sequence:
         # sample shape is [100,3]
@@ -138,7 +145,8 @@ def separate_ypr_sample(data_sequence):
 
     return np.array(yaws), np.array(pitchs), np.array(rolls)
 
-def __shallow_Autoencoder(input_size = 100, code_size = 64):
+
+def __shallow_Autoencoder(input_size=100, code_size=64):
     '''
     one layer
     '''
@@ -148,7 +156,8 @@ def __shallow_Autoencoder(input_size = 100, code_size = 64):
 
     return Model(input_ypr, output_ypr)
 
-def __2_layer_Autoencoder(input_size = 100, hidden_size = 128, code_size = 64):
+
+def __2_layer_Autoencoder(input_size=100, hidden_size=128, code_size=64):
     '''
     two layer 
     '''
@@ -159,9 +168,9 @@ def __2_layer_Autoencoder(input_size = 100, hidden_size = 128, code_size = 64):
     output_ypr = Dense(input_size, activation='sigmoid')(hidden_2)
 
     return Model(input_ypr, output_ypr)
-    
 
-def Denoising_Autoencoder(ypr_train_noisy, input_size = 100, hidden_size = 128, code_size = 64, verbose=False):
+
+def Denoising_Autoencoder(ypr_train_noisy, input_size=100, hidden_size=128, code_size=64, verbose=False):
 
     normalized_train_noisy = normalize_ypr(ypr_train_noisy)
 
@@ -185,16 +194,8 @@ def Denoising_Autoencoder(ypr_train_noisy, input_size = 100, hidden_size = 128, 
 
     new_ypr = restore_ypr(new_ypr)
 
-
-    # plt.subplot(1,2,1)
-    # plt.plot(ypr_train_noisy[0])
-    # plt.ylabel('Degrees')
-    # plt.subplot(1,2,2)
-    # plt.plot(new_ypr[0])
-    # plt.suptitle('Compare before and after denoise, y/p/r data')
-    # plt.show()
-
     return new_ypr, autoencoder
+
 
 def autoencode_by_letter(dataset):
     reconstructed_dataset = {}
@@ -204,10 +205,14 @@ def autoencode_by_letter(dataset):
 
         print(yaws.shape, pitchs.shape, rolls.shape)
 
-        new_yaws = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-        new_pitchs = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-        new_rolls = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = 128, code_size = 64, verbose=False)
-        reconstructed_dataset[key] = restore_ypr_sample(new_yaws, new_pitchs, new_rolls)
+        new_yaws = Denoising_Autoencoder(
+            yaws, input_size=FEATURE_NUM, hidden_size=128, code_size=64, verbose=False)
+        new_pitchs = Denoising_Autoencoder(
+            pitchs, input_size=FEATURE_NUM, hidden_size=128, code_size=64, verbose=False)
+        new_rolls = Denoising_Autoencoder(
+            rolls, input_size=FEATURE_NUM, hidden_size=128, code_size=64, verbose=False)
+        reconstructed_dataset[key] = restore_ypr_sample(
+            new_yaws, new_pitchs, new_rolls)
 
     return reconstructed_dataset
 
@@ -216,17 +221,23 @@ def autoencode_as_whole(dataset):
 
     yaws, pitchs, rolls, labels = separate_ypr_data(dataset)
 
-    print("yprl shapes:",yaws.shape, pitchs.shape, rolls.shape, labels.shape)
+    print("yprl shapes:", yaws.shape, pitchs.shape, rolls.shape, labels.shape)
 
-    new_yaws, yaws_encoder = Denoising_Autoencoder(yaws, input_size=FEATURE_NUM, hidden_size = HIDDEN_SIZE, code_size = CODE_SIZE, verbose=False)
-    new_pitchs, pitchs_encoder = Denoising_Autoencoder(pitchs, input_size=FEATURE_NUM, hidden_size = HIDDEN_SIZE, code_size = CODE_SIZE, verbose=False)
-    new_rolls, rolls_encoder = Denoising_Autoencoder(rolls, input_size=FEATURE_NUM, hidden_size = HIDDEN_SIZE, code_size = CODE_SIZE, verbose=False)
+    new_yaws, yaws_encoder = Denoising_Autoencoder(
+        yaws, input_size=FEATURE_NUM, hidden_size=HIDDEN_SIZE, code_size=CODE_SIZE, verbose=False)
+    new_pitchs, pitchs_encoder = Denoising_Autoencoder(
+        pitchs, input_size=FEATURE_NUM, hidden_size=HIDDEN_SIZE, code_size=CODE_SIZE, verbose=False)
+    new_rolls, rolls_encoder = Denoising_Autoencoder(
+        rolls, input_size=FEATURE_NUM, hidden_size=HIDDEN_SIZE, code_size=CODE_SIZE, verbose=False)
 
-    print("after: yprl shapes:",new_yaws.shape, new_pitchs.shape, new_rolls.shape, labels.shape)
+    print("after: yprl shapes:", new_yaws.shape,
+          new_pitchs.shape, new_rolls.shape, labels.shape)
 
-    reconstructed_dataset = restore_ypr_data(new_yaws, new_pitchs, new_rolls, labels)
+    reconstructed_dataset = restore_ypr_data(
+        new_yaws, new_pitchs, new_rolls, labels)
 
     return reconstructed_dataset
+
 
 def __as_denoise_test(dataset):
     yaws, pitchs, rolls, labels = separate_ypr_data(dataset)
@@ -235,10 +246,13 @@ def __as_denoise_test(dataset):
     pitchs_c = pitchs.copy()
     rolls_c = rolls.copy()
 
-    _ , _, _, ypr_encoder = ae_denoise(yaws, pitchs, rolls, FEATURE_NUM, HIDDEN_SIZE, CODE_SIZE)
-    new_yaws, new_pitchs, new_rolls = ae_predict(yaws_c, pitchs_c, rolls_c, ypr_encoder)
+    _, _, _, ypr_encoder = ae_denoise(
+        yaws, pitchs, rolls, FEATURE_NUM, HIDDEN_SIZE, CODE_SIZE)
+    new_yaws, new_pitchs, new_rolls = ae_predict(
+        yaws_c, pitchs_c, rolls_c, ypr_encoder)
 
-    reconstructed_dataset = restore_ypr_data(new_yaws, new_pitchs, new_rolls, labels)
+    reconstructed_dataset = restore_ypr_data(
+        new_yaws, new_pitchs, new_rolls, labels)
 
     return reconstructed_dataset
 
@@ -259,20 +273,14 @@ def ae_denoise(yaws, pitchs, rolls, feature_num=100, hidden_size=128, code_size=
     pitchs = np.copy(pitchs)
     rolls = np.copy(rolls)
 
-    new_yaws, yaws_encoder = Denoising_Autoencoder(yaws, input_size=feature_num, hidden_size = hidden_size, code_size = code_size, verbose=False)
-    
-    # yaws_encoder.save('yaw.h5')
-    # del yaws_encoder
+    new_yaws, yaws_encoder = Denoising_Autoencoder(
+        yaws, input_size=feature_num, hidden_size=hidden_size, code_size=code_size, verbose=False)
 
-    new_pitchs, pitchs_encoder = Denoising_Autoencoder(pitchs, input_size=feature_num, hidden_size = hidden_size, code_size = code_size, verbose=False)
-    
-    # pitchs_encoder.save('pitch.h5')
-    # del pitchs_encoder
+    new_pitchs, pitchs_encoder = Denoising_Autoencoder(
+        pitchs, input_size=feature_num, hidden_size=hidden_size, code_size=code_size, verbose=False)
 
-    new_rolls, rolls_encoder = Denoising_Autoencoder(rolls, input_size=feature_num, hidden_size = hidden_size, code_size = code_size, verbose=False)
-
-    # rolls_encoder.save('roll.h5')
-    # del rolls_encoder
+    new_rolls, rolls_encoder = Denoising_Autoencoder(
+        rolls, input_size=feature_num, hidden_size=hidden_size, code_size=code_size, verbose=False)
 
     ypr_encoder = np.array([yaws_encoder, pitchs_encoder, rolls_encoder])
 
@@ -290,21 +298,11 @@ def ae_predict(yaws, pitchs, rolls, ypr_encoder):
 
     output = []
 
-    # yaws_encoder = load_model('yaw.h5')
-    # pitchs_encoder = load_model('pitch.h5')
-    # rolls_encoder = load_model('roll.h5')
-
-    # for encoder, ypr_noisy in [(yaws_encoder, yaws), (pitchs_encoder, pitchs), (rolls_encoder, rolls)]:
     for encoder, ypr_noisy in [(yaws_encoder, np.copy(yaws)), (pitchs_encoder, np.copy(pitchs)), (rolls_encoder, np.copy(rolls))]:
         normalized_noisy = normalize_ypr(ypr_noisy)
         res = encoder.predict(normalized_noisy)
         new_ypr = restore_ypr(res)
         output.append(new_ypr)
-
-
-    # new_yaws = yaws_encoder.predict(yaws)
-    # new_pitchs = pitchs_encoder.predict(pitchs)
-    # new_rolls = rolls_encoder.predict(rolls)
 
     new_yaws, new_pitchs, new_rolls = output[0], output[1], output[2]
 
@@ -315,20 +313,18 @@ def main():
     '''
     In terminal, run {python autoencoder.py "flat_ypr_testdata"}
     '''
-    # if len(sys.argv) != 2:
-    #     print('Usage: python autoencoder.py <subject_path>')
-    #     quit()
+    trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(
+        True, False)
+    dataset = restore_ypr_data(
+        testx[:, :, 0], testx[:, :, 1], testx[:, :, 2], testy)
 
-    # subject_path = sys.argv[1]
-    # dataset = load_data(subject_path, feature_num=FEATURE_NUM)
+    _, _, _, ypr_encoder = ae_denoise(
+        trainx[:, :, 0], trainx[:, :, 1], trainx[:, :, 2])
+    new_yaws, new_pitchs, new_rolls = ae_predict(
+        testx[:, :, 0], testx[:, :, 1], testx[:, :, 2], ypr_encoder)
 
-    trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(True, False)
-    dataset = restore_ypr_data(testx[:,:,0], testx[:,:,1], testx[:,:,2], testy)
-
-    _, _, _, ypr_encoder = ae_denoise(trainx[:,:,0], trainx[:,:,1], trainx[:,:,2])
-    new_yaws, new_pitchs, new_rolls = ae_predict(testx[:,:,0], testx[:,:,1], testx[:,:,2], ypr_encoder)
-
-    reconstructed_dataset = restore_ypr_data(new_yaws, new_pitchs, new_rolls, testy)
+    reconstructed_dataset = restore_ypr_data(
+        new_yaws, new_pitchs, new_rolls, testy)
 
     # reconstructed_dataset = autoencode_by_letter(dataset)
     # reconstructed_dataset = autoencode_as_whole(dataset)
@@ -340,51 +336,55 @@ def main():
     # if compare_dataset(restored_dataset, dataset):
     #     print('same!')
 
-    print("shape of the reconstructed dataset:",reconstructed_dataset[0].shape)
+    print("shape of the reconstructed dataset:",
+          reconstructed_dataset[0].shape)
     # print(dataset[0][0])
     # print(reconstructed_dataset[0][0])
 
     for key in reconstructed_dataset:
 
-        plt.subplot(2,2,1)
-        plt.plot(dataset[key][2].T[1], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 1)
+        plt.plot(dataset[key][2].T[1], label='Original', color=color_blue)
         # plt.legend(loc="upper right")
         plt.ylabel('Degrees')
-        plt.subplot(2,2,2)
-        plt.plot(dataset[key][7].T[1], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 2)
+        plt.plot(dataset[key][7].T[1], label='Original', color=color_blue)
         # plt.legend(loc="upper right")
-        plt.subplot(2,2,3)
-        plt.plot(dataset[key][12].T[1], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 3)
+        plt.plot(dataset[key][12].T[1], label='Original', color=color_blue)
         # plt.legend(loc="upper right")
         plt.ylabel('Degrees')
-        plt.subplot(2,2,4)
-        plt.plot(dataset[key][18].T[1], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 4)
+        plt.plot(dataset[key][18].T[1], label='Original', color=color_blue)
         # plt.legend(loc="upper right")
 
-        plt.subplot(2,2,1)
-        plt.plot(reconstructed_dataset[key][2].T[1], label = 'Denoised', color = color_red)
-        # plt.legend(loc="upper right")
-        # plt.xlim(0, 100)
-        # plt.ylim(-40, 60)
-        # plt.gca().set_aspect('equal', adjustable='box')
-
-
-        plt.subplot(2,2,2)
-        plt.plot(reconstructed_dataset[key][7].T[1], label = 'Denoised', color = color_red)
-        # plt.legend(loc="upper right")
-        # plt.xlim(0, 100)
-        # plt.ylim(-40, 60)
-        # plt.gca().set_aspect('equal', adjustable='box')
-        
-        plt.subplot(2,2,3)
-        plt.plot(reconstructed_dataset[key][12].T[1], label = 'Denoised', color = color_red)
+        plt.subplot(2, 2, 1)
+        plt.plot(reconstructed_dataset[key][2].T[1],
+                 label='Denoised', color=color_red)
         # plt.legend(loc="upper right")
         # plt.xlim(0, 100)
         # plt.ylim(-40, 60)
         # plt.gca().set_aspect('equal', adjustable='box')
 
-        plt.subplot(2,2,4)
-        plt.plot(reconstructed_dataset[key][18].T[1], label = 'Denoised', color = color_red)
+        plt.subplot(2, 2, 2)
+        plt.plot(reconstructed_dataset[key][7].T[1],
+                 label='Denoised', color=color_red)
+        # plt.legend(loc="upper right")
+        # plt.xlim(0, 100)
+        # plt.ylim(-40, 60)
+        # plt.gca().set_aspect('equal', adjustable='box')
+
+        plt.subplot(2, 2, 3)
+        plt.plot(reconstructed_dataset[key][12].T[1],
+                 label='Denoised', color=color_red)
+        # plt.legend(loc="upper right")
+        # plt.xlim(0, 100)
+        # plt.ylim(-40, 60)
+        # plt.gca().set_aspect('equal', adjustable='box')
+
+        plt.subplot(2, 2, 4)
+        plt.plot(reconstructed_dataset[key][18].T[1],
+                 label='Denoised', color=color_red)
         # plt.legend(loc="upper right")
 
         letter_name = chr(key + 97)
@@ -400,6 +400,6 @@ def main():
         plt.savefig(file_name, dpi=200)
         plt.clf()
 
+
 if __name__ == "__main__":
     main()
-

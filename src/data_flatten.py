@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import sys
-# from data import data_utils
 import data_utils
 from scipy import interpolate
 import matplotlib.pyplot as plt
@@ -10,13 +9,11 @@ import matplotlib.pyplot as plt
 INDEX_TIME_COLUMNS = [
     'id', 'td',
 ]
-
 YPRS_COLUMNS = [
     'yaw', 'pitch', 'roll',
 ]
 
-##
-# Private Functions
+
 def __linear_interpolate_1d(sample_timestamp, sample_ypr, interpol_time_axis, label_name):
 
     try:
@@ -25,7 +22,7 @@ def __linear_interpolate_1d(sample_timestamp, sample_ypr, interpol_time_axis, la
         return interpol_ypr
     except:
         print("!"*80)
-        print("The data is corruptted. The corruptted letter is",label_name)
+        print("The data is corruptted. The corruptted letter is", label_name)
         print("!"*80)
         assert(False)
 
@@ -52,9 +49,6 @@ def __create_time_stamps(time_list):
         acc_sum += time_delta
 
     return output
-
-##
-# Public Functions
 
 
 def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
@@ -163,10 +157,12 @@ def resample_sequence(data_sequence, is_flatten_ypr=True, feature_num=100, label
     time_axis = np.linspace(
         time_lower_bound, time_upper_bound, num=feature_num)
 
-    interpol_yaw = __linear_interpolate_1d(time_stamps, yaw_list, time_axis, label_name)
+    interpol_yaw = __linear_interpolate_1d(
+        time_stamps, yaw_list, time_axis, label_name)
     interpol_pitch = __linear_interpolate_1d(
         time_stamps, pitch_list, time_axis, label_name)
-    interpol_roll = __linear_interpolate_1d(time_stamps, roll_list, time_axis, label_name)
+    interpol_roll = __linear_interpolate_1d(
+        time_stamps, roll_list, time_axis, label_name)
 
     merged_ypr = np.column_stack((interpol_yaw, interpol_pitch, interpol_roll))
 
@@ -186,13 +182,13 @@ def resample_dataset(data, is_flatten_ypr=True, feature_num=100):
 
     for label_name, data_sequences in data.items():
         new_sequences = []
-        
+
         CURR_LABEL_NAME = label_name
 
         for data_seq in data_sequences:
             new_sequences.append(
-                resample_sequence(data_sequence=data_seq, is_flatten_ypr=is_flatten_ypr, 
-                    feature_num=feature_num, label_name=label_name)
+                resample_sequence(data_sequence=data_seq, is_flatten_ypr=is_flatten_ypr,
+                                  feature_num=feature_num, label_name=label_name)
             )
 
         resampled_output[label_name] = np.asarray(new_sequences)
@@ -259,38 +255,46 @@ def example():
     color_blue = '#003262'
 
     for key in loaded_dataset:
-        plt.subplot(2,2,1)
-        plt.plot(loaded_dataset[key][2].T[3], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 1)
+        plt.plot(loaded_dataset[key][2].T[3],
+                 label='Original', color=color_blue)
         plt.legend(loc="upper right")
         plt.ylabel('Degrees')
-        plt.subplot(2,2,2)
-        plt.plot(loaded_dataset[key][7].T[3], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 2)
+        plt.plot(loaded_dataset[key][7].T[3],
+                 label='Original', color=color_blue)
         plt.legend(loc="upper right")
         plt.xlim(0, 200)
         plt.ylim(-40, 60)
         plt.gca().set_aspect('equal', adjustable='box')
-        plt.subplot(2,2,3)
-        plt.plot(loaded_dataset[key][12].T[3], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 3)
+        plt.plot(loaded_dataset[key][12].T[3],
+                 label='Original', color=color_blue)
         plt.legend(loc="upper right")
         plt.ylabel('Degrees')
-        plt.subplot(2,2,4)
-        plt.plot(loaded_dataset[key][18].T[3], label = 'Original', color = color_blue)
+        plt.subplot(2, 2, 4)
+        plt.plot(loaded_dataset[key][18].T[3],
+                 label='Original', color=color_blue)
         plt.legend(loc="upper right")
 
-        plt.subplot(2,2,1)
-        plt.plot(resampled_dataset[key][2].T[1], label = 'Resampled', color = color_red)
+        plt.subplot(2, 2, 1)
+        plt.plot(resampled_dataset[key][2].T[1],
+                 label='Resampled', color=color_red)
         plt.legend(loc="upper right")
-        plt.subplot(2,2,2)
-        plt.plot(resampled_dataset[key][7].T[1], label = 'Resampled', color = color_red)
+        plt.subplot(2, 2, 2)
+        plt.plot(resampled_dataset[key][7].T[1],
+                 label='Resampled', color=color_red)
         plt.xlim(0, 200)
         plt.ylim(-40, 60)
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
-        plt.subplot(2,2,3)
-        plt.plot(resampled_dataset[key][12].T[1], label = 'Resampled', color = color_red)
+        plt.subplot(2, 2, 3)
+        plt.plot(resampled_dataset[key][12].T[1],
+                 label='Resampled', color=color_red)
         plt.legend(loc="upper right")
-        plt.subplot(2,2,4)
-        plt.plot(resampled_dataset[key][18].T[1], label = 'Resampled', color = color_red)
+        plt.subplot(2, 2, 4)
+        plt.plot(resampled_dataset[key][18].T[1],
+                 label='Resampled', color=color_red)
         plt.legend(loc="upper right")
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)
@@ -299,7 +303,6 @@ def example():
         plt.savefig(file_name, dpi=200)
         plt.clf()
 
+
 if __name__ == "__main__":
     example()
-
-
