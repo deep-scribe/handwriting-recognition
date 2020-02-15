@@ -4,15 +4,37 @@ import java.util.Date;
 import java.lang.StringBuilder;
 
 //boolean USE_SUBJECT_NAME = true;
-String DIR_NAME = "";
-String SUBJECT_NAME = "NEW_SUBJECT";
+
+String[] mini_easy_2 = new String[]{
+"exams", "focus", "sauce", "coax", "same", "sex", "awe", "fem", "axe", "age"
+};
+
+String[] mini_hard_2 = new String[]{
+"kanji", "flick", "beach", "cabin", "hack", "lack", "kami", "kid" , "ban", "bad"
+};
+
+
+/* ------------------------------ */
+/* Custom Field Start */
+String DIR_NAME = "Words";
+String SUBJECT_NAME = "words_mini_easy_2";
+
+String[] word_list = mini_easy_2.clone();
+
+boolean addCalibration = true;
+int word_index_to_start_at = 0;
+
+/* Custom Field End */
+/* ------------------------------ */
 
 Serial mySerial;
 Date date;
 PrintWriter output;
 boolean isReady;
 StringBuilder buffer;
-int char_counter;
+int next_word_index;
+int curr_word_index;
+int INDEX_LIMIT = word_list.length;
 
 void setup() {
    date = new Date();  
@@ -25,8 +47,13 @@ void setup() {
    
    buffer = new StringBuilder();
    
-   // use "-1" if you wish to start with calibration, else enter corresponding letter's number
-   char_counter = -1;
+   if (addCalibration){
+     // use "-1" if you wish to start with calibration, else enter corresponding letter's number
+     next_word_index = -1;
+   }
+   else {
+     next_word_index = word_index_to_start_at;
+   }
 }
 
 void draw() {
@@ -37,8 +64,8 @@ void draw() {
               if (!isReady){
                 if (value.indexOf("Ready to go!") != -1) {
                   isReady = true;
-                  char curr_char = CreateNewFile();
-                  println("Character count is " + char_counter + ". Now writing for the letter " + curr_char);
+                  String filename = CreateNewFile();
+                  println("Now word index is: " + curr_word_index + ". Writing for the file:  " + filename);
                 }
               }
               else{
@@ -50,6 +77,7 @@ void draw() {
 
 
 // Key Board Control Explained:
+// N: "Next" Collect the next word, or exit if all words are collected.
 // D: "Delete" You just wrote a letter and released the arduino button, but you want to mark the previous data sequence as invalid.
 // P: "Purify" You want to clear all data about this current letter before writing to file, e.g. because you suddenly notice that you should write letter 'b' but not 'a'
 // R: "Recollect" You want to re-start from the very beginning, and overwrite everything you've collected so far in that folder.
@@ -58,69 +86,62 @@ void keyReleased(){
   // Upon completing writing a letter, flush the buffer to the outputfile, and Next
   if(key == 'n' || key == 'N'){
     
-    if (char_counter > 26){
+    if (next_word_index > INDEX_LIMIT){
       println("Confirmed exiting.");
       exit();
     }
     
     SaveBufferData();
     
-    if (char_counter == 26){
+    if (next_word_index == INDEX_LIMIT){
       output.flush();
       output.close();
       
-      println("Completed collecting letters. Press R to restart collecting. Press N again to confirm exit.");
-      char_counter += 1;
+      println("Completed collecting data. Press R to restart collecting. Press N again to confirm exit.");
+      next_word_index += 1;
     }
     
-    if (char_counter < 26){
-      char curr_char = CreateNewFile();
-      println("Character count is " + char_counter + ". Now writing for the letter " + curr_char);
+    if (next_word_index < INDEX_LIMIT){
+      String filename = CreateNewFile();
+      println("Now word index is: " + curr_word_index + ". Writing for the file:  " + filename);
     }
   }
   
   if (key == 'd' || key == 'D'){
     buffer.append("#\n");
-    println("Marked the previous letter motion as invalid using #");
+    println("Marked the previous data sequence as invalid by using # as the current row.");
   }
   
   if (key == 'p' || key == 'P'){
     buffer.setLength(0);
-    char curr_char = (char)('a' + char_counter - 1);
-    println("Purified the buffer, recollect motion data for letter " + curr_char);
+    println("Purified the buffer, recollect motion data for word " + word_list[curr_word_index]);
   }
   
   if (key == 'r' || key == 'R'){
     output.flush();
     output.close();
-    char_counter = -1;
-    date = new Date();  
-    char curr_char = CreateNewFile();
+    next_word_index = 0;
+    String filename = CreateNewFile();
     println("Started recollecting data.");
-    println("Now writing for the letter " + curr_char);
+    println("Now word index is: " + curr_word_index + ". Writing for the file:  " + filename);
   }
 }
 
-char CreateNewFile(){
+String CreateNewFile(){
+  // look at current word
+  curr_word_index = next_word_index;
   
-  char curr_char = (char)('a' + char_counter);
-  SimpleDateFormat formatter = new SimpleDateFormat("MM_dd_HH_mm");  
-  //String filename = "Raw_" + curr_char + "_" + formatter.format(date) + ".csv";
-  String filename = curr_char + ".csv";
+  String filename = ".csv";
+  String curr_word = "NO_WORD_ERROR";
   String directoryName = DIR_NAME + "/" + SUBJECT_NAME;
   
-  if (char_counter == -1){
-    filename = "calibration.csv";
+  if (curr_word_index == -1){
+    filename = "calibration" + filename;
   }
-  
-  
-  //if (USE_SUBJECT_NAME){
-  //  if (char_counter == -1){
-  //    filename = "Calibration" + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
-  //  }else{
-  //    filename = "Raw_" + curr_char + "_" + SUBJECT_NAME + "_" + TRIAL_NUMBER + ".csv";
-  //  }
-  //}
+  else{
+    curr_word = word_list[curr_word_index];
+    filename = curr_word + filename;
+  }
   
   File directory = new File(directoryName);
   if (! directory.exists()){
@@ -135,12 +156,9 @@ char CreateNewFile(){
   }
   
   output = createWriter( filename );
-  char_counter += 1;
+  next_word_index += 1;
   
-  if (char_counter == 0){
-    return '0';
-  }
-  return curr_char;
+  return filename;
 }
 
 void SaveBufferData(){
