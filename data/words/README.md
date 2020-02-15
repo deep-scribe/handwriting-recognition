@@ -21,3 +21,15 @@ contains following 10 words, each words has been written 3 times.
 
 face, bug, cute, hello, fancy, nexus, acme, cab, cup, ax
 
+## Words_mini_easy_2:
+
+contains following 10 words, each words has been written 3 times.
+
+"exams", "focus", "sauce", "coax", "same", "sex", "awe", "fem", "axe", "age"
+
+## Words_mini_hard_2:
+
+contains following 10 words, each words has been written 3 times.
+
+"kanji", "flick", "beach", "cabin", "hack", "lack", "kami", "kid" , "ban", "bad"
+
