@@ -3,8 +3,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date; 
 import java.lang.StringBuilder;
 
-boolean USE_SUBJECT_NAME = true;
-String SUBJECT_NAME = "Jianhan";
+//boolean USE_SUBJECT_NAME = true;
+String DIR_NAME = "Words";
+String SUBJECT_NAME = "words_mini_hard";
 
 Serial mySerial;
 Date date;
@@ -24,7 +25,8 @@ void setup() {
    
    buffer = new StringBuilder();
    
-   char_counter = 20;
+   // use "-1" if you wish to start with calibration, else enter corresponding letter's number
+   char_counter = 3;
 }
 
 void draw() {
@@ -105,7 +107,7 @@ char CreateNewFile(){
   SimpleDateFormat formatter = new SimpleDateFormat("MM_dd_HH_mm");  
   //String filename = "Raw_" + curr_char + "_" + formatter.format(date) + ".csv";
   String filename = curr_char + ".csv";
-  String directoryName = SUBJECT_NAME;
+  String directoryName = DIR_NAME + "/" + SUBJECT_NAME;
   
   if (char_counter == -1){
     filename = "calibration.csv";
