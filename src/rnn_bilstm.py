@@ -29,7 +29,7 @@ def get_dataloader(x, y, batch_size):
 
 def pad(input):
     max_length = max(i.shape[0] for i in input)
-    for i in len(input):
+    for i in range(len(input)):
         input[i] = np.pad(input[i], max_length - input[i].shape[0], axis = 0, constant_values = 0)
     return input
 
