@@ -28,6 +28,7 @@ def get_dataloader(x, y, batch_size):
     return dataloader
 
 def pad(input):
+    print(input.shape)
     max_length = max(len(i) for i in input)
     for i in range(len(input)):
         result = np.zeros((max_length, 3))
