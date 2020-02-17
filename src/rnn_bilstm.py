@@ -31,7 +31,7 @@ def pad(input):
     max_length = max(len(i) for i in input)
     for i in range(len(input)):
         result = np.zeros((max_length, 3))
-        result[:len(input[i]), 3] = input[i]
+        result[:len(input[i]), :] = input[i]
         input[i] = result
     return input
 
