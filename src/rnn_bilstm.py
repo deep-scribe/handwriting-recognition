@@ -89,7 +89,7 @@ class Net(nn.Module):
 
 
 print(sys.argv)
-experiment_type, resampled, trial = sys.argv
+_, experiment_type, resampled, trial = sys.argv
 filename = experiment_type + '_' + resampled + '_' + trial
 
 if experiment_type == "subject":
