@@ -7,7 +7,7 @@ import torch.optim as optim
 import os
 import json
 from collections import defaultdict
-import autoencoder
+# import autoencoder
 import numpy as np
 import sys
 
@@ -16,10 +16,10 @@ print(torch.cuda.is_available())
 
 def split_ypr(x):
     return x[:,:,0],x[:,:,1], x[:,:,2]
-
-def encode(x, encoder):
-    y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
-    return np.stack((y,p,r), axis=2)
+#
+# def encode(x, encoder):
+#     y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
+#     return np.stack((y,p,r), axis=2)
 
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
