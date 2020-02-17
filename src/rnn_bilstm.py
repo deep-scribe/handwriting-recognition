@@ -10,6 +10,7 @@ from collections import defaultdict
 # import autoencoder
 import numpy as np
 import sys
+from torch.nn.utils.rnn import pad_sequence
 
 #cell 1
 print(torch.cuda.is_available())
@@ -25,6 +26,11 @@ def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataloader
+
+# def pad(input, pad_value, axis):
+#     max_length = max()
+#     result = np.zeros(b.shape)
+#     return np.pad(input, )
 
 def acc(data_loader):
     correct = 0
@@ -75,7 +81,7 @@ class Net(nn.Module):
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True, bidirectional = True)
-        self.fc = nn.Linear(hidden_dim, 26, bias = True)
+        self.fc = nn.Linear(hidden_dim*2, 26, bias = True)
 
     def forward(self, x):
         init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim).cuda()
@@ -103,6 +109,7 @@ else:
     else:
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = False, flatten=False)
 
+print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
