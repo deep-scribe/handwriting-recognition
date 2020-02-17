@@ -78,8 +78,8 @@ class Net(nn.Module):
         self.fc = nn.Linear(hidden_dim, 26, bias = True)
 
     def forward(self, x):
-        init_h = torch.randn(self.n_layers, x.shape[0], self.hidden_dim).cuda()
-        init_c = torch.randn(self.n_layers, x.shape[0], self.hidden_dim).cuda()
+        init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim).cuda()
+        init_c = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim).cuda()
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (init_h, init_c))
         # print("inter: ", out.shape)
