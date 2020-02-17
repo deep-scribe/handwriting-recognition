@@ -27,10 +27,11 @@ def get_dataloader(x, y, batch_size):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-# def pad(input, pad_value, axis):
-#     max_length = max()
-#     result = np.zeros(b.shape)
-#     return np.pad(input, )
+def pad(input, pad_value, axis):
+    max_length = max(i.shape[0] for i in input)
+    for i in len(input):
+        input[i] = np.pad(input[i], max_length - input[i].shape[0], axis = 0, constant_values = 0)
+    return input
 
 def acc(data_loader):
     correct = 0
@@ -177,12 +178,12 @@ for epoch in range(1):  # loop over the dataset multiple times
     print(f'        trainloss={trainloss} devloss={devloss}')
 
 print('Finished Training')
-torch.save(net.state_dict(), "../saved_model/rnn_bilistm" + "rnn_bilstm_" + filename + ".pth")
+torch.save(net.state_dict(), "../saved_model/rnn_bilstm/" + "rnn_bilstm_" + filename + ".pth")
 
 testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
 testacc, testloss
 hist['testacc'] = testacc
 hist['testloss'] = testloss
 
-with open('../output/rnn_bilistm/rnn_' + filename + '.json', 'w') as f:
+with open('../output/rnn_bilstm/rnn_' + filename + '.json', 'w') as f:
     json.dump(hist, f)
