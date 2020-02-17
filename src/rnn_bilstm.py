@@ -94,14 +94,14 @@ filename = experiment_type + '_' + resampled + '_' + trial
 
 if experiment_type == "subject":
     if resampled == "resampled":
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = False, flatten=False)
-    else:
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = True, flatten=False)
+    else:
+        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = False, flatten=False)
 else:
     if resampled == "resampled":
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = False, flatten=False)
-    else:
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = True, flatten=False)
+    else:
+        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = False, flatten=False)
 
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
