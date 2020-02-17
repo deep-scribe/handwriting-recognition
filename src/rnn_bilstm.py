@@ -27,11 +27,14 @@ def get_dataloader(x, y, batch_size):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def pad(input, pad_value, axis):
+def pad(input):
     max_length = max(i.shape[0] for i in input)
     for i in len(input):
         input[i] = np.pad(input[i], max_length - input[i].shape[0], axis = 0, constant_values = 0)
     return input
+
+def pad_all(trainx, devx, testx, trainy, devy, testy):
+    return pad(trainx), pad(devx), pad(testx), pad(trainy), pad(devy), pad(testy)
 
 def acc(data_loader):
     correct = 0
@@ -104,11 +107,13 @@ if experiment_type == "subject":
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = True, flatten=False)
     else:
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = False, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = pad_all(trainx, devx, testx, trainy, devy, testy)
 else:
     if resampled == "resampled":
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = True, flatten=False)
     else:
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = False, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = pad_all(trainx, devx, testx, trainy, devy, testy)
 
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
