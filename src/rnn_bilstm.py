@@ -27,8 +27,7 @@ def get_dataloader(x, y, batch_size):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
-def pad(input):
-    print(input)
+def pad_x(input):
     max_length = max(len(input[i]) for i in range(input.shape[0]))
     for i in range(len(input)):
         result = np.zeros((max_length, 3))
@@ -36,8 +35,19 @@ def pad(input):
         input[i] = result
     return input
 
-def pad_all(trainx, devx, testx, trainy, devy, testy):
-    return pad(trainx), pad(devx), pad(testx), pad(trainy), pad(devy), pad(testy)
+def pad_all_x(trainx, devx, testx):
+    return pad_x(trainx), pad_x(devx), pad_x(testx)
+#
+# def pad_y(input):
+#     max_length = max(len(input[i]) for i in range(input.shape[0]))
+#     for i in range(len(input)):
+#         result = np.zeros((max_length, 3))
+#         result[:len(input[i]), :] = input[i]
+#         input[i] = result
+#     return input
+#
+# def pad_all_y(trainy, devy, testy):
+#     return pad_y(trainy), pad_y(devy), pad_y(testy)
 
 def acc(data_loader):
     correct = 0
@@ -110,13 +120,13 @@ if experiment_type == "subject":
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = True, flatten=False)
     else:
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = False, flatten=False)
-        trainx, devx, testx, trainy, devy, testy = pad_all(trainx, devx, testx, trainy, devy, testy)
+        trainx, devx, testx = pad_all_x(trainx, devx, testx)
 else:
     if resampled == "resampled":
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = True, flatten=False)
     else:
         trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = False, flatten=False)
-        trainx, devx, testx, trainy, devy, testy = pad_all(trainx, devx, testx, trainy, devy, testy)
+        trainx, devx, testx = pad_all_x(trainx, devx, testx)
 
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
