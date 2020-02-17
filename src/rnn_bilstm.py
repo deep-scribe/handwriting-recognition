@@ -29,11 +29,10 @@ def get_dataloader(x, y, batch_size):
 
 def pad_x(input):
     max_length = max(len(input[i]) for i in range(input.shape[0]))
+    result = np.zeros((input.shape[0], max_length, 3))
     for i in range(len(input)):
-        result = np.zeros((max_length, 3))
-        result[:len(input[i]), :] = input[i]
-        input[i] = result
-    return input
+        result[i, :len(input[i]), :] = input[i]
+    return result
 
 def pad_all_x(trainx, devx, testx):
     return pad_x(trainx), pad_x(devx), pad_x(testx)
