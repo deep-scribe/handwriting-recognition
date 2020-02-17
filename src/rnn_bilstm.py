@@ -88,7 +88,7 @@ class Net(nn.Module):
         return out
 
 
-print(sys.argv)
+print(sys.argv[1:])
 _, experiment_type, resampled, trial = sys.argv
 filename = experiment_type + '_' + resampled + '_' + trial
 
