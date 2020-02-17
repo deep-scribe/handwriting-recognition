@@ -122,9 +122,9 @@ if experiment_type == "subject":
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
 else:
     if resampled == "resampled":
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = True, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = True, flatten=False)
     else:
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_random_split(resampled = False, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = False, flatten=False)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
 
 print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
