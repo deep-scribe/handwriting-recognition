@@ -109,6 +109,18 @@ class Net(nn.Module):
         # print("out: ", out.shape)
         return out
 
+def get_net(checkpoint_path):
+    net = Net(3, 100, 5)
+    net.load_state_dict(torch.load(checkpoint_path))
+    return net
+
+def get_logit(net, input):
+    net.eval()
+    with torch.no_grad():
+        if torch.cuda.is_available():
+            input = input.cuda()
+        logit = net(input.float())
+    return logit
 
 print(sys.argv[1:])
 _, experiment_type, resampled, trial = sys.argv
