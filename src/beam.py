@@ -43,6 +43,7 @@ def top_k_trajectory_from_seg(trajectory_dict, top_k_logit_dict, k, seg_begin, m
         segmented to 3 equal chunks, segment bounds are [0,1,2,3], max_seg_bound is 3
     '''
 
+    # no trajectory needed to go from max_seg_bound to end
     if max_seg_bound not in trajectory_dict:
         trajectory_dict[max_seg_bound] = [(None, [])]
 
@@ -50,19 +51,26 @@ def top_k_trajectory_from_seg(trajectory_dict, top_k_logit_dict, k, seg_begin, m
     for i in range(seg_begin+1, max_seg_bound):
         assert i in trajectory_dict
 
-    candidates = []  # [(prob, [(seg_begin, seg_end, classidx, prob), ...])]
+    # [(prob, [(seg_begin, seg_end, classidx, prob), ...])]
+    candidates = []
 
     for seg_end in range(seg_begin+1, max_seg_bound+1):
         top_k_logit = top_k_logit_dict[(seg_begin, seg_end)]
+
+        # for each prediction in segment (seg_begin, seg_end)
         for this_class_idx, this_prob in top_k_logit:
             this_trajectory = (seg_begin, seg_end,
                                this_class_idx, this_prob)
+            # for each top trajectory spanning (seg_end, max_seg)
             for _, later_trajectory in trajectory_dict[seg_end]:
+                # merge current segment with trajectory leading to end, append to candidate
                 combined_trajectory = [this_trajectory] + later_trajectory[:]
                 all_prob_list = [this_prob] + \
                     [prob for _, _, _, prob in later_trajectory]
                 avg_prob = sum(all_prob_list) / len(all_prob_list)
                 candidates.append((avg_prob, combined_trajectory))
+
+    # keep the top k candidate for update trajectory_dict
     candidates.sort(reverse=True)
     candidates = candidates[:k]
     trajectory_dict[seg_begin] = candidates
