@@ -81,8 +81,16 @@ def beam_search_top_k_trajectory(logit_dict, k, max_seg_bound):
     @return trajectory dict: {
         seg_begin: [
            (avg_seg_prob, 
-            [(subseg_begin, subseg_end, subseg_class_idx, subseg_prob), ...]), ... 
-        ], ... 
+            [(subseg_begin, subseg_end, subseg_class_idx, subseg_prob), 
+             (subseg_begin, subseg_end, subseg_class_idx, subseg_prob), 
+             (subseg_begin, subseg_end, subseg_class_idx, subseg_prob)
+             ... list continues until subseg_end=max_seg_bound ]
+           ),
+           (..), 
+           (..), 
+           ... list of at most k trajectory tuples
+        ], 
+        ... dict of all possible seg_begin in [0, 1, ..., max_seg_bound]
     }
     '''
     top_k_logit_dict = logit_to_top_k_logit_dict(logit_dict, k)
