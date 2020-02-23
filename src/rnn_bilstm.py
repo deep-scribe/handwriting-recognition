@@ -1,4 +1,4 @@
-#cell 0
+# cell 0
 import torch
 import data_loader
 import torch.nn as nn
@@ -12,18 +12,23 @@ import numpy as np
 import sys
 from torch.nn.utils.rnn import pad_sequence
 
-#cell 1
+# cell 1
+
+
 def split_ypr(x):
-    return x[:,:,0],x[:,:,1], x[:,:,2]
+    return x[:, :, 0], x[:, :, 1], x[:, :, 2]
 #
 # def encode(x, encoder):
 #     y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
 #     return np.stack((y,p,r), axis=2)
 
+
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    dataloader = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, shuffle=True)
     return dataloader
+
 
 def pad_x(input):
     max_length = max(len(input[i]) for i in range(input.shape[0]))
@@ -31,6 +36,7 @@ def pad_x(input):
     for i in range(len(input)):
         result[i, :len(input[i]), :] = input[i]
     return result
+
 
 def pad_all_x(trainx, devx, testx):
     return pad_x(trainx), pad_x(devx), pad_x(testx)
@@ -45,6 +51,7 @@ def pad_all_x(trainx, devx, testx):
 #
 # def pad_all_y(trainy, devy, testy):
 #     return pad_y(trainy), pad_y(devy), pad_y(testy)
+
 
 def acc(data_loader):
     correct = 0
@@ -64,6 +71,7 @@ def acc(data_loader):
             correct += r
             total += len(y)
     return correct / total
+
 
 def acc_loss(net, data_loader, criterion):
     correct = 0
@@ -87,16 +95,19 @@ def acc_loss(net, data_loader, criterion):
             total_loss += criterion(outputs, y.long()).item() * len(x)
     return correct / total, total_loss / total
 
-#cell 7
+# cell 7
+
+
 class Net(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_layers):
         super(Net, self).__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
-        self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True, bidirectional = True)
-        self.dropout = nn.Dropout(0.1)
-        self.fc = nn.Linear(hidden_dim*2, 26, bias = True)
+        self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
+                            batch_first=True, bidirectional=True)
+        # self.dropout = nn.Dropout(0.1)
+        self.fc = nn.Linear(hidden_dim*2, 26, bias=True)
 
     def forward(self, x):
         init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
@@ -106,19 +117,22 @@ class Net(nn.Module):
             init_c = init_c.cuda()
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (init_h, init_c))
-        out = self.dropout(out)
+        # out = self.dropout(out)
         # print("inter: ", out.shape)
-        out = self.fc(out[:,-1,:])
+        out = self.fc(out[:, -1, :])
         # print("out: ", out.shape)
         return out
+
 
 def get_net(checkpoint_path):
     net = Net(3, 100, 5)
     if torch.cuda.is_available():
         net.load_state_dict(torch.load(checkpoint_path))
     else:
-        net.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu')))
+        net.load_state_dict(torch.load(
+            checkpoint_path, map_location=torch.device('cpu')))
     return net
+
 
 def get_logit(net, input):
     if torch.cuda.is_available():
@@ -139,23 +153,31 @@ def main():
 
     if experiment_type == "subject":
         if resampled == "resampled":
-            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = True, flatten=False)
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(
+                resampled=True, flatten=False)
         else:
-            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = False, flatten=False)
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(
+                resampled=False, flatten=False)
     else:
         if resampled == "resampled":
-            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = True, flatten=False)
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(
+                resampled=True, flatten=False)
         else:
-            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = False, flatten=False)
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(
+                resampled=False, flatten=False)
 
-    print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+    print(trainx.shape, devx.shape, testx.shape,
+          trainy.shape, devy.shape, testy.shape)
     if resampled == "resampled":
-        trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False, resampled = True)
+        trainx, trainy = data_loader.augment_train_set(
+            trainx, trainy, augment_prop=3, is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
-        trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False, resampled = False)
+        trainx, trainy = data_loader.augment_train_set(
+            trainx, trainy, augment_prop=3, is_flattened=False, resampled=False)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
-    print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+    print(trainx.shape, devx.shape, testx.shape,
+          trainy.shape, devy.shape, testy.shape)
 
     # _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
     #
@@ -166,25 +188,25 @@ def main():
     # print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
     # del encoder
 
-    #cell 4
+    # cell 4
     BATCH_SIZE = 250
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
-    #cell 5
+    # cell 5
     sample_size, num_feature, num_channel = trainx.shape
     print(sample_size, num_feature, num_channel)
 
-    #cell 6
+    # cell 6
 
     net = Net(num_channel, 100, 5)
     if torch.cuda.is_available():
         net.cuda()
 
-    #cell 8
-    criterion = nn.CrossEntropyLoss(ignore_index = 0, size_average = True)
+    # cell 8
+    criterion = nn.CrossEntropyLoss(ignore_index=0, size_average=True)
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
@@ -221,7 +243,8 @@ def main():
         print(f'        trainloss={trainloss} devloss={devloss}')
 
     print('Finished Training')
-    torch.save(net.state_dict(), "../saved_model/rnn_bilstm/" + "rnn_bilstm_" + filename + ".pth")
+    torch.save(net.state_dict(), "../saved_model/rnn_bilstm/" +
+               "rnn_bilstm_" + filename + ".pth")
 
     testacc, testloss = acc_loss(net, testloader, nn.CrossEntropyLoss())
     testacc, testloss
@@ -230,6 +253,7 @@ def main():
 
     with open('../output/rnn_bilstm/rnn_' + filename + '.json', 'w') as f:
         json.dump(hist, f)
+
 
 if __name__ == '__main__':
     main()
