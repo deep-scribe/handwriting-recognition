@@ -107,7 +107,7 @@ def load_all_subject_split(resampled=True, flatten=True):
     return trainx, devx, testx, trainy, devy, testy
 
 
-def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True):
+def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True, resampled = True):
     '''
     use default data augmentation setting to append to the TRAIN_SET
     augment_prop * len(train_set) number of samples
@@ -135,7 +135,7 @@ def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True):
             else:
                 augmented_xs.append(augmented_x)
             augmented_ys.append(y)
-    if is_flattened:
+    if resampled:
         return np.vstack((train_x, np.array(augmented_xs))), np.append(train_y, np.array(augmented_ys))
     else:
         return np.append(train_x, augmented_xs), np.append(train_y, augmented_ys)

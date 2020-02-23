@@ -149,8 +149,11 @@ def main():
             trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = False, flatten=False)
 
     print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-    trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
-    if not resampled == "resampled":
+    if resampled == "resampled":
+        trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False, resampled = True)
+        trainx, devx, testx = pad_all_x(trainx, devx, testx)
+    else:
+        trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False, resampled = False)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
