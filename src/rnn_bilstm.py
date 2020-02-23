@@ -65,7 +65,7 @@ def acc(data_loader):
             total += len(y)
     return correct / total
 
-def acc_loss(data_loader, criterion):
+def acc_loss(net, data_loader, criterion):
     correct = 0
     total = 0
     total_loss = 0.0
@@ -210,8 +210,8 @@ def main():
             loss.backward()
             optimizer.step()
 
-        trainacc, trainloss = acc_loss(trainloader, criterion)
-        devacc, devloss = acc_loss(devloader, criterion)
+        trainacc, trainloss = acc_loss(net, trainloader, criterion)
+        devacc, devloss = acc_loss(net, devloader, criterion)
         hist['trainacc'].append(trainacc)
         hist['trainloss'].append(trainloss)
         hist['devacc'].append(devacc)
@@ -223,7 +223,7 @@ def main():
     print('Finished Training')
     torch.save(net.state_dict(), "../saved_model/rnn_bilstm/" + "rnn_bilstm_" + filename + ".pth")
 
-    testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
+    testacc, testloss = acc_loss(net, testloader, nn.CrossEntropyLoss())
     testacc, testloss
     hist['testacc'] = testacc
     hist['testloss'] = testloss
