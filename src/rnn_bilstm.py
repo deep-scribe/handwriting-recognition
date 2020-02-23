@@ -13,8 +13,6 @@ import sys
 from torch.nn.utils.rnn import pad_sequence
 
 #cell 1
-print(torch.cuda.is_available())
-
 def split_ypr(x):
     return x[:,:,0],x[:,:,1], x[:,:,2]
 #
@@ -100,8 +98,11 @@ class Net(nn.Module):
         self.fc = nn.Linear(hidden_dim*2, 26, bias = True)
 
     def forward(self, x):
-        init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim).cuda()
-        init_c = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim).cuda()
+        init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
+        init_c = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
+        if torch.cuda.is_available():
+            init_h = init_h.cuda()
+            init_c = init_c.cuda()
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (init_h, init_c))
         # print("inter: ", out.shape)
@@ -111,108 +112,119 @@ class Net(nn.Module):
 
 def get_net(checkpoint_path):
     net = Net(3, 100, 5)
-    net.load_state_dict(torch.load(checkpoint_path))
+    if torch.cuda.is_available():
+        net.load_state_dict(torch.load(checkpoint_path))
+    else:
+        net.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu')))
     return net
 
 def get_logit(net, input):
+    if torch.cuda.is_available():
+        input = input.cuda()
+    else:
+        net.cpu()
     net.eval()
     with torch.no_grad():
-        if torch.cuda.is_available():
-            input = input.cuda()
         logit = net(input.float())
     return logit
 
-print(sys.argv[1:])
-_, experiment_type, resampled, trial = sys.argv
-filename = experiment_type + '_' + resampled + '_' + trial
 
-if experiment_type == "subject":
-    if resampled == "resampled":
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = True, flatten=False)
+def main():
+    print(torch.cuda.is_available())
+    print(sys.argv[1:])
+    _, experiment_type, resampled, trial = sys.argv
+    filename = experiment_type + '_' + resampled + '_' + trial
+
+    if experiment_type == "subject":
+        if resampled == "resampled":
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = True, flatten=False)
+        else:
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = False, flatten=False)
     else:
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(resampled = False, flatten=False)
+        if resampled == "resampled":
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = True, flatten=False)
+        else:
+            trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = False, flatten=False)
+
+    print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+    trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
+    if not resampled == "resampled":
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
-else:
-    if resampled == "resampled":
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = True, flatten=False)
-    else:
-        trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = False, flatten=False)
-        trainx, devx, testx = pad_all_x(trainx, devx, testx)
+    print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
 
-print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-trainx, trainy = data_loader.augment_train_set(trainx, trainy, augment_prop=3, is_flattened=False)
-print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+    # _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
+    #
+    #
+    # trainx = encode(trainx, encoder)
+    # devx = encode(devx, encoder)
+    # testx = encode(testx, encoder)
+    # print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
+    # del encoder
 
-# _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
-#
-#
-# trainx = encode(trainx, encoder)
-# devx = encode(devx, encoder)
-# testx = encode(testx, encoder)
-# print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-# del encoder
+    #cell 4
+    BATCH_SIZE = 250
 
-#cell 4
-BATCH_SIZE = 250
+    trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
+    devloader = get_dataloader(devx, devy, BATCH_SIZE)
+    testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
-trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
-devloader = get_dataloader(devx, devy, BATCH_SIZE)
-testloader = get_dataloader(testx, testy, BATCH_SIZE)
+    #cell 5
+    sample_size, num_feature, num_channel = trainx.shape
+    print(sample_size, num_feature, num_channel)
 
-#cell 5
-sample_size, num_feature, num_channel = trainx.shape
-print(sample_size, num_feature, num_channel)
+    #cell 6
 
-#cell 6
+    net = Net(num_channel, 100, 5)
+    if torch.cuda.is_available():
+        net.cuda()
 
-net = Net(num_channel, 100, 5)
-if torch.cuda.is_available():
-    net.cuda()
+    #cell 8
+    criterion = nn.CrossEntropyLoss()
+    # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
+    optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
-#cell 8
-criterion = nn.CrossEntropyLoss()
-# optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
-optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
+    hist = defaultdict(list)
+    for epoch in range(250):  # loop over the dataset multiple times
+        running_loss = 0.0
+        for i, data in enumerate(trainloader):
+            print(f'{i if i%20==0 else ""}.', end='')
 
-hist = defaultdict(list)
-for epoch in range(250):  # loop over the dataset multiple times
-    running_loss = 0.0
-    for i, data in enumerate(trainloader):
-        print(f'{i if i%20==0 else ""}.', end='')
+            # get the inputs; data is a list of [inputs, labels]
+            inputs, labels = data
+            if torch.cuda.is_available():
+                inputs = inputs.cuda()
+                labels = labels.cuda()
 
-        # get the inputs; data is a list of [inputs, labels]
-        inputs, labels = data
-        if torch.cuda.is_available():
-            inputs = inputs.cuda()
-            labels = labels.cuda()
+            # zero the parameter gradients
+            optimizer.zero_grad()
 
-        # zero the parameter gradients
-        optimizer.zero_grad()
+            # forward + backward + optimize
 
-        # forward + backward + optimize
+            outputs = net(inputs.float())
+            loss = criterion(outputs, labels.long())
+            loss.backward()
+            optimizer.step()
 
-        outputs = net(inputs.float())
-        loss = criterion(outputs, labels.long())
-        loss.backward()
-        optimizer.step()
+        trainacc, trainloss = acc_loss(trainloader, criterion)
+        devacc, devloss = acc_loss(devloader, criterion)
+        hist['trainacc'].append(trainacc)
+        hist['trainloss'].append(trainloss)
+        hist['devacc'].append(devacc)
+        hist['devloss'].append(devloss)
 
-    trainacc, trainloss = acc_loss(trainloader, criterion)
-    devacc, devloss = acc_loss(devloader, criterion)
-    hist['trainacc'].append(trainacc)
-    hist['trainloss'].append(trainloss)
-    hist['devacc'].append(devacc)
-    hist['devloss'].append(devloss)
+        print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
+        print(f'        trainloss={trainloss} devloss={devloss}')
 
-    print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
-    print(f'        trainloss={trainloss} devloss={devloss}')
+    print('Finished Training')
+    torch.save(net.state_dict(), "../saved_model/rnn_bilstm/" + "rnn_bilstm_" + filename + ".pth")
 
-print('Finished Training')
-torch.save(net.state_dict(), "../saved_model/rnn_bilstm/" + "rnn_bilstm_" + filename + ".pth")
+    testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
+    testacc, testloss
+    hist['testacc'] = testacc
+    hist['testloss'] = testloss
 
-testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
-testacc, testloss
-hist['testacc'] = testacc
-hist['testloss'] = testloss
+    with open('../output/rnn_bilstm/rnn_' + filename + '.json', 'w') as f:
+        json.dump(hist, f)
 
-with open('../output/rnn_bilstm/rnn_' + filename + '.json', 'w') as f:
-    json.dump(hist, f)
+if __name__ == '__main__':
+    main()

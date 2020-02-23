@@ -135,8 +135,10 @@ def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True):
             else:
                 augmented_xs.append(augmented_x)
             augmented_ys.append(y)
-
-    return np.vstack((train_x, np.array(augmented_xs))), np.append(train_y, np.array(augmented_ys))
+    if is_flattened:
+        return np.vstack((train_x, np.array(augmented_xs))), np.append(train_y, np.array(augmented_ys))
+    else:
+        return np.append(train_x, augmented_xs), np.append(train_y, augmented_ys)
 
 
 if __name__ == "__main__":
