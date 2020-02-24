@@ -120,7 +120,7 @@ def get_net(checkpoint_path):
         net.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu')))
     return net
 
-def get_logit(net, input):
+def get_prob(net, input):
     if torch.cuda.is_available():
         input = input.cuda()
     else:
@@ -128,7 +128,8 @@ def get_logit(net, input):
     net.eval()
     with torch.no_grad():
         logit = net(input.float())
-    return logit
+        prob = F.log_softmax(logit, dim = -1)
+    return prob
 
 
 def main():

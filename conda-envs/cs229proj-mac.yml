@@ -125,5 +125,4 @@ dependencies:
   - pip:
     - autopep8==1.4.4
     - pycodestyle==2.5.0
-prefix: /Users/junshenchen/anaconda3/envs/cs229proj-mac
 

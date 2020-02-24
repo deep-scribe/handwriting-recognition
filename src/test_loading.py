@@ -15,7 +15,7 @@ input, _ = next(iter(testloader))
 
 net = rnn_bilstm.get_net("../saved_model/rnn_bilstm/rnn_bilstm_subject_resampled_0.pth")
 
-logit = rnn_bilstm.get_logit(net, input)
+logit = rnn_bilstm.get_prob(net, input)
 print(logit)
 _, predicted = torch.max(logit.data, 1)
 print(predicted)
