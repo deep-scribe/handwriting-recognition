@@ -21,7 +21,7 @@ Our current best model using RNN (LSTM) achieves 86.6% accuracy in the random sp
 
 * [**Wanze (Russell) Xie**](https://github.com/russellxie7)
 * [**Yutong (Kelly) He**](https://github.com/KellyYutongHe)
-* [**Junshen Kevin Chen**](https://github.com/CniveK)
+* [**Junshen Kevin Chen**](https://github.com/jkvc)
 
 
 
