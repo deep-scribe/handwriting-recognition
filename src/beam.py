@@ -2,32 +2,29 @@ import numpy as np
 from pprint import pprint
 
 
-def top_k_logit(logit, k):
+def sorted_logit(logit):
     '''
     @param logits: np.array, shape (n_class,)
     @param k: int, num top choices to keep
     @return list, [(idx, prob) ...] of top k choices, sorted
     '''
-    assert k > 0
-    assert k <= logit.shape[0]
     assert len(logit.shape) == 1
     sorted_idx = list(np.argsort(logit))[::-1]
-    top_k_idx = sorted_idx[:k]
-    return [(idx, logit[idx]) for idx in top_k_idx]
+    return [(idx, logit[idx]) for idx in sorted_idx]
 
 
-def logit_to_top_k_logit_dict(logit_dict, k):
+def logit_to_sorted_logit_dict(logit_dict):
     '''
     @param logit_dict: {(seg_begin, seg_end): logit ...} where logit is np.array(n_class,)
     @param k: int, num top choices to keep
     @return {(seg_begin, seg_end): [(idx, prob) ...]}
     '''
     return {
-        bound: top_k_logit(logit_dict[bound], k) for bound in logit_dict
+        bound: sorted_logit(logit_dict[bound]) for bound in logit_dict
     }
 
 
-def top_k_trajectory_from_seg(trajectory_dict, top_k_logit_dict, k, seg_begin, max_seg_bound):
+def top_k_trajectory_from_seg(trajectory_dict, sorted_logit_dict, k, seg_begin, max_seg_bound):
     '''
     populate trajectory_dict with the top k trajectories, starting from seg_begin, 
     ending at max_seg_bound.
@@ -36,7 +33,7 @@ def top_k_trajectory_from_seg(trajectory_dict, top_k_logit_dict, k, seg_begin, m
 
     @param trajectory_dict, dict containing all best trajectories between seg_begin+1
         and seg_end, updated to also contain best trajectory between seg_begin and seg_end
-    @param top_k_logit_dict: {(seg_begin, seg_end): [(class_idx, prob) ...]}
+    @param sorted_logit_dict: {(seg_begin, seg_end): [(class_idx, prob) ...]}
     @param k: int, num top choices to keep
     @param seg_begin: int, at which point we begin searching for the best trajectory to end
     @param max_seg_bound: int, largest possible segment bound, for example, in a sequence 
@@ -55,16 +52,16 @@ def top_k_trajectory_from_seg(trajectory_dict, top_k_logit_dict, k, seg_begin, m
     candidates = []
 
     for seg_end in range(seg_begin+1, max_seg_bound+1):
-        top_k_logit = top_k_logit_dict[(seg_begin, seg_end)]
+        top_k_logit = sorted_logit_dict[(seg_begin, seg_end)]
 
         # for each prediction in segment (seg_begin, seg_end)
         for this_class_idx, this_prob in top_k_logit:
-            this_trajectory = (seg_begin, seg_end,
-                               this_class_idx, this_prob)
+            this_candidate = (seg_begin, seg_end,
+                              this_class_idx, this_prob)
             # for each top trajectory spanning (seg_end, max_seg)
             for _, later_trajectory in trajectory_dict[seg_end]:
                 # merge current segment with trajectory leading to end, append to candidate
-                combined_trajectory = [this_trajectory] + later_trajectory[:]
+                combined_trajectory = [this_candidate] + later_trajectory[:]
                 all_prob_list = [this_prob] + \
                     [prob for _, _, _, prob in later_trajectory]
                 avg_prob = sum(all_prob_list) / len(all_prob_list)
@@ -101,12 +98,12 @@ def beam_search_top_k_trajectory(logit_dict, k, max_seg_bound):
         ... dict of all possible seg_begin in [0, 1, ..., max_seg_bound]
     }
     '''
-    top_k_logit_dict = logit_to_top_k_logit_dict(logit_dict, k)
+    sorted_logit_dict = logit_to_sorted_logit_dict(logit_dict)
 
     trajectory_dict = {}
     for seg_begin in range(max_seg_bound-1, -1, -1):
         top_k_trajectory_from_seg(
-            trajectory_dict, top_k_logit_dict,
+            trajectory_dict, sorted_logit_dict,
             k=k, seg_begin=seg_begin, max_seg_bound=max_seg_bound,
         )
 
@@ -115,21 +112,21 @@ def beam_search_top_k_trajectory(logit_dict, k, max_seg_bound):
 
 if __name__ == "__main__":
     print('-'*80)
-    print('logit_to_top_k_logit_dict')
+    print('logit_to_sorted_logit_dict')
     print('-'*80)
     logit_dict = {}
     for i in range(4):
         for j in range(i+1, 4):
             logit_dict[(i, j)] = np.array([np.random.rand() for k in range(6)])
-    top_k_logit_dict = logit_to_top_k_logit_dict(logit_dict, 4)
-    pprint(top_k_logit_dict)
+    sorted_logit_dict = logit_to_sorted_logit_dict(logit_dict)
+    pprint(sorted_logit_dict)
 
     print('-'*80)
     print('top_k_trajectory_from_seg, empty trajectory, 0-3 segs, seg_begin=2, k=4')
     print('-'*80)
     trajectory_dict = {}
     top_k_trajectory_from_seg(
-        trajectory_dict, top_k_logit_dict,
+        trajectory_dict, sorted_logit_dict,
         k=4, seg_begin=2, max_seg_bound=3
     )
     pprint(trajectory_dict)
@@ -138,7 +135,7 @@ if __name__ == "__main__":
     print('top_k_trajectory_from_seg, 0-3 segs, seg_begin=1, k=4')
     print('-'*80)
     top_k_trajectory_from_seg(
-        trajectory_dict, top_k_logit_dict,
+        trajectory_dict, sorted_logit_dict,
         k=4, seg_begin=1, max_seg_bound=3
     )
     pprint(trajectory_dict)
@@ -147,7 +144,7 @@ if __name__ == "__main__":
     print('top_k_trajectory_from_seg, 0-3 segs, seg_begin=0, k=4')
     print('-'*80)
     top_k_trajectory_from_seg(
-        trajectory_dict, top_k_logit_dict,
+        trajectory_dict, sorted_logit_dict,
         k=4, seg_begin=0, max_seg_bound=3
     )
     pprint(trajectory_dict)
