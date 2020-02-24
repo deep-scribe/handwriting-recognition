@@ -151,7 +151,7 @@ def get_yprs_calibration_vector(df):
     return calibrationyprs
 
 
-def get_calibrated_yprs_samples(df, resampled, flatten):
+def get_calibrated_yprs_samples(df, resampled, flatten, is_word_samples=False):
     '''
     given a df of a subject (i.e. df returned by load_subject())
     return (xs, ys)
@@ -164,10 +164,19 @@ def get_calibrated_yprs_samples(df, resampled, flatten):
 
     calibrationyprs = get_yprs_calibration_vector(df)
 
-    for label_idx in range(len(LEGAL_LABELS)):
-        label_ch = LEGAL_LABELS[label_idx]
+    if not is_word_samples:
+        # chars only
+        legal_labels = LEGAL_LABELS
+    else:
+        # anything except `calibration`
+        legal_labels = df[
+            df['label'] != CALIBRATION_LABEL_NAME
+        ]['label'].unique()
 
-        samples = get_all_samples_by_label(df, label_ch)
+    for label_idx in range(len(legal_labels)):
+        label_str = legal_labels[label_idx]
+
+        samples = get_all_samples_by_label(df, label_str)
         for sample_id in samples:
             sampledf = samples[sample_id]
             sample_yprs = sampledf[YPRS_COLUMNS].to_numpy()
@@ -189,7 +198,7 @@ def get_calibrated_yprs_samples(df, resampled, flatten):
                 )
 
             xs.append(sample_yprs)
-            ys.append(label_idx)
+            ys.append(label_idx if not is_word_samples else label_str)
 
     return xs, ys
 
