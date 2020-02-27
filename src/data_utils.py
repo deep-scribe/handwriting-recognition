@@ -151,7 +151,7 @@ def get_yprs_calibration_vector(df):
     return calibrationyprs
 
 
-def get_calibrated_yprs_samples(df, resampled, flatten, is_word_samples=False):
+def get_calibrated_yprs_samples(df, resampled, flatten, feature_num=100, is_word_samples=False, keep_idx_and_td=False):
     '''
     given a df of a subject (i.e. df returned by load_subject())
     return (xs, ys)
@@ -183,19 +183,25 @@ def get_calibrated_yprs_samples(df, resampled, flatten, is_word_samples=False):
             # calibrate
             sample_yprs = sample_yprs - calibrationyprs - sample_yprs[0]
 
+            sample_id_col = sampledf[ID_COLUMN].to_numpy().reshape((-1, 1))
+            sample_td_col = sampledf[TIME_DELTA_COLUMN].to_numpy().reshape(
+                (-1, 1))
+            yprs_with_id_td = np.hstack(
+                (sample_id_col, sample_td_col, sample_yprs))
+
+            # resample to fixed length
             if resampled:
-                sample_id_col = sampledf[ID_COLUMN].to_numpy().reshape((-1, 1))
-                sample_td_col = sampledf[TIME_DELTA_COLUMN].to_numpy().reshape(
-                    (-1, 1))
-                sequence = np.hstack(
-                    (sample_id_col, sample_td_col, sample_yprs))
-
-                if sequence.shape[0] <= 2:
+                if yprs_with_id_td.shape[0] <= 2:
                     continue
-
                 sample_yprs = data_flatten.resample_sequence(
-                    sequence, is_flatten_ypr=flatten
+                    yprs_with_id_td,
+                    is_flatten_ypr=flatten,
+                    feature_num=feature_num
                 )
+
+            # re-append idx and td col, only if specified and it's not resampled
+            elif keep_idx_and_td:
+                sample_yprs = yprs_with_id_td
 
             xs.append(sample_yprs)
             ys.append(label_idx if not is_word_samples else label_str)
