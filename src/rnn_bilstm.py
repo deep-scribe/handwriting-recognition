@@ -133,6 +133,7 @@ def get_net(checkpoint_path):
             checkpoint_path, map_location=torch.device('cpu')))
     return net
 
+
 def get_prob(net, input):
     if torch.cuda.is_available():
         input = input.cuda()
@@ -141,7 +142,7 @@ def get_prob(net, input):
     net.eval()
     with torch.no_grad():
         logit = net(input.float())
-        prob = F.log_softmax(logit, dim = -1)
+        prob = F.log_softmax(logit, dim=-1)
     return prob
 
 

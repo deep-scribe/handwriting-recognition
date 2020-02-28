@@ -11,7 +11,7 @@ MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth
 if __name__ == "__main__":
     NUM_PART = 15
 
-    df = data_utils.load_subject('../data_words/words_mini_hard_2')
+    df = data_utils.load_subject('../data_words/words_mini_easy_2')
     xs, ys = data_utils.get_calibrated_yprs_samples(
         df=df,
         resampled=False,
@@ -20,7 +20,7 @@ if __name__ == "__main__":
         keep_idx_and_td=True
     )
     xs_split, bounds = segmentation.split_to_resampled_segments(
-        xs[25], NUM_PART
+        xs[1], NUM_PART
     )
     xs_split = torch.tensor(xs_split)
 
@@ -32,9 +32,9 @@ if __name__ == "__main__":
     }
     trajectory_dict = beam.trajectory_search(logit_dict, 10, NUM_PART)
 
-    print(ys[25])
+    print(ys[1])
     for likelihood, traj in trajectory_dict[0]:
         word = ''
         for seg_begin, seg_end, pred, prob in traj:
             word += chr(pred+97)
-        print(word)
+        print('pred:', word)
