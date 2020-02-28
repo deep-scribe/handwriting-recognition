@@ -1,5 +1,6 @@
 import data_utils
 import data_flatten
+import numpy as np
 from pprint import pprint
 
 
@@ -11,13 +12,13 @@ def split_to_resampled_segments(x, n, is_flatten_ypr=False, feature_num=100):
     @param is_flatten_ypr: if true, flatten to 1d vector
     @param feature_num: num of resultant feature of each resampled segments
 
-    @return dict: {
-        (seg_begin, seg_end): np.array(feature_num, 3), or np.array(feature_num) if flatten
-        ...
-    }
+    @return two lists that share index
+        [np.array(3, feature_num), or np.array(feature_num) if flatten, ...]
+        [(seg_begin, seg_end), ...]
     '''
     nframes, _ = x.shape
-    segments = {}
+    segments = []
+    bounds = []
 
     for seg_begin in range(n):
         frame_begin = int(nframes / n * seg_begin)
@@ -30,9 +31,10 @@ def split_to_resampled_segments(x, n, is_flatten_ypr=False, feature_num=100):
                 feature_num=feature_num,
                 label_name=""
             )
-            segments[(seg_begin, seg_end)] = resampled_seg_frames
+            segments.append(resampled_seg_frames.T)
+            bounds.append((seg_begin, seg_end))
 
-    return segments
+    return segments, bounds
 
 
 if __name__ == "__main__":
@@ -49,9 +51,7 @@ if __name__ == "__main__":
     )
 
     begin = time.time() * 1000
-    xs_split = [
-        split_to_resampled_segments(x, NUM_PART) for x in xs
-    ]
+    xs_split, bounds = split_to_resampled_segments(xs[0], NUM_PART)
     elapsed = time.time() * 1000 - begin
 
-    print(f'Split {len(xs)} samples to {NUM_PART} parts took {elapsed} ms.')
+    print(np.array(xs_split).shape)
