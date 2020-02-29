@@ -2,6 +2,7 @@ import beam
 import rnn_bilstm
 import data_utils
 import segmentation
+import word_search
 import data_flatten
 import numpy as np
 import torch
@@ -37,20 +38,14 @@ next step:
 
 if __name__ == "__main__":
     TARGET_WORDS = [
-        'cat',
-        'dog',
-        'memory',
-        'nexus',
-        'fog',
-        'entity',
-        'word',
-        'exfloiate',
-        'internationalization'
+        'ace', 'cafe', 'egg', 'fax', 'leg', 'mac', 'omega',
+        'safe', 'usage', 'wage', 'age', 'awe', 'axe', 'coax',
+        'exams', 'fem', 'focus', 'same', 'sauce', 'sex',
     ]
 
     model = rnn_bilstm.get_net(MODEL_WEIGHT_PATH)
 
-    char_df = data_utils.load_subject('../data/russell_11_7')
+    char_df = data_utils.load_subject('../data/albert')
     calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
 
     for target_word in TARGET_WORDS:
@@ -87,17 +82,9 @@ if __name__ == "__main__":
         x = np.vstack(sample_chs)
 
         NUM_PART = 30
-        x_split, bounds = segmentation.split_to_resampled_segments(
-            x, NUM_PART
-        )
-        x_split = torch.tensor(x_split)
-        probs = rnn_bilstm.get_prob(model, x_split)
-        logit_dict = {
-            bounds[i]: np.array(probs[i]) for i in range(len(bounds))
-        }
-        trajectory_dict = beam.trajectory_search(logit_dict, 5, NUM_PART)
+        trajs = word_search.word_search(x, NUM_PART, 10, model)
 
-        for i, (likelihood, traj) in enumerate(trajectory_dict[0]):
+        for i, (likelihood, traj) in enumerate(trajs):
             word = ''
             for seg_begin, seg_end, pred, prob in traj:
                 word += chr(pred+97)
