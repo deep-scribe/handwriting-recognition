@@ -10,31 +10,12 @@ from sklearn.model_selection import train_test_split
 # modify this list to match dirs in ../data that contain
 # valid data, one subject per dir
 VERIFIED_SUBJECTS = [
-    'albert',
-    'canon_12_5',
-    'chen',
-    'daniel',
-    'isa_12_5',
-    'joanne',
-    'jq_12_6',
-    'kelly_11_7',
-    'kevin_11_7',
-    'ruocheng',
-    'russell_11_20_stand',
-    'russell_random_12_7',
-    'solomon',
-    'yiheng_11_30',
-    'yiheng_12_5',
-    'yongxu_11_30',
-    'zhaoye',
-    'wenzhou_12_5',
-    'haobin_11_22',
-    'janet',
-    'russell_11_7',
+    'kevin',
+    'russell',
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
-DATA_PATH = '../data/'
+DATA_PATH = '../data_upper/'
 
 
 def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=None):
