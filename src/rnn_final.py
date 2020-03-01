@@ -11,6 +11,7 @@ from collections import defaultdict
 import numpy as np
 import sys
 from torch.nn.utils.rnn import pad_sequence
+import data_augmentation
 
 # cell 1
 
@@ -169,9 +170,15 @@ def main():
 
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
+
+    a = trainx.shape
+    trainx, trainy = data_augmentation.augment_head_tail_noise(
+        trainx, trainy, augment_prop=5)
+    print(trainx.shape, trainy.shape)
+
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=10, is_flattened=False, resampled=True)
+            trainx, trainy, augment_prop=1, is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
         trainx, trainy = data_loader_upper.augment_train_set(

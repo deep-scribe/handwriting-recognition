@@ -97,6 +97,44 @@ def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5
     return sample_yprs
 
 
+def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.1):
+    '''
+    x shape=(N,3)
+    do this before shape augment
+    '''
+    assert augment_prop >= 1
+
+    aug_xs = []
+    aug_ys = []
+    num_orig = len(xs)
+
+    for _ in range(augment_prop):
+        for i, x in enumerate(xs):
+            y = ys[i]
+            aug_ys.append(y)
+
+            nframes, _ = x.shape
+            x_front_src = xs[np.random.choice(num_orig)]
+            x_back_src = xs[np.random.choice(num_orig)]
+
+            front_noise_frame_prop = np.random.normal(
+                noise_prop, noise_prop)
+            front_noise_frame_num = int(
+                front_noise_frame_prop * len(x_front_src))
+            back_noise_frame_prop = np.random.normal(
+                noise_prop, noise_prop)
+            back_noise_frame_num = int(
+                back_noise_frame_prop * len(x_back_src))
+
+            front_noise = x_front_src[:front_noise_frame_num, :]
+            back_noise = x_back_src[len(x_back_src) - back_noise_frame_num:, :]
+
+            augmented_x = np.vstack([front_noise, x, back_noise])
+            aug_xs.append(augmented_x)
+
+    return np.append(xs, np.array(aug_xs)), np.append(ys, np.array(aug_ys))
+
+
 def dump_augmented_yprs_pngs(subject_path):
     '''
     subject_path: string of a path containing all csv recorded by a subject
