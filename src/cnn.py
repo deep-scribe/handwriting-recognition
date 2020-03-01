@@ -169,6 +169,8 @@ for epoch in range(40):  # loop over the dataset multiple times
     print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
     print(f'        trainloss={trainloss} devloss={devloss}')
 
+    torch.save(net.state_dict(), "../saved_model/cnn/cnn_1.pth")
+
 print('Finished Training')
 
 # cell 13
@@ -180,7 +182,8 @@ testacc, testloss
 hist['testacc'] = testacc
 hist['testloss'] = testloss
 
-# cell 16
+# cell 15
+hist
 
 # cell 17
 
