@@ -164,16 +164,16 @@ def main():
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
-    a = trainx.shape
-    trainx, trainy = data_augmentation.augment_head_tail_noise(
-        trainx, trainy, augment_prop=10)
-    print(trainx.shape, trainy.shape)
-    print(trainx[0].shape)
-    print(trainx[1].shape)
+    def aug_head_tail(x, y):
+        x, y = data_augmentation.augment_head_tail_noise(
+            x, y, augment_prop=10)
+        x = data_flatten.resample_dataset_list(x)
+        x = np.array(x)
+        return x, y
 
-    trainx = data_flatten.resample_dataset_list(trainx)
-    trainx = np.array(trainx)
-    print(trainx.shape)
+    trainx, trainy = aug_head_tail(trainx, trainy)
+    devx, devy = aug_head_tail(devx, devy)
+    testx, testy = aug_head_tail(testx, testy)
 
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
