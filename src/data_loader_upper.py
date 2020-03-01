@@ -18,7 +18,7 @@ YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
 DATA_PATH = '../data_upper/'
 
 
-def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=None):
+def verified_subjects_calibrated_yprs(resampled=True, flatten=True, keep_idx_and_td=False, subjects=None):
     '''
     load yaw, pitch, roll with verified subjects
     use param subjects to override
@@ -35,7 +35,7 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=Non
         print('Processing', subject)
         df = dfs[subject]
         xs, ys = data_utils.get_calibrated_yprs_samples(
-            df, resampled=resampled, flatten=flatten)
+            df, resampled=resampled, flatten=flatten, keep_idx_and_td=keep_idx_and_td)
 
         allxs.extend(xs)
         allys.extend(ys)
@@ -47,9 +47,9 @@ DEV_PROP = 0.01
 TRAIN_PROP = 0.01
 
 
-def load_all_classic_random_split(resampled=True, flatten=True):
+def load_all_classic_random_split(resampled=True, flatten=True, keep_idx_and_td=False):
     xs, ys = verified_subjects_calibrated_yprs(
-        resampled=resampled, flatten=flatten)
+        resampled=resampled, flatten=flatten, keep_idx_and_td=keep_idx_and_td)
     xs = np.array(xs)
     ys = np.array(ys)
     print('Splitting out test set')

@@ -12,6 +12,7 @@ import numpy as np
 import sys
 from torch.nn.utils.rnn import pad_sequence
 import data_augmentation
+import data_flatten
 
 # cell 1
 
@@ -154,19 +155,11 @@ def main():
     filename = experiment_type + '_' + resampled + '_' + trial
 
     if experiment_type == "subject":
-        if resampled == "resampled":
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
-                resampled=True, flatten=False)
-        else:
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
-                resampled=False, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
+            resampled=False, flatten=False, keep_idx_and_td=True)
     else:
-        if resampled == "resampled":
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-                resampled=True, flatten=False)
-        else:
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-                resampled=False, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
+            resampled=False, flatten=False, keep_idx_and_td=True)
 
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
@@ -175,10 +168,17 @@ def main():
     trainx, trainy = data_augmentation.augment_head_tail_noise(
         trainx, trainy, augment_prop=10)
     print(trainx.shape, trainy.shape)
+    print(trainx[0].shape)
+    print(trainx[1].shape)
+
+    trainx = data_flatten.resample_dataset_list(trainx)
+    trainx = np.array(trainx)
+    print(trainx.shape)
 
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=1, is_flattened=False, resampled=True)
+            trainx, trainy, augment_prop=1,
+            is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
         trainx, trainy = data_loader_upper.augment_train_set(
