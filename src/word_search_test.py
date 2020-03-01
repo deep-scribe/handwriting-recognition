@@ -79,22 +79,22 @@ if __name__ == "__main__":
                 word += chr(pred+97)
             print(f', pred {i}:', word)
 
-    TARGET_WORDS = [
-        'word',
-        'does',
-        'not',
-        'something',
-        'in',
-        'it',
-        'focus',
-        'another',
-        'word',
-        'function',
-        'short',
-        'kid',
-        'fem',
-        'sex'
-    ]
+    # TARGET_WORDS = [
+    #     'word',
+    #     'does',
+    #     'not',
+    #     'something',
+    #     'in',
+    #     'it',
+    #     'focus',
+    #     'another',
+    #     'word',
+    #     'function',
+    #     'short',
+    #     'kid',
+    #     'fem',
+    #     'sex'
+    # ]
 
     # char_df = data_utils.load_subject('../data_upper/kevin')
     # calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
@@ -129,12 +129,12 @@ if __name__ == "__main__":
 
     #         sample_chs.append(yprs_with_id_td)
 
-    #         # insert noise
-    #         num_noise_frame = random.randint(1, 10)
-    #         noise_start = random.randint(0, yprs_with_id_td.shape[0])
-    #         noise = yprs_with_id_td[
-    #             noise_start:noise_start+num_noise_frame, :]
-    #         sample_chs.append(noise)
+    #         # # insert noise
+    #         # num_noise_frame = random.randint(1, 10)
+    #         # noise_start = random.randint(0, yprs_with_id_td.shape[0])
+    #         # noise = yprs_with_id_td[
+    #         #     noise_start:noise_start+num_noise_frame, :]
+    #         # sample_chs.append(noise)
 
     #     # concat each char sequence to word sequence
     #     x = np.vstack(sample_chs)
