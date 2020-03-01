@@ -171,11 +171,11 @@ def main():
           trainy.shape, devy.shape, testy.shape)
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=3, is_flattened=False, resampled=True)
+            trainx, trainy, augment_prop=6, is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=3, is_flattened=False, resampled=False)
+            trainx, trainy, augment_prop=6, is_flattened=False, resampled=False)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
