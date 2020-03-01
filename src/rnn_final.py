@@ -243,10 +243,10 @@ def main():
 
         print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
         print(f'        trainloss={trainloss} devloss={devloss}')
-        if best_acc < devacc:
-            best_acc = devacc
-            torch.save(net.state_dict(), "../saved_model/rnn_final/" +
-                       "rnn_final_" + filename + ".pth")
+        # if best_acc < devacc:
+        #     best_acc = devacc
+        torch.save(net.state_dict(), "../saved_model/rnn_final/" +
+                   "rnn_final_" + filename + ".pth")
 
     print('Finished Training', 'Best Dev Acc', best_acc)
 
