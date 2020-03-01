@@ -184,7 +184,7 @@ def main():
 
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=5,
+            trainx, trainy, augment_prop=10,
             is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
