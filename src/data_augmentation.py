@@ -117,12 +117,10 @@ def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.1):
             x_front_src = xs[np.random.choice(num_orig)]
             x_back_src = xs[np.random.choice(num_orig)]
 
-            front_noise_frame_prop = np.random.normal(
-                noise_prop, noise_prop)
+            front_noise_frame_prop = np.random.random() * noise_prop
             front_noise_frame_num = int(
                 front_noise_frame_prop * len(x_front_src))
-            back_noise_frame_prop = np.random.normal(
-                noise_prop, noise_prop)
+            back_noise_frame_prop = np.random.random() * noise_prop
             back_noise_frame_num = int(
                 back_noise_frame_prop * len(x_back_src))
 

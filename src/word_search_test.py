@@ -13,7 +13,7 @@ import cnn
 import random
 
 # MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
-MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_9.pth'
+MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_10.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -67,9 +67,9 @@ if __name__ == "__main__":
     for idx in range(len(wordys)):
         x = wordxs[idx]
         y = wordys[idx]
-        if 'a' in y or 'A' in y:
-            continue
-        NUM_PART = int(x.shape[0] / 10) + 5
+        # if 'a' in y or 'A' in y:
+        #     continue
+        NUM_PART = int(x.shape[0] / 8)
         trajs = word_search.word_search(x, NUM_PART, 10, model)
         print(f'predicting {y}')
 
@@ -79,24 +79,24 @@ if __name__ == "__main__":
                 word += chr(pred+97)
             print(f', pred {i}:', word)
 
-    # TARGET_WORDS = [
-    #     'word',
-    #     'does',
-    #     'not',
-    #     'something',
-    #     'in',
-    #     'it',
-    #     'focus',
-    #     'another',
-    #     'word',
-    #     'function',
-    #     'short',
-    #     'kid',
-    #     'fem',
-    #     'sex'
-    # ]
+    TARGET_WORDS = [
+        'word',
+        'does',
+        'not',
+        'something',
+        'in',
+        'it',
+        'focus',
+        'another',
+        'word',
+        'function',
+        'short',
+        'kid',
+        'fem',
+        'sex'
+    ]
 
-    # char_df = data_utils.load_subject('../data_upper/russell')
+    # char_df = data_utils.load_subject('../data_upper/kevin')
     # calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
 
     # for target_word in TARGET_WORDS:
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     #         sample_chs.append(yprs_with_id_td)
 
     #         # insert noise
-    #         num_noise_frame = random.randint(6, 10)
+    #         num_noise_frame = random.randint(1, 10)
     #         noise_start = random.randint(0, yprs_with_id_td.shape[0])
     #         noise = yprs_with_id_td[
     #             noise_start:noise_start+num_noise_frame, :]
