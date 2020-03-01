@@ -213,7 +213,7 @@ def main():
         net.cuda()
 
     # cell 8
-    criterion = nn.CrossEntropyLoss(ignore_index=0, size_average=True)
+    criterion = nn.CrossEntropyLoss(size_average=True)
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
