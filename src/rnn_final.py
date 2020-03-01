@@ -110,8 +110,8 @@ class Net(nn.Module):
                             batch_first=True, bidirectional=True)
         # self.dropout = nn.Dropout(0.1)
         self.fc = nn.Linear(hidden_dim*2, 800, bias=True)
-        self.fc2 = nn.Linear(800, 300, bias=True)
-        self.fc3 = nn.Linear(300, 26, bias=True)
+        self.fc2 = nn.Linear(800, 500, bias=True)
+        self.fc3 = nn.Linear(500, 26, bias=True)
 
     def forward(self, x):
         init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
