@@ -43,8 +43,8 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=Non
     return allxs, allys
 
 
-DEV_PROP = 0.1
-TRAIN_PROP = 0.1
+DEV_PROP = 0.01
+TRAIN_PROP = 0.01
 
 
 def load_all_classic_random_split(resampled=True, flatten=True):
@@ -88,7 +88,7 @@ def load_all_subject_split(resampled=True, flatten=True):
     return trainx, devx, testx, trainy, devy, testy
 
 
-def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True, resampled = True):
+def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True, resampled=True):
     '''
     use default data augmentation setting to append to the TRAIN_SET
     augment_prop * len(train_set) number of samples

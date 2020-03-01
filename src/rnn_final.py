@@ -105,8 +105,8 @@ class Net(nn.Module):
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
-                            batch_first=True, bidirectional=False)
-        self.dropout = nn.Dropout(0.1)
+                            batch_first=True, bidirectional=True)
+        # self.dropout = nn.Dropout(0.1)
         self.fc = nn.Linear(hidden_dim, 26, bias=True)
 
     def forward(self, x):
@@ -117,7 +117,7 @@ class Net(nn.Module):
             init_c = init_c.cuda()
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (init_h, init_c))
-        out = self.dropout(out)
+        # out = self.dropout(out)
         # print("inter: ", out.shape)
         out = self.fc(out[:, -1, :])
         # print("out: ", out.shape)
@@ -133,6 +133,7 @@ def get_net(checkpoint_path):
             checkpoint_path, map_location=torch.device('cpu')))
     return net
 
+
 def get_prob(net, input):
     if torch.cuda.is_available():
         input = input.cuda()
@@ -141,7 +142,7 @@ def get_prob(net, input):
     net.eval()
     with torch.no_grad():
         logit = net(input.float())
-        prob = F.log_softmax(logit, dim = -1)
+        prob = F.log_softmax(logit, dim=-1)
     return prob
 
 
@@ -189,7 +190,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 128
+    BATCH_SIZE = 64
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
@@ -212,7 +213,7 @@ def main():
 
     hist = defaultdict(list)
     best_acc = 0
-    for epoch in range(100):  # loop over the dataset multiple times
+    for epoch in range(150):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
             print(f'{i if i%20==0 else ""}.', end='')
@@ -250,7 +251,7 @@ def main():
     print('Finished Training', 'Best Dev Acc', best_acc)
 
     net.load_state_dict(torch.load("../saved_model/rnn_final/" +
-               "rnn_final_" + filename + ".pth"))
+                                   "rnn_final_" + filename + ".pth"))
 
     testacc, testloss = acc_loss(net, testloader, nn.CrossEntropyLoss())
     testacc, testloss
