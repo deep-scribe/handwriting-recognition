@@ -53,7 +53,7 @@ def pad_all_x(trainx, devx, testx):
 #     return pad_y(trainy), pad_y(devy), pad_y(testy)
 
 
-def acc(data_loader):
+def acc(net, data_loader):
     correct = 0
     total = 0
     with torch.no_grad():
