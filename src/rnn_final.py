@@ -109,8 +109,9 @@ class Net(nn.Module):
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
                             batch_first=True, bidirectional=True)
         # self.dropout = nn.Dropout(0.1)
-        self.fc = nn.Linear(hidden_dim*2, 500, bias=True)
-        self.fc2 = nn.Linear(500, 26, bias=True)
+        self.fc = nn.Linear(hidden_dim*2, 800, bias=True)
+        self.fc2 = nn.Linear(800, 300, bias=True)
+        self.fc3 = nn.Linear(300, 26, bias=True)
 
     def forward(self, x):
         init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
@@ -124,7 +125,9 @@ class Net(nn.Module):
         # print("inter: ", out.shape)
         out = self.fc(out[:, -1, :])
         out = torch.nn.functional.relu(out)
-        out = self.fc2(fc)
+        out = self.fc2(out)
+        out = torch.nn.functional.relu(out)
+        out = self.fc3(out)
         # print("out: ", out.shape)
         return out
 
@@ -169,7 +172,7 @@ def main():
 
     def aug_head_tail(x, y):
         x, y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=20)
+            x, y, augment_prop=10)
         x = data_flatten.resample_dataset_list(x)
         x = np.array(x)
         return x, y
@@ -200,7 +203,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 512
+    BATCH_SIZE = 256
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
