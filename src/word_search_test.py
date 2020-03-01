@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from pprint import pprint
 
-MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_2.pth'
+MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_3.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # print(wrong)
     # print(np.sum(wrong))
 
-    char_df = data_utils.load_subject('../data_upper/russell')
+    char_df = data_utils.load_subject('../data_upper/kevin')
     calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
 
     for target_word in TARGET_WORDS:

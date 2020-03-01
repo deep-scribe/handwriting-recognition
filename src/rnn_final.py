@@ -213,7 +213,7 @@ def main():
 
     hist = defaultdict(list)
     best_acc = 0
-    for epoch in range(50):  # loop over the dataset multiple times
+    for epoch in range(150):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
             print(f'{i if i%20==0 else ""}.', end='')
