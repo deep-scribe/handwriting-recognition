@@ -109,9 +109,8 @@ class Net(nn.Module):
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
                             batch_first=True, bidirectional=True)
         # self.dropout = nn.Dropout(0.1)
-        self.fc = nn.Linear(hidden_dim*2, 800, bias=True)
-        self.fc2 = nn.Linear(800, 300, bias=True)
-        self.fc3 = nn.Linear(300, 26, bias=True)
+        self.fc = nn.Linear(hidden_dim*2, 500, bias=True)
+        self.fc2 = nn.Linear(500, 26, bias=True)
 
     def forward(self, x):
         init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
@@ -126,8 +125,6 @@ class Net(nn.Module):
         out = self.fc(out[:, -1, :])
         out = torch.nn.functional.relu(out)
         out = self.fc2(out)
-        out = torch.nn.functional.relu(out)
-        out = self.fc3(out)
         out = torch.nn.functional.softmax(out, dim=-1)
         # print("out: ", out.shape)
         return out
