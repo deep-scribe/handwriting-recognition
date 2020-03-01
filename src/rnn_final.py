@@ -110,8 +110,8 @@ class Net(nn.Module):
         self.fc = nn.Linear(hidden_dim, 26, bias=True)
 
     def forward(self, x):
-        init_h = torch.randn(self.n_layers, x.shape[0], self.hidden_dim*2)
-        init_c = torch.randn(self.n_layers, x.shape[0], self.hidden_dim*2)
+        init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
+        init_c = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
         if torch.cuda.is_available():
             init_h = init_h.cuda()
             init_c = init_c.cuda()
