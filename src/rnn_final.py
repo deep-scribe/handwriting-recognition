@@ -173,7 +173,7 @@ def main():
 
     a = trainx.shape
     trainx, trainy = data_augmentation.augment_head_tail_noise(
-        trainx, trainy, augment_prop=5)
+        trainx, trainy, augment_prop=10)
     print(trainx.shape, trainy.shape)
 
     if resampled == "resampled":
