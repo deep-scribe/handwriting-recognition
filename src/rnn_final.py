@@ -107,7 +107,7 @@ class Net(nn.Module):
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
                             batch_first=True, bidirectional=True)
         # self.dropout = nn.Dropout(0.1)
-        self.fc = nn.Linear(hidden_dim, 26, bias=True)
+        self.fc = nn.Linear(hidden_dim*2, 26, bias=True)
 
     def forward(self, x):
         init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
