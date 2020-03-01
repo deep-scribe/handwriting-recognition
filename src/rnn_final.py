@@ -211,6 +211,7 @@ def main():
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
     hist = defaultdict(list)
+    best_acc = 0
     for epoch in range(100):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
@@ -241,10 +242,11 @@ def main():
 
         print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
         print(f'        trainloss={trainloss} devloss={devloss}')
+        if best_acc < devacc:
+            torch.save(net.state_dict(), "../saved_model/rnn_final/" +
+                       "rnn_final_" + filename + ".pth")
 
     print('Finished Training')
-    torch.save(net.state_dict(), "../saved_model/rnn_final/" +
-               "rnn_final_" + filename + ".pth")
 
     testacc, testloss = acc_loss(net, testloader, nn.CrossEntropyLoss())
     testacc, testloss
