@@ -190,7 +190,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 128
+    BATCH_SIZE = 64
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
@@ -209,11 +209,11 @@ def main():
     # cell 8
     criterion = nn.CrossEntropyLoss(ignore_index=0, size_average=True)
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
-    optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
+    optimizer = optim.AdamW(net.parameters(), weight_decay=0.001)
 
     hist = defaultdict(list)
     best_acc = 0
-    for epoch in range(150):  # loop over the dataset multiple times
+    for epoch in range(100):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
             print(f'{i if i%20==0 else ""}.', end='')

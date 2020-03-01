@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from pprint import pprint
 
-MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
+MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_0.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -40,27 +40,27 @@ next step:
 if __name__ == "__main__":
     TARGET_WORDS = [
         'age', 'cafe', 'egg', 'fax', 'leg', 'mac', 'omega',
-        # 'safe', 'usage', 'wage', 'age', 'awe', 'axe', 'coax',
-        # 'exams', 'fem', 'focus', 'same', 'sauce', 'sex',
+        'safe', 'usage', 'wage', 'age', 'awe', 'axe', 'coax',
+        'exams', 'fem', 'focus', 'same', 'sauce', 'sex',
     ]
 
-    model = rnn_bilstm.get_net(MODEL_WEIGHT_PATH)
-
-    # char_df = data_utils.load_subject('../data_upper/russell')
-    # calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
+    model = rnn_final.get_net(MODEL_WEIGHT_PATH)
 
     import data_loader_upper
     import data_loader
-    xs, ys = data_loader.verified_subjects_calibrated_yprs(
-        flatten=False, subjects=['russell_11_7', 'kevin_11_7'])
+    xs, ys = data_loader_upper.verified_subjects_calibrated_yprs(
+        flatten=False)
     xs = torch.tensor(xs)
     xs = torch.transpose(xs, -1, -2)
     print(xs.shape)
-    pred = rnn_bilstm.get_prob(model, xs)
+    pred = rnn_final.get_prob(model, xs)
     pred = np.argmax(pred, axis=1)
     wrong = np.array(pred) != np.array(ys)
     print(wrong)
     print(np.sum(wrong))
+
+    # char_df = data_utils.load_subject('../data_upper/russell')
+    # calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
 
     # for target_word in TARGET_WORDS:
     #     print('-'*80)
