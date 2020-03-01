@@ -113,8 +113,7 @@ class Net(nn.Module):
         self.pool3 = nn.MaxPool1d(kernel_size=5, stride=1, padding=2)
 
         self.fc1 = nn.Linear(num_feature * 64, 3200)
-        self.fc2 = nn.Linear(3200, 1600)
-        self.fc3 = nn.Linear(1600, 500)
+        self.fc2 = nn.Linear(3200, 500)
         self.out = nn.Linear(500, 26)
 
     def forward(self, x):
@@ -124,7 +123,6 @@ class Net(nn.Module):
         x = x.view(-1, num_feature * 64)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
         x = self.out(x)
         return x
 
@@ -188,7 +186,28 @@ hist
 # cell 17
 
 
+def get_net(checkpoint_path):
+    net = Net(3, 100, 5)
+    if torch.cuda.is_available():
+        net.load_state_dict(torch.load(checkpoint_path))
+    else:
+        net.load_state_dict(torch.load(
+            checkpoint_path, map_location=torch.device('cpu')))
+    return net
+
 # cell 18
+
+
+def get_prob(net, input):
+    if torch.cuda.is_available():
+        input = input.cuda()
+    else:
+        net.cpu()
+    net.eval()
+    with torch.no_grad():
+        logit = net(input.float())
+        prob = F.log_softmax(logit, dim=-1)
+    return prob
 
 
 # cell 19
