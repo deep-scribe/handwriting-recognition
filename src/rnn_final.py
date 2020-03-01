@@ -171,7 +171,7 @@ def main():
           trainy.shape, devy.shape, testy.shape)
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=1, is_flattened=False, resampled=True)
+            trainx, trainy, augment_prop=10, is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
         trainx, trainy = data_loader_upper.augment_train_set(
@@ -190,7 +190,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 64
+    BATCH_SIZE = 256
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
@@ -213,7 +213,7 @@ def main():
 
     hist = defaultdict(list)
     best_acc = 0
-    for epoch in range(150):  # loop over the dataset multiple times
+    for epoch in range(200):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
             print(f'{i if i%20==0 else ""}.', end='')
