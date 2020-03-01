@@ -31,10 +31,12 @@ VERIFIED_SUBJECTS = [
     'haobin_11_22',
     'janet',
     'russell_11_7',
+    'kevin',
+    'russell'
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
-DATA_PATH = '../data/'
+DATA_PATH = '../data_upper/'
 
 
 def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=None):
