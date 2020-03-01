@@ -5,7 +5,7 @@ import java.lang.StringBuilder;
 
 //boolean USE_SUBJECT_NAME = true;
 String DIR_NAME = "letter_data";
-String SUBJECT_NAME = "CHEN_Upper";
+String SUBJECT_NAME = "Xie_Upper";
 
 Serial mySerial;
 Date date;
@@ -26,7 +26,7 @@ void setup() {
    buffer = new StringBuilder();
    
    // use "-1" if you wish to start with calibration, else enter corresponding letter's number
-   char_counter = -1;
+   char_counter = 10;
 }
 
 void draw() {

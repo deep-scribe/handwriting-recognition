@@ -14,7 +14,7 @@ String[] words_mini_hard_2 = new String[]{
 "kanji", "flick", "beach", "cabin", "hack", "lack", "kami", "kid" , "ban", "bad"
 };
 
-String[] Chen_words = new String[]{
+String[] words_20 = new String[]{
 "exams", "focus", "sauce", "coax", "same", "sex", "awe", "fem", "axe", "age", "kanji", "flick", "beach", "cabin", "hack", "lack", "kami", "kid" , "ban", "bad"
 };
 
@@ -25,7 +25,7 @@ String[] Chen_words = new String[]{
 String DIR_NAME = "words_data";
 
 String FOLDER_NAME = "Chen";
-String[] word_list = testwords.clone();
+String[] word_list = words_20.clone();
 
 boolean start_from_first_word = true;
 String word_to_start_at = "NO_WORD_DEFINED";
