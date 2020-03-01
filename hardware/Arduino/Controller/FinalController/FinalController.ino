@@ -291,7 +291,7 @@ void setup()
   Serial.begin(115200);
 
   lcd.begin(16, 2);
-  lcd.print("CS229    FA19");
+  lcd.print("CS230   WI20");
   lcd.setCursor(1, 1);
   lcd.print("Final  Project");
 

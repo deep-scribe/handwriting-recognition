@@ -14,12 +14,17 @@ String[] words_mini_hard_2 = new String[]{
 "kanji", "flick", "beach", "cabin", "hack", "lack", "kami", "kid" , "ban", "bad"
 };
 
+String[] Chen_words = new String[]{
+"exams", "focus", "sauce", "coax", "same", "sex", "awe", "fem", "axe", "age", "kanji", "flick", "beach", "cabin", "hack", "lack", "kami", "kid" , "ban", "bad"
+};
+
+
 
 /* ------------------------------ */
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "testwords";
+String FOLDER_NAME = "Chen";
 String[] word_list = testwords.clone();
 
 boolean start_from_first_word = true;

@@ -4,8 +4,8 @@ import java.util.Date;
 import java.lang.StringBuilder;
 
 //boolean USE_SUBJECT_NAME = true;
-String DIR_NAME = "";
-String SUBJECT_NAME = "NEW_SUBJECT";
+String DIR_NAME = "letter_data";
+String SUBJECT_NAME = "CHEN_Upper";
 
 Serial mySerial;
 Date date;
