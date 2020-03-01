@@ -200,7 +200,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 256
+    BATCH_SIZE = 512
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
