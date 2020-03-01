@@ -13,7 +13,7 @@ import cnn
 import random
 
 # MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
-MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_5.pth'
+MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_7.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -58,18 +58,18 @@ if __name__ == "__main__":
     # print(wrong)
     # print(np.sum(wrong))
 
-    # word_df = data_utils.load_subject('../data_words/words_mini_easy')
-    # wordxs, wordys = data_utils.get_calibrated_yprs_samples(
-    #     word_df, resampled=False, flatten=False,
-    #     is_word_samples=True, keep_idx_and_td=True
-    # )
+    word_df = data_utils.load_subject('../data_words/russell')
+    wordxs, wordys = data_utils.get_calibrated_yprs_samples(
+        word_df, resampled=False, flatten=False,
+        is_word_samples=True, keep_idx_and_td=True
+    )
 
     # for idx in range(len(wordys)):
     #     x = wordxs[idx]
     #     y = wordys[idx]
-    #     # if 'a' in y:
-    #     #     continue
-    #     NUM_PART = 40
+    #     if 'a' in y or 'A' in y:
+    #         continue
+    #     NUM_PART = int(x.shape[0] / 10) + 5
     #     trajs = word_search.word_search(x, NUM_PART, 10, model)
     #     print(f'predicting {y}')
 
@@ -87,6 +87,13 @@ if __name__ == "__main__":
         'in',
         'it',
         'focus',
+        'another',
+        'word',
+        'function',
+        'short',
+        'kid',
+        'fem',
+        'sex'
     ]
 
     char_df = data_utils.load_subject('../data_upper/russell')
@@ -123,7 +130,7 @@ if __name__ == "__main__":
             sample_chs.append(yprs_with_id_td)
 
             # insert noise
-            num_noise_frame = random.randint(4, 7)
+            num_noise_frame = random.randint(6, 10)
             noise_start = random.randint(0, yprs_with_id_td.shape[0])
             noise = yprs_with_id_td[
                 noise_start:noise_start+num_noise_frame, :]
