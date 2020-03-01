@@ -223,7 +223,7 @@ def main():
     # cell 8
     criterion = nn.CrossEntropyLoss(size_average=True)
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
-    optimizer = optim.AdamW(net.parameters(), weight_decay=0.02)
+    optimizer = optim.AdamW(net.parameters(), weight_decay=0.005)
 
     hist = defaultdict(list)
     best_acc = 0
