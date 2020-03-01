@@ -10,7 +10,7 @@ import torch
 from pprint import pprint
 import data_loader
 
-MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_4.pth'
+MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_5.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # print(wrong)
     # print(np.sum(wrong))
 
-    word_df = data_utils.load_subject('../data_words/kevin')
+    word_df = data_utils.load_subject('../data_words/russell')
     wordxs, wordys = data_utils.get_calibrated_yprs_samples(
         word_df, resampled=False, flatten=False,
         is_word_samples=True, keep_idx_and_td=True
@@ -66,7 +66,7 @@ if __name__ == "__main__":
         y = wordys[idx]
         if 'A' in y:
             continue
-        NUM_PART = 60
+        NUM_PART = 40
         trajs = word_search.word_search(x, NUM_PART, 10, model)
         print(f'predicting {y}')
 
@@ -74,59 +74,63 @@ if __name__ == "__main__":
             word = ''
             for seg_begin, seg_end, pred, prob in traj:
                 word += chr(pred+97)
+            print(f', pred {i}:', word)
+
+    TARGET_WORDS = [
+        'word',
+        'does',
+        'not',
+        'ei',
+        'in',
+        'it',
+        'focus',
+        'beam',
+        'kami',
+        'kanji',
+        'cabin'
+    ]
+
+    char_df = data_utils.load_subject('../data_upper/russell')
+    calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
+
+    for target_word in TARGET_WORDS:
+        print('-'*80)
+        print(f'checking word {target_word}')
+        print('-'*80)
+        sample_chs = []
+        for ch in target_word:
+            sample_df = data_utils.get_random_sample_by_label(char_df, ch)
+            sample_yprs = sample_df[data_utils.YPRS_COLUMNS].to_numpy()
+            # calibrate
+            sample_yprs = sample_yprs - calibration_yprs - sample_yprs[0]
+
+            # check each char predicted is correct
+            # resample to test forward
+            sample_id_col = sample_df[data_utils.ID_COLUMN].to_numpy().reshape(
+                (-1, 1))
+            sample_td_col = sample_df[data_utils.TIME_DELTA_COLUMN].to_numpy().reshape(
+                (-1, 1))
+            yprs_with_id_td = np.hstack(
+                (sample_id_col, sample_td_col, sample_yprs))
+            sample_yprs = data_flatten.resample_sequence(
+                yprs_with_id_td,
+                is_flatten_ypr=False,
+                feature_num=100
+            )
+            yhat = rnn_final.get_prob(model, torch.tensor([sample_yprs.T]))
+            pred = chr(97+np.argmax(yhat))
+            print(f'expect [{ch}] predict [{pred}]')
+
+            sample_chs.append(yprs_with_id_td)
+
+        # concat each char sequence to word sequence
+        x = np.vstack(sample_chs)
+
+        NUM_PART = 25
+        trajs = word_search.word_search(x, NUM_PART, 10, model)
+
+        for i, (likelihood, traj) in enumerate(trajs):
+            word = ''
+            for seg_begin, seg_end, pred, prob in traj:
+                word += chr(pred+97)
             print(f'pred {i}:', word)
-
-    # TARGET_WORDS = [
-    #     'word',
-    #     'does',
-    #     'not',
-    #     'ei',
-    #     'in',
-    #     'it',
-    #     'focus'
-    # ]
-
-    # char_df = data_utils.load_subject('../data_upper/russell')
-    # calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
-
-    # for target_word in TARGET_WORDS:
-    #     print('-'*80)
-    #     print(f'checking word {target_word}')
-    #     print('-'*80)
-    #     sample_chs = []
-    #     for ch in target_word:
-    #         sample_df = data_utils.get_random_sample_by_label(char_df, ch)
-    #         sample_yprs = sample_df[data_utils.YPRS_COLUMNS].to_numpy()
-    #         # calibrate
-    #         sample_yprs = sample_yprs - calibration_yprs - sample_yprs[0]
-
-    #         # check each char predicted is correct
-    #         # resample to test forward
-    #         sample_id_col = sample_df[data_utils.ID_COLUMN].to_numpy().reshape(
-    #             (-1, 1))
-    #         sample_td_col = sample_df[data_utils.TIME_DELTA_COLUMN].to_numpy().reshape(
-    #             (-1, 1))
-    #         yprs_with_id_td = np.hstack(
-    #             (sample_id_col, sample_td_col, sample_yprs))
-    #         sample_yprs = data_flatten.resample_sequence(
-    #             yprs_with_id_td,
-    #             is_flatten_ypr=False,
-    #             feature_num=100
-    #         )
-    #         yhat = rnn_final.get_prob(model, torch.tensor([sample_yprs.T]))
-    #         pred = chr(97+np.argmax(yhat))
-    #         print(f'expect [{ch}] predict [{pred}]')
-
-    #         sample_chs.append(yprs_with_id_td)
-
-    #     # concat each char sequence to word sequence
-    #     x = np.vstack(sample_chs)
-
-    #     NUM_PART = 20
-    #     trajs = word_search.word_search(x, NUM_PART, 10, model)
-
-    #     for i, (likelihood, traj) in enumerate(trajs):
-    #         word = ''
-    #         for seg_begin, seg_end, pred, prob in traj:
-    #             word += chr(pred+97)
-    #         print(f'pred {i}:', word)
