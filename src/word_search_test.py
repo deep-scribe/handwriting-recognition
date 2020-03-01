@@ -11,7 +11,7 @@ from pprint import pprint
 import data_loader
 import cnn
 
-MODEL_WEIGHT_PATH = '../saved_model/cnn/cnn_1.pth'
+MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_5.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -41,7 +41,7 @@ next step:
 
 if __name__ == "__main__":
 
-    model = cnn.get_net(MODEL_WEIGHT_PATH)
+    model = rnn_final.get_net(MODEL_WEIGHT_PATH)
 
     # import data_loader_upper
     # import data_loader
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # xs = torch.tensor(xs)
     # xs = torch.transpose(xs, -1, -2)
     # print(xs.shape)
-    # pred = cnn.get_prob(model, xs)
+    # pred = rnn_final.get_prob(model, xs)
     # pred = np.argmax(pred, axis=1)
     # wrong = np.array(pred) != np.array(ys)
     # print(wrong)
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 is_flatten_ypr=False,
                 feature_num=100
             )
-            yhat = cnn.get_prob(model, torch.tensor([sample_yprs.T]))
+            yhat = rnn_final.get_prob(model, torch.tensor([sample_yprs.T]))
             pred = chr(97+np.argmax(yhat))
             print(f'expect [{ch}] predict [{pred}]')
 
