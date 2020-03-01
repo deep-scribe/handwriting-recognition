@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 # modify this list to match dirs in ../data that contain
 # valid data, one subject per dir
 VERIFIED_SUBJECTS = [
-    # 'kevin',
+    'kevin',
     'russell',
 ]
 
@@ -44,7 +44,7 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, keep_idx_and
 
 
 DEV_PROP = 0.05
-TRAIN_PROP = 0.05
+TRAIN_PROP = 0.01
 
 
 def load_all_classic_random_split(resampled=True, flatten=True, keep_idx_and_td=False):

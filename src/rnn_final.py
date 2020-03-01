@@ -150,7 +150,7 @@ def get_prob(net, input):
     net.eval()
     with torch.no_grad():
         logit = net(input.float())
-        prob = np.log(logit)
+        prob = F.log_softmax(logit, dim=-1)
     return prob
 
 
@@ -222,7 +222,7 @@ def main():
     # cell 8
     criterion = nn.CrossEntropyLoss(size_average=True)
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
-    optimizer = optim.AdamW(net.parameters(), weight_decay=0.001)
+    optimizer = optim.AdamW(net.parameters(), weight_decay=0.005)
 
     hist = defaultdict(list)
     best_acc = 0
