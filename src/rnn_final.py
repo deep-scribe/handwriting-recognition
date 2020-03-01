@@ -212,7 +212,7 @@ def main():
 
     hist = defaultdict(list)
     best_acc = 0
-    for epoch in range(100):  # loop over the dataset multiple times
+    for epoch in range(1):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
             print(f'{i if i%20==0 else ""}.', end='')
@@ -243,15 +243,20 @@ def main():
         print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
         print(f'        trainloss={trainloss} devloss={devloss}')
         if best_acc < devacc:
+            best_acc = devacc
             torch.save(net.state_dict(), "../saved_model/rnn_final/" +
                        "rnn_final_" + filename + ".pth")
 
-    print('Finished Training')
+    print('Finished Training', 'Best Dev Acc', best_acc)
+
+    net.load_state_dict(torch.load("../saved_model/rnn_final/" +
+               "rnn_final_" + filename + ".pth"))
 
     testacc, testloss = acc_loss(net, testloader, nn.CrossEntropyLoss())
     testacc, testloss
     hist['testacc'] = testacc
     hist['testloss'] = testloss
+    print(f'test loss={testloss} devloss={testacc}')
 
     with open('../output/rnn_final/rnn_final_' + filename + '.json', 'w') as f:
         json.dump(hist, f)
