@@ -128,7 +128,7 @@ class Net(nn.Module):
         out = self.fc2(out)
         out = torch.nn.functional.relu(out)
         out = self.fc3(out)
-        out = torch.nn.functional.softmax(out)
+        out = torch.nn.functional.softmax(out, dim=-1)
         # print("out: ", out.shape)
         return out
 
@@ -151,7 +151,7 @@ def get_prob(net, input):
     net.eval()
     with torch.no_grad():
         logit = net(input.float())
-        prob = np.log(logit, dim=-1)
+        prob = np.log(logit)
     return prob
 
 
