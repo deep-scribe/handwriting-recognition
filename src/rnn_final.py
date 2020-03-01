@@ -105,7 +105,7 @@ class Net(nn.Module):
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
-                            batch_first=True, bidirectional=True)
+                            batch_first=True, bidirectional=False)
         # self.dropout = nn.Dropout(0.1)
         self.fc = nn.Linear(hidden_dim, 26, bias=True)
 
