@@ -130,11 +130,11 @@ if __name__ == "__main__":
             sample_chs.append(yprs_with_id_td)
 
             # insert noise
-            num_noise_frame = random.randint(6, 10)
-            noise_start = random.randint(0, yprs_with_id_td.shape[0])
-            noise = yprs_with_id_td[
-                noise_start:noise_start+num_noise_frame, :]
-            sample_chs.append(noise)
+            # num_noise_frame = random.randint(6, 10)
+            # noise_start = random.randint(0, yprs_with_id_td.shape[0])
+            # noise = yprs_with_id_td[
+            #     noise_start:noise_start+num_noise_frame, :]
+            # sample_chs.append(noise)
 
         # concat each char sequence to word sequence
         x = np.vstack(sample_chs)

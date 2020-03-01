@@ -166,7 +166,7 @@ def main():
 
     def aug_head_tail(x, y):
         x, y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=10)
+            x, y, augment_prop=20)
         x = data_flatten.resample_dataset_list(x)
         x = np.array(x)
         return x, y
@@ -250,10 +250,10 @@ def main():
 
         print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
         print(f'        trainloss={trainloss} devloss={devloss}')
-        # if best_acc < devacc:
-        #     best_acc = devacc
-        torch.save(net.state_dict(), "../saved_model/rnn_final/" +
-                   "rnn_final_" + filename + ".pth")
+        if best_acc < devacc:
+            best_acc = devacc
+            torch.save(net.state_dict(), "../saved_model/rnn_final/" +
+                       "rnn_final_" + filename + ".pth")
 
     print('Finished Training', 'Best Dev Acc', best_acc)
 
