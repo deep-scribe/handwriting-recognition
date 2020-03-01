@@ -226,7 +226,7 @@ def main():
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.005)
 
     hist = defaultdict(list)
-    best_acc = 0
+    best_loss = 1000
     for epoch in range(200):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
@@ -257,12 +257,12 @@ def main():
 
         print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
         print(f'        trainloss={trainloss} devloss={devloss}')
-        if best_acc < devacc:
-            best_acc = devacc
+        if best_loss > devloss:
+            best_loss = devloss
             torch.save(net.state_dict(), "../saved_model/rnn_final/" +
                        "rnn_final_" + filename + ".pth")
 
-    print('Finished Training', 'Best Dev Acc', best_acc)
+    print('Finished Training', 'Best Dev Loss', best_loss)
 
     net.load_state_dict(torch.load("../saved_model/rnn_final/" +
                                    "rnn_final_" + filename + ".pth"))
