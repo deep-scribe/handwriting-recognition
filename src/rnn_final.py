@@ -256,7 +256,7 @@ def main():
     testacc, testloss
     hist['testacc'] = testacc
     hist['testloss'] = testloss
-    print(f'test loss={testloss} devloss={testacc}')
+    print(f'test loss={testloss} test acc={testacc}')
 
     with open('../output/rnn_final/rnn_final_' + filename + '.json', 'w') as f:
         json.dump(hist, f)
