@@ -12,7 +12,8 @@ from sklearn.model_selection import train_test_split
 VERIFIED_SUBJECTS = [
     # 'kevin',
     # 'russell',
-    'kevin_tip_first', 'kevin_tip_second'
+    'kevin_tip_first', 'kevin_tip_second',
+    'kevin_tip_char_2'
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]

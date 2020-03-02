@@ -172,7 +172,7 @@ def main():
 
     def aug_head_tail(x, y):
         x, y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=10)
+            x, y, augment_prop=25)
         x = data_flatten.resample_dataset_list(x)
         x = np.array(x)
         return x, y
@@ -203,7 +203,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 512
+    BATCH_SIZE = 2000
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
