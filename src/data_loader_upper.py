@@ -45,7 +45,7 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, keep_idx_and
     return allxs, allys
 
 
-DEV_PROP = 0.05
+DEV_PROP = 0.1
 TRAIN_PROP = 0.01
 
 
