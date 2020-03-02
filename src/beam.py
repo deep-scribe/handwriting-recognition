@@ -67,7 +67,7 @@ def partial_trajectory_search(trajectory_dict, candidate_dict, k, seg_begin, max
     found_trajs = []
 
     for seg_end in range(
-        seg_begin+max(int(max_seg_bound / 20), 1),
+        seg_begin+1,
         max_seg_bound+1
     ):
         candidates = candidate_dict[(seg_begin, seg_end)]
