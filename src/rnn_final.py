@@ -162,29 +162,28 @@ def main():
 
     if experiment_type == "subject":
         trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
-            resampled=True, flatten=False, keep_idx_and_td=True)
+            resampled=False, flatten=False, keep_idx_and_td=True)
     else:
         trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-            resampled=True, flatten=False, keep_idx_and_td=True)
+            resampled=False, flatten=False, keep_idx_and_td=True)
 
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
-    # def aug_head_tail(x, y):
-    #     x, y = data_augmentation.augment_head_tail_noise(
-    #         x, y, augment_prop=4)
-    #     x = data_flatten.resample_dataset_list(x)
-    #     x = np.array(x)
-    #     return x, y
+    def aug_head_tail(x, y):
+        x, y = data_augmentation.augment_head_tail_noise(
+            x, y, augment_prop=10)
+        x = data_flatten.resample_dataset_list(x)
+        x = np.array(x)
+        return x, y
 
-    # trainx, trainy = aug_head_tail(trainx, trainy)
-    # print(trainx.shape)
-    # devx, devy = aug_head_tail(devx, devy)
-    # testx, testy = aug_head_tail(testx, testy)
+    trainx, trainy = aug_head_tail(trainx, trainy)
+    devx, devy = aug_head_tail(devx, devy)
+    testx, testy = aug_head_tail(testx, testy)
 
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=20,
+            trainx, trainy, augment_prop=5,
             is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
