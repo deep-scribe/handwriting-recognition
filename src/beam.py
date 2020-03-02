@@ -82,9 +82,7 @@ def partial_trajectory_search(trajectory_dict, candidate_dict, k, seg_begin, max
                 combined_trajectory = [this_candidate] + later_trajectory[:]
                 all_prob_list = [this_prob] + \
                     [prob for _, _, _, prob in later_trajectory]
-                avg_prob = 1
-                for p in all_prob_list:
-                    avg_prob = avg_prob * p
+                avg_prob = sum(all_prob_list) / len(all_prob_list)
                 found_trajs.append((avg_prob, combined_trajectory))
 
     # keep the top k candidate for update trajectory_dict
