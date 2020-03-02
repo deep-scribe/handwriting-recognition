@@ -26,7 +26,7 @@ void setup() {
    buffer = new StringBuilder();
    
    // use "-1" if you wish to start with calibration, else enter corresponding letter's number
-   char_counter = 10;
+   char_counter = -1;
 }
 
 void draw() {

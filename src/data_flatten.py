@@ -196,6 +196,75 @@ def resample_dataset(data, is_flatten_ypr=True, feature_num=100):
     return resampled_output
 
 
+def example_words():
+    '''
+    In terminal, run {python data_flatten.py "flat_ypr_testdata"}
+    '''
+    if len(sys.argv) != 2:
+        print('Usage: python data_flatten.py <subject_path>')
+        quit()
+
+    subject_path = sys.argv[1]
+
+    loaded_dataset = load_data_dict_from_file(
+        subject_path, calibrate=True, verbose=True)
+    resampled_dataset = resample_dataset(
+    loaded_dataset, is_flatten_ypr=False, feature_num=500)
+
+    print("\nSanity check for Word Example, ypr data is NOT flattened...")
+    # the shape of should be (20, 100, 3)
+    assert(resampled_dataset['exams'].shape == (3, 500, 3))
+    print("shape word exams:", resampled_dataset['exams'].shape)
+
+    # peek one data sequence from letter m, should be ypr in 100 rows
+    assert(resampled_dataset['age'][1].shape == (500, 3))
+    print("one data sequence from word age:", resampled_dataset['age'][1].shape)
+
+    # peek first three ypr from letter o
+    print("first three ypr from word cabin:",
+          resampled_dataset['cabin'][1][0].shape)
+
+    print("\ndone.")
+
+
+    color_red = '#980000'
+    color_blue = '#003262'
+
+    for key in loaded_dataset:
+
+        plt.subplot(2, 1, 1)
+        plt.plot(resampled_dataset[key][0].T[1],
+                 label='Resampled', color=color_red)
+        plt.xlim(-10, 510)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
+        plt.legend(loc="upper right")
+
+
+        plt.subplot(2, 1, 2)
+        plt.plot(resampled_dataset[key][1].T[1],
+                 label='Resampled', color=color_red)
+        plt.xlim(-10, 510)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
+        plt.legend(loc="upper right")
+        # plt.subplot(2, 2, 3)
+        # plt.plot(resampled_dataset[key][2].T[1],
+        #          label='Resampled', color=color_red)
+        # plt.legend(loc="upper right")
+        # plt.subplot(2, 2, 4)
+        # plt.plot(loaded_dataset[key][0].T[1],
+        #          label='Original', color=color_blue)
+        # plt.legend(loc="upper right")
+
+        sub_title = 'Word ' + key + '. Pitch data'
+        plt.suptitle(sub_title)
+
+        file_name = 'flatten_vis_word/' + key + ".png"
+        plt.savefig(file_name, dpi=200)
+        plt.clf()
+
+
 def example():
     '''
     In terminal, run {python data_flatten.py "flat_ypr_testdata"}
@@ -225,7 +294,7 @@ def example():
 
     # peek first three ypr from letter z
     print("first three ypr from letter z:",
-          flattened_dataset['z'][18][:3].shape)
+          flattened_dataset['z'][8][:3].shape)
 
 # Example 2:
 # If you only want to resample but don't flatten the data
@@ -244,7 +313,7 @@ def example():
 
     # peek first three ypr from letter o
     print("first three ypr from letter o:",
-          resampled_dataset['o'][18][0].shape)
+          resampled_dataset['o'][8][0].shape)
 
     print("\ndone.")
 
@@ -255,47 +324,65 @@ def example():
     color_blue = '#003262'
 
     for key in loaded_dataset:
-        plt.subplot(2, 2, 1)
-        plt.plot(loaded_dataset[key][2].T[3],
-                 label='Original', color=color_blue)
-        plt.legend(loc="upper right")
-        plt.ylabel('Degrees')
-        plt.subplot(2, 2, 2)
-        plt.plot(loaded_dataset[key][7].T[3],
-                 label='Original', color=color_blue)
-        plt.legend(loc="upper right")
-        plt.xlim(0, 200)
-        plt.ylim(-40, 60)
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.subplot(2, 2, 3)
-        plt.plot(loaded_dataset[key][12].T[3],
-                 label='Original', color=color_blue)
-        plt.legend(loc="upper right")
-        plt.ylabel('Degrees')
-        plt.subplot(2, 2, 4)
-        plt.plot(loaded_dataset[key][18].T[3],
-                 label='Original', color=color_blue)
-        plt.legend(loc="upper right")
+        # plt.subplot(2, 2, 1)
+        # plt.plot(loaded_dataset[key][2].T[3],
+        #          label='Original', color=color_blue)
+        # plt.legend(loc="upper right")
+        # plt.ylabel('Degrees')
+        # plt.subplot(2, 2, 2)
+        # plt.plot(loaded_dataset[key][7].T[3],
+        #          label='Original', color=color_blue)
+        # plt.legend(loc="upper right")
+        # plt.ylabel('Degrees')
+        # # plt.xlim(0, 200)
+        # # plt.ylim(-40, 60)
+        # # plt.gca().set_aspect('equal', adjustable='box')
+        # plt.subplot(2, 2, 3)
+        # plt.plot(loaded_dataset[key][4].T[3],
+        #          label='Original', color=color_blue)
+        # plt.legend(loc="upper right")
+        # plt.ylabel('Degrees')
+        # plt.subplot(2, 2, 4)
+        # plt.plot(loaded_dataset[key][8].T[3],
+        #          label='Original', color=color_blue)
+        # plt.legend(loc="upper right")
 
         plt.subplot(2, 2, 1)
         plt.plot(resampled_dataset[key][2].T[1],
                  label='Resampled', color=color_red)
-        plt.legend(loc="upper right")
-        plt.subplot(2, 2, 2)
-        plt.plot(resampled_dataset[key][7].T[1],
-                 label='Resampled', color=color_red)
-        plt.xlim(0, 200)
+        plt.xlim(-10, 110)
         plt.ylim(-40, 60)
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
+        
+
+        plt.subplot(2, 2, 2)
+        plt.plot(resampled_dataset[key][7].T[1],
+                 label='Resampled', color=color_red)
+        plt.xlim(-10, 110)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
+        plt.legend(loc="upper right")
+
+
         plt.subplot(2, 2, 3)
-        plt.plot(resampled_dataset[key][12].T[1],
+        plt.plot(resampled_dataset[key][4].T[1],
                  label='Resampled', color=color_red)
+        plt.xlim(-10, 110)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
+
+
         plt.subplot(2, 2, 4)
-        plt.plot(resampled_dataset[key][18].T[1],
+        plt.plot(resampled_dataset[key][8].T[1],
                  label='Resampled', color=color_red)
+        plt.xlim(-10, 110)
+        plt.ylim(-40, 60)
+        plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
+
+
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)
 
@@ -305,4 +392,5 @@ def example():
 
 
 if __name__ == "__main__":
-    example()
+    # example()
+    example_words()
