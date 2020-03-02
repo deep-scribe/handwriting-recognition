@@ -151,7 +151,7 @@ def get_prob(net, input):
     with torch.no_grad():
         logit = net(input.float())
         prob = F.log_softmax(logit, dim=-1)
-    return prob
+    return logit
 
 
 def main():

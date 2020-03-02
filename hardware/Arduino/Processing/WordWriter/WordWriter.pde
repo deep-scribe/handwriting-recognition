@@ -24,7 +24,7 @@ String[] words_20 = new String[]{
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "kevin_tip";
+String FOLDER_NAME = "kevin_tip_2";
 String[] word_list = words_20.clone();
 
 boolean start_from_first_word = true;
