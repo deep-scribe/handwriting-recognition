@@ -196,7 +196,17 @@ def resample_dataset(data, is_flatten_ypr=True, feature_num=100):
     return resampled_output
 
 
-def example_words():
+def resample_dataset_list(xs, is_flatten_ypr=False, feature_num=100):
+    resampled_xs = []
+    for x in xs:
+        resampled_xs.append(
+            resample_sequence(data_sequence=x, is_flatten_ypr=is_flatten_ypr,
+                              feature_num=feature_num)
+        )
+    return resampled_xs
+
+
+def visualization_example_words():
     '''
     In terminal, run {python data_flatten.py "flat_ypr_testdata"}
     '''
@@ -265,7 +275,7 @@ def example_words():
         plt.clf()
 
 
-def example():
+def visualization_example():
     '''
     In terminal, run {python data_flatten.py "flat_ypr_testdata"}
     '''
@@ -392,5 +402,5 @@ def example():
 
 
 if __name__ == "__main__":
-    # example()
-    example_words()
+    # visualization_example()
+    visualization_example_words()

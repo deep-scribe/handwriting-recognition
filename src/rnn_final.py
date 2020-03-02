@@ -11,6 +11,8 @@ from collections import defaultdict
 import numpy as np
 import sys
 from torch.nn.utils.rnn import pad_sequence
+import data_augmentation
+import data_flatten
 
 # cell 1
 
@@ -53,7 +55,7 @@ def pad_all_x(trainx, devx, testx):
 #     return pad_y(trainy), pad_y(devy), pad_y(testy)
 
 
-def acc(data_loader):
+def acc(net, data_loader):
     correct = 0
     total = 0
     with torch.no_grad():
@@ -105,21 +107,27 @@ class Net(nn.Module):
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
-                            batch_first=True, bidirectional=False)
-        self.dropout = nn.Dropout(0.1)
-        self.fc = nn.Linear(hidden_dim, 26, bias=True)
+                            batch_first=True, bidirectional=True)
+        # self.dropout = nn.Dropout(0.1)
+        self.fc = nn.Linear(hidden_dim*2, 800, bias=True)
+        self.fc2 = nn.Linear(800, 500, bias=True)
+        self.fc3 = nn.Linear(500, 26, bias=True)
 
     def forward(self, x):
-        init_h = torch.randn(self.n_layers, x.shape[0], self.hidden_dim)
-        init_c = torch.randn(self.n_layers, x.shape[0], self.hidden_dim)
+        init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
+        init_c = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
         if torch.cuda.is_available():
             init_h = init_h.cuda()
             init_c = init_c.cuda()
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (init_h, init_c))
-        out = self.dropout(out)
+        # out = self.dropout(out)
         # print("inter: ", out.shape)
         out = self.fc(out[:, -1, :])
+        out = torch.nn.functional.relu(out)
+        out = self.fc2(out)
+        out = torch.nn.functional.relu(out)
+        out = self.fc3(out)
         # print("out: ", out.shape)
         return out
 
@@ -133,6 +141,7 @@ def get_net(checkpoint_path):
             checkpoint_path, map_location=torch.device('cpu')))
     return net
 
+
 def get_prob(net, input):
     if torch.cuda.is_available():
         input = input.cuda()
@@ -141,7 +150,7 @@ def get_prob(net, input):
     net.eval()
     with torch.no_grad():
         logit = net(input.float())
-        prob = F.log_softmax(logit, dim = -1)
+        prob = F.log_softmax(logit, dim=-1)
     return prob
 
 
@@ -152,29 +161,35 @@ def main():
     filename = experiment_type + '_' + resampled + '_' + trial
 
     if experiment_type == "subject":
-        if resampled == "resampled":
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
-                resampled=True, flatten=False)
-        else:
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
-                resampled=False, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
+            resampled=True, flatten=False, keep_idx_and_td=True)
     else:
-        if resampled == "resampled":
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-                resampled=True, flatten=False)
-        else:
-            trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-                resampled=False, flatten=False)
+        trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
+            resampled=True, flatten=False, keep_idx_and_td=True)
 
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
+
+    def aug_head_tail(x, y):
+        x, y = data_augmentation.augment_head_tail_noise(
+            x, y, augment_prop=10)
+        x = data_flatten.resample_dataset_list(x)
+        x = np.array(x)
+        return x, y
+
+    # trainx, trainy = aug_head_tail(trainx, trainy)
+    # print(trainx.shape)
+    # devx, devy = aug_head_tail(devx, devy)
+    # testx, testy = aug_head_tail(testx, testy)
+
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=3, is_flattened=False, resampled=True)
+            trainx, trainy, augment_prop=10,
+            is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=3, is_flattened=False, resampled=False)
+            trainx, trainy, augment_prop=1, is_flattened=False, resampled=False)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
@@ -189,7 +204,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 128
+    BATCH_SIZE = 512
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
@@ -206,13 +221,13 @@ def main():
         net.cuda()
 
     # cell 8
-    criterion = nn.CrossEntropyLoss(ignore_index=0, size_average=True)
+    criterion = nn.CrossEntropyLoss(size_average=True)
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
-    optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
+    optimizer = optim.AdamW(net.parameters(), weight_decay=0.005)
 
     hist = defaultdict(list)
-    best_acc = 0
-    for epoch in range(100):  # loop over the dataset multiple times
+    best_loss = 1000
+    for epoch in range(200):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
             print(f'{i if i%20==0 else ""}.', end='')
@@ -242,15 +257,15 @@ def main():
 
         print(f'Epoch {epoch} trainacc={trainacc} devacc={devacc}')
         print(f'        trainloss={trainloss} devloss={devloss}')
-        if best_acc < devacc:
-            best_acc = devacc
+        if best_loss > devloss:
+            best_loss = devloss
             torch.save(net.state_dict(), "../saved_model/rnn_final/" +
                        "rnn_final_" + filename + ".pth")
 
-    print('Finished Training', 'Best Dev Acc', best_acc)
+    print('Finished Training', 'Best Dev Loss', best_loss)
 
     net.load_state_dict(torch.load("../saved_model/rnn_final/" +
-               "rnn_final_" + filename + ".pth"))
+                                   "rnn_final_" + filename + ".pth"))
 
     testacc, testloss = acc_loss(net, testloader, nn.CrossEntropyLoss())
     testacc, testloss

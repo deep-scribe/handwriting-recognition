@@ -1,4 +1,5 @@
 import beam
+import rnn_final
 import rnn_bilstm
 import data_utils
 import segmentation
@@ -7,8 +8,12 @@ import data_flatten
 import numpy as np
 import torch
 from pprint import pprint
+import data_loader
+import cnn
+import random
 
-MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
+# MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
+MODEL_WEIGHT_PATH = '../saved_model/rnn_final/rnn_final_random_resampled_10.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -37,55 +42,108 @@ next step:
 
 
 if __name__ == "__main__":
-    TARGET_WORDS = [
-        'ace', 'cafe', 'egg', 'fax', 'leg', 'mac', 'omega',
-        'safe', 'usage', 'wage', 'age', 'awe', 'axe', 'coax',
-        'exams', 'fem', 'focus', 'same', 'sauce', 'sex',
-    ]
 
-    model = rnn_bilstm.get_net(MODEL_WEIGHT_PATH)
+    model = rnn_final.get_net(MODEL_WEIGHT_PATH)
 
-    char_df = data_utils.load_subject('../data/albert')
-    calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
+    # import data_loader_upper
+    # import data_loader
+    # xs, ys = data_loader_upper.verified_subjects_calibrated_yprs(
+    #     flatten=False)
+    # xs = torch.tensor(xs)
+    # xs = torch.transpose(xs, -1, -2)
+    # print(xs.shape)
+    # pred = rnn_final.get_prob(model, xs)
+    # pred = np.argmax(pred, axis=1)
+    # wrong = np.array(pred) != np.array(ys)
+    # print(wrong)
+    # print(np.sum(wrong))
 
-    for target_word in TARGET_WORDS:
-        print('-'*80)
-        print(f'checking word {target_word}')
-        print('-'*80)
-        sample_chs = []
-        for ch in target_word:
-            sample_df = data_utils.get_random_sample_by_label(char_df, ch)
-            sample_yprs = sample_df[data_utils.YPRS_COLUMNS].to_numpy()
-            # calibrate
-            sample_yprs = sample_yprs - calibration_yprs - sample_yprs[0]
+    word_df = data_utils.load_subject('../data_words/russell')
+    wordxs, wordys = data_utils.get_calibrated_yprs_samples(
+        word_df, resampled=False, flatten=False,
+        is_word_samples=True, keep_idx_and_td=True
+    )
 
-            # check each char predicted is correct
-            # resample to test forward
-            sample_id_col = sample_df[data_utils.ID_COLUMN].to_numpy().reshape(
-                (-1, 1))
-            sample_td_col = sample_df[data_utils.TIME_DELTA_COLUMN].to_numpy().reshape(
-                (-1, 1))
-            yprs_with_id_td = np.hstack(
-                (sample_id_col, sample_td_col, sample_yprs))
-            sample_yprs = data_flatten.resample_sequence(
-                yprs_with_id_td,
-                is_flatten_ypr=False,
-                feature_num=100
-            )
-            yhat = rnn_bilstm.get_prob(model, torch.tensor([sample_yprs.T]))
-            pred = chr(97+np.argmax(yhat))
-            print(f'expect [{ch}] predict [{pred}]')
-
-            sample_chs.append(yprs_with_id_td)
-
-        # concat each char sequence to word sequence
-        x = np.vstack(sample_chs)
-
-        NUM_PART = 30
+    for idx in range(len(wordys)):
+        x = wordxs[idx]
+        y = wordys[idx]
+        # if 'a' in y or 'A' in y:
+        #     continue
+        NUM_PART = int(x.shape[0] / 8)
         trajs = word_search.word_search(x, NUM_PART, 10, model)
+        print(f'predicting {y}')
 
         for i, (likelihood, traj) in enumerate(trajs):
             word = ''
             for seg_begin, seg_end, pred, prob in traj:
                 word += chr(pred+97)
-            print(f'pred {i}:', word)
+            print(f', pred {i}:', word)
+
+    # TARGET_WORDS = [
+    #     'word',
+    #     'does',
+    #     'not',
+    #     'something',
+    #     'in',
+    #     'it',
+    #     'focus',
+    #     'another',
+    #     'word',
+    #     'function',
+    #     'short',
+    #     'kid',
+    #     'fem',
+    #     'sex'
+    # ]
+
+    # char_df = data_utils.load_subject('../data_upper/kevin')
+    # calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
+
+    # for target_word in TARGET_WORDS:
+    #     print('-'*80)
+    #     print(f'checking word {target_word}')
+    #     print('-'*80)
+    #     sample_chs = []
+    #     for i, ch in enumerate(target_word):
+    #         sample_df = data_utils.get_random_sample_by_label(char_df, ch)
+    #         sample_yprs = sample_df[data_utils.YPRS_COLUMNS].to_numpy()
+    #         # calibrate
+    #         sample_yprs = sample_yprs - calibration_yprs - sample_yprs[0]
+
+    #         # check each char predicted is correct
+    #         # resample to test forward
+    #         sample_id_col = sample_df[data_utils.ID_COLUMN].to_numpy().reshape(
+    #             (-1, 1))
+    #         sample_td_col = sample_df[data_utils.TIME_DELTA_COLUMN].to_numpy().reshape(
+    #             (-1, 1))
+    #         yprs_with_id_td = np.hstack(
+    #             (sample_id_col, sample_td_col, sample_yprs))
+    #         sample_yprs = data_flatten.resample_sequence(
+    #             yprs_with_id_td,
+    #             is_flatten_ypr=False,
+    #             feature_num=100
+    #         )
+    #         yhat = rnn_final.get_prob(model, torch.tensor([sample_yprs.T]))
+    #         pred = chr(97+np.argmax(yhat))
+    #         print(f'expect [{ch}] predict [{pred}]')
+
+    #         sample_chs.append(yprs_with_id_td)
+
+    #         # # insert noise
+    #         # num_noise_frame = random.randint(1, 10)
+    #         # noise_start = random.randint(0, yprs_with_id_td.shape[0])
+    #         # noise = yprs_with_id_td[
+    #         #     noise_start:noise_start+num_noise_frame, :]
+    #         # sample_chs.append(noise)
+
+    #     # concat each char sequence to word sequence
+    #     x = np.vstack(sample_chs)
+
+    #     NUM_PART = int(x.shape[0] / 10) + 5
+    #     trajs = word_search.word_search(x, NUM_PART, 10, model)
+
+    #     for i, (likelihood, traj) in enumerate(trajs):
+    #         word = ''
+    #         for seg_begin, seg_end, pred, prob in traj:
+    #             word += chr(pred+97)
+    #         print(f'pred {i}:', word)

@@ -53,7 +53,7 @@ def pad_all_x(trainx, devx, testx):
 #     return pad_y(trainy), pad_y(devy), pad_y(testy)
 
 
-def acc(data_loader):
+def acc(net, data_loader):
     correct = 0
     total = 0
     with torch.no_grad():
@@ -107,7 +107,9 @@ class Net(nn.Module):
         self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
                             batch_first=True, bidirectional=True)
         # self.dropout = nn.Dropout(0.1)
-        self.fc = nn.Linear(hidden_dim*2, 26, bias=True)
+        self.fc = nn.Linear(hidden_dim*2, 800, bias=True)
+        self.fc2 = nn.Linear(800, 500, bias=True)
+        self.fc3 = nn.Linear(500, 26, bias=True)
 
     def forward(self, x):
         init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
@@ -120,6 +122,10 @@ class Net(nn.Module):
         # out = self.dropout(out)
         # print("inter: ", out.shape)
         out = self.fc(out[:, -1, :])
+        out = torch.nn.functional.relu(out)
+        out = self.fc2(out)
+        out = torch.nn.functional.relu(out)
+        out = self.fc3(out)
         # print("out: ", out.shape)
         return out
 
@@ -190,7 +196,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 250
+    BATCH_SIZE = 500
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
@@ -207,7 +213,7 @@ def main():
         net.cuda()
 
     # cell 8
-    criterion = nn.CrossEntropyLoss(ignore_index=0, size_average=True)
+    criterion = nn.CrossEntropyLoss(size_average=True)
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
