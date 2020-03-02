@@ -138,7 +138,7 @@ def main():
 
     def aug_head_tail(x, y):
         x, y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=5)
+            x, y, augment_prop=10)
         x = data_flatten.resample_dataset_list(x)
         x = np.array(x)
         return x, y
@@ -151,7 +151,7 @@ def main():
         trainx, trainy, augment_prop=3,
         is_flattened=False, resampled=True)
 
-    BATCH_SIZE = 500
+    BATCH_SIZE = 800
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
