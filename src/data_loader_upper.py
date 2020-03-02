@@ -10,8 +10,9 @@ from sklearn.model_selection import train_test_split
 # modify this list to match dirs in ../data that contain
 # valid data, one subject per dir
 VERIFIED_SUBJECTS = [
-    'kevin',
-    'russell',
+    # 'kevin',
+    # 'russell',
+    'kevin_tip_first', 'kevin_tip_second'
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]

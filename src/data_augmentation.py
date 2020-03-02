@@ -97,7 +97,7 @@ def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5
     return sample_yprs
 
 
-def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.1):
+def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.05):
     '''
     x shape=(N,3)
     do this before shape augment
