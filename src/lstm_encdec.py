@@ -87,7 +87,7 @@ def get_prob(net, input):
 
 
 class LSTMencdec(nn.Module):
-    def __init__(self, n_channels, hidden_dim=500, n_layers=3, bidirectional=True):
+    def __init__(self, n_channels, hidden_dim=200, n_layers=3, bidirectional=True):
         super(LSTMencdec, self).__init__()
         self.n_channels = n_channels
         self.hidden_dim = hidden_dim
@@ -148,7 +148,7 @@ def main():
     # testx, testy = aug_head_tail(testx, testy)
 
     trainx, trainy = data_loader_upper.augment_train_set(
-        trainx, trainy, augment_prop=20,
+        trainx, trainy, augment_prop=5,
         is_flattened=False, resampled=True)
 
     BATCH_SIZE = 500
