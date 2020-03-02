@@ -134,21 +134,21 @@ def main():
     filename = '_' + trial
 
     trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-        resampled=True, flatten=False, keep_idx_and_td=False)
+        resampled=False, flatten=False, keep_idx_and_td=True)
 
-    # def aug_head_tail(x, y):
-    #     x, y = data_augmentation.augment_head_tail_noise(
-    #         x, y, augment_prop=1)
-    #     x = data_flatten.resample_dataset_list(x)
-    #     x = np.array(x)
-    #     return x, y
+    def aug_head_tail(x, y):
+        x, y = data_augmentation.augment_head_tail_noise(
+            x, y, augment_prop=5)
+        x = data_flatten.resample_dataset_list(x)
+        x = np.array(x)
+        return x, y
 
-    # trainx, trainy = aug_head_tail(trainx, trainy)
-    # devx, devy = aug_head_tail(devx, devy)
-    # testx, testy = aug_head_tail(testx, testy)
+    trainx, trainy = aug_head_tail(trainx, trainy)
+    devx, devy = aug_head_tail(devx, devy)
+    testx, testy = aug_head_tail(testx, testy)
 
     trainx, trainy = data_loader_upper.augment_train_set(
-        trainx, trainy, augment_prop=5,
+        trainx, trainy, augment_prop=3,
         is_flattened=False, resampled=True)
 
     BATCH_SIZE = 500
