@@ -98,7 +98,7 @@ class LSTMencdec(nn.Module):
             batch_first=True,
             bidirectional=bidirectional)
         self.fc = nn.Linear(hidden_dim*n_layers*self.num_dir*2, 200, bias=True)
-        self.fc2 = nn.Linear(200, 26, bias=True)
+        self.fc2 = nn.Linear(200, 27, bias=True)
 
     def forward(self, x):
         init_h = torch.randn(
@@ -142,13 +142,19 @@ def main():
 
     def aug_head_tail(x, y):
         aug_noise_x, aug_noise_y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=8)
+            x, y, augment_prop=12)
         trimmed_x, trimmed_y = data_augmentation.augment_trim_head_tail(
-            x, y, augment_prop=8)
+            x, y, augment_prop=12)
         x = np.append(x, aug_noise_x)
         y = np.append(y, aug_noise_y)
         x = np.append(x, trimmed_x)
         y = np.append(y, trimmed_y)
+
+        num_nonclass = len(x) // 26
+        nonclass_x, nonclass_y = data_augmentation.get_nonclass_samples(
+            x, num_nonclass)
+        x = np.append(x, nonclass_x)
+        y = np.append(y, nonclass_y)
 
         x = np.array(data_flatten.resample_dataset_list(x))
         return x, y
@@ -158,7 +164,7 @@ def main():
     testx, testy = aug_head_tail(testx, testy)
 
     trainx, trainy = data_loader_upper.augment_train_set(
-        trainx, trainy, augment_prop=3,
+        trainx, trainy, augment_prop=2,
         is_flattened=False, resampled=True)
 
     BATCH_SIZE = 800

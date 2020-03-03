@@ -11,6 +11,7 @@ def top_k_logit(logit, k):
     assert k > 0
     assert k <= logit.shape[0]
     assert len(logit.shape) == 1
+    logit = logit[:-1]  # do not consider nonclass
     sorted_class_idx = list(np.argsort(logit))[::-1]
     top_k_class_idx = sorted_class_idx[:k]
     return [(class_idx, logit[class_idx]) for class_idx in top_k_class_idx]

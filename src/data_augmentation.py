@@ -160,6 +160,31 @@ def augment_trim_head_tail(xs, ys, augment_prop, trim_prop=0.1):
     return np.array(aug_xs), np.array(aug_ys)
 
 
+def get_nonclass_samples(xs, count, nonclass_idx=26):
+    lenxs = len(xs)
+    nonclass_xs = []
+
+    # nonclass by taking small partial of a sample
+    for _ in range(count // 2):
+        x = xs[np.random.choice(lenxs)]
+        lenx = len(x)
+        num_frame = np.random.choice(lenx//4) + 2
+        begin_frame = np.random.choice(lenx - num_frame - 1)
+        partx = x[begin_frame: begin_frame + num_frame, :]
+        nonclass_xs.append(partx)
+
+    # nonclass by concating 2-4 chars
+    for _ in range(count // 2):
+        cat = []
+        n = np.random.randint(2, 5)
+        for _ in range(n):
+            cat.append(xs[np.random.choice(lenxs)])
+        nonclass_x = np.vstack(cat)
+        nonclass_xs.append(nonclass_x)
+
+    return np.array(nonclass_xs), np.array([nonclass_idx for _ in range(len(nonclass_xs))])
+
+
 def dump_augmented_yprs_pngs(subject_path):
     '''
     subject_path: string of a path containing all csv recorded by a subject

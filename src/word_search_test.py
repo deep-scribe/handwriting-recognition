@@ -14,7 +14,7 @@ import random
 import lstm_encdec
 
 # MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
-MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__4.pth'
+MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__5_unidir_hncn_cat.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -70,14 +70,12 @@ if __name__ == "__main__":
             print(f', pred {i}: likelihood {likelihood}', word)
 
     TARGET_WORDS = [
-        # 'exams',
-        # 'cabin',
-        # 'axe',
-        # 'awe',
-        # 'focus',
-        # 'kanji',
-        'something',
-        'internet',
+        'exams',
+        'cabin',
+        'axe',
+        'awe',
+        'focus',
+        'kanji',
         'honest',
     ]
 
