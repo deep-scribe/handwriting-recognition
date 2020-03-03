@@ -14,7 +14,7 @@ import random
 import lstm_encdec
 
 # MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
-MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__6_nonclass.pth'
+MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__7.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # model = rnn_final.get_net(MODEL_WEIGHT_PATH)
     model = lstm_encdec.get_net(MODEL_WEIGHT_PATH)
 
-    word_df = data_utils.load_subject('../data_words/kevin_tip')
+    word_df = data_utils.load_subject('../data_words/kevin_mar3')
     # word_df = data_utils.load_subject('../data_words/kevin_t_words')
     wordxs, wordys = data_utils.get_calibrated_yprs_samples(
         word_df, resampled=False, flatten=False,
