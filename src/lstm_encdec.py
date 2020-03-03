@@ -140,7 +140,7 @@ def main():
     def aug_head_tail(x, y):
         aug_noise_x, aug_noise_y = data_augmentation.augment_head_tail_noise(
             x, y, augment_prop=8)
-        trimmed_x, trimmed_y = data_augmentation.augment_head_tail_noise(
+        trimmed_x, trimmed_y = data_augmentation.augment_trim_head_tail(
             x, y, augment_prop=8)
         x = np.append(x, aug_noise_x)
         y = np.append(y, aug_noise_y)

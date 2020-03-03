@@ -144,14 +144,17 @@ def augment_trim_head_tail(xs, ys, augment_prop, trim_prop=0.1):
 
     for _ in range(augment_prop):
         for i, x in enumerate(xs):
+            nframes = len(x)
             y = ys[i]
             aug_ys.append(y)
 
-            front_trim_frame_num = int(np.random.random() * trim_prop)
-            back_trim_frame_num = int(np.random.random() * trim_prop)
+            front_trim_frame_num = int(
+                np.random.random() * trim_prop * nframes)
+            back_trim_frame_num = int(np.random.random() * trim_prop * nframes)
 
-            augmented_x = x[front_trim_frame_num:back_trim_frame_num, :]
+            augmented_x = x[front_trim_frame_num:-back_trim_frame_num, :]
             aug_xs.append(augmented_x)
+
     return np.array(aug_xs), np.array(aug_ys)
 
 
