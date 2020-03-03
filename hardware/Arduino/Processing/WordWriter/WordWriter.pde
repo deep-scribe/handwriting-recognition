@@ -18,7 +18,7 @@ String[] words_20 = new String[]{
 "EXAMS", "FOCUS", "SAUCE", "COAX", "SAME", "SEX", "AWE", "FEM", "AXE", "AGE", "KANJI", "FLICK", "BEACH", "CABIN", "HACK", "LACK", "KAMI", "KID" , "BAN", "BAD"
 };
 
-String[] az = new String{
+String[] az = new String[]{
   "QUICK", "BROWN", "FOX", "JUMPS", "OVER", "LAZY", "DOG"
 };
 

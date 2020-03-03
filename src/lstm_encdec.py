@@ -142,15 +142,15 @@ def main():
 
     def aug_head_tail(x, y):
         aug_noise_x, aug_noise_y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=12)
+            x, y, augment_prop=15)
         trimmed_x, trimmed_y = data_augmentation.augment_trim_head_tail(
-            x, y, augment_prop=12)
+            x, y, augment_prop=15)
         x = np.append(x, aug_noise_x)
         y = np.append(y, aug_noise_y)
         x = np.append(x, trimmed_x)
         y = np.append(y, trimmed_y)
 
-        num_nonclass = len(x) // 26
+        num_nonclass = len(x) // 20
         nonclass_x, nonclass_y = data_augmentation.get_nonclass_samples(
             x, num_nonclass)
         x = np.append(x, nonclass_x)
@@ -164,10 +164,10 @@ def main():
     testx, testy = aug_head_tail(testx, testy)
 
     trainx, trainy = data_loader_upper.augment_train_set(
-        trainx, trainy, augment_prop=2,
+        trainx, trainy, augment_prop=3,
         is_flattened=False, resampled=True)
 
-    BATCH_SIZE = 800
+    BATCH_SIZE = 1400
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
