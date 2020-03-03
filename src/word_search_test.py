@@ -47,8 +47,8 @@ if __name__ == "__main__":
     # model = rnn_final.get_net(MODEL_WEIGHT_PATH)
     model = lstm_encdec.get_net(MODEL_WEIGHT_PATH)
 
-    word_df = data_utils.load_subject('../data_words/kevin_mar3')
-    # word_df = data_utils.load_subject('../data_words/kevin_t_words')
+    # word_df = data_utils.load_subject('../data_words/kevin_mar3')
+    word_df = data_utils.load_subject('../data_words/kevin_tip')
     wordxs, wordys = data_utils.get_calibrated_yprs_samples(
         word_df, resampled=False, flatten=False,
         is_word_samples=True, keep_idx_and_td=True
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         x = wordxs[idx]
         y = wordys[idx]
 
-        NUM_PART = len(x) // 10 + 5
+        NUM_PART = len(x) // 12
         print(NUM_PART)
         trajs = word_search.word_search(x, NUM_PART, 10, model)
         print(f'predicting {y}')
