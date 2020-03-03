@@ -14,7 +14,7 @@ import random
 import lstm_encdec
 
 # MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
-MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__3.pth'
+MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__4.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
@@ -83,12 +83,15 @@ if __name__ == "__main__":
     #         print(f', pred {i}: likelihood {likelihood}', word)
 
     TARGET_WORDS = [
-        'exams',
-        'cabin',
-        'axe',
-        'awe',
-        'focus',
-        'kanji'
+        # 'exams',
+        # 'cabin',
+        # 'axe',
+        # 'awe',
+        # 'focus',
+        # 'kanji',
+        'something',
+        'internet',
+        'honest',
     ]
 
     char_df = data_utils.load_subject('../data_upper/kevin_tip_char_2')
@@ -125,7 +128,7 @@ if __name__ == "__main__":
             sample_chs.append(yprs_with_id_td)
 
             # insert noise
-            num_noise_frame = random.randint(8, 10)
+            num_noise_frame = random.randint(4, 10)
             noise_start = random.randint(0, yprs_with_id_td.shape[0])
             noise = yprs_with_id_td[
                 noise_start:noise_start+num_noise_frame, :]
