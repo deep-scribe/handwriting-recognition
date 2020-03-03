@@ -14,7 +14,7 @@ import random
 import lstm_encdec
 
 # MODEL_WEIGHT_PATH = '../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth'
-MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__5_unidir_hncn_cat.pth'
+MODEL_WEIGHT_PATH = '../saved_model/lstm_encdec/lstm_encdec__6_nonclass.pth'
 
 '''
 Test the feasibility to use trajectory_search to reconstruct word
