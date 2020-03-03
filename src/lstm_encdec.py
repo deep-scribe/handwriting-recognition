@@ -87,7 +87,7 @@ def get_prob(net, input):
 
 
 class LSTMencdec(nn.Module):
-    def __init__(self, n_channels, hidden_dim=200, n_layers=3, bidirectional=True):
+    def __init__(self, n_channels, hidden_dim=200, n_layers=3, bidirectional=False):
         super(LSTMencdec, self).__init__()
         self.n_channels = n_channels
         self.hidden_dim = hidden_dim
@@ -97,7 +97,7 @@ class LSTMencdec(nn.Module):
             n_channels, hidden_dim, n_layers,
             batch_first=True,
             bidirectional=bidirectional)
-        self.fc = nn.Linear(hidden_dim*n_layers*self.num_dir, 200, bias=True)
+        self.fc = nn.Linear(hidden_dim*n_layers*self.num_dir*2, 200, bias=True)
         self.fc2 = nn.Linear(200, 26, bias=True)
 
     def forward(self, x):
@@ -120,9 +120,12 @@ class LSTMencdec(nn.Module):
         c_n = c_n.permute(1, 0, 2)
         h_n = h_n.permute(1, 0, 2)
         # c_n (batch, num_layers * num_directions, hidden_size)
-        c_n_flat = c_n.reshape(-1, self.n_layers*2*self.hidden_dim)
+        c_n_flat = c_n.reshape(-1, self.n_layers*self.num_dir*self.hidden_dim)
+        h_n_flat = h_n.reshape(-1, self.n_layers*self.num_dir*self.hidden_dim)
         # c_n (batch, num_layers * num_directions * hidden_size)
-        out = self.fc(c_n_flat)
+        combined = torch.cat([c_n_flat, h_n_flat], dim=1)
+
+        out = self.fc(combined)
         out = torch.nn.functional.relu(out)
         out = self.fc2(out)
         return out
