@@ -18,14 +18,17 @@ String[] words_20 = new String[]{
 "EXAMS", "FOCUS", "SAUCE", "COAX", "SAME", "SEX", "AWE", "FEM", "AXE", "AGE", "KANJI", "FLICK", "BEACH", "CABIN", "HACK", "LACK", "KAMI", "KID" , "BAN", "BAD"
 };
 
+String[] az = new String{
+  "QUICK", "BROWN", "FOX", "JUMPS", "OVER", "LAZY", "DOG"
+};
 
 
 /* ------------------------------ */
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "kevin_tip_2";
-String[] word_list = words_20.clone();
+String FOLDER_NAME = "kevin_mar3";
+String[] word_list = az.clone();
 
 boolean start_from_first_word = true;
 String word_to_start_at = "NO_WORD_DEFINED";
