@@ -130,7 +130,29 @@ def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.10):
             augmented_x = np.vstack([front_noise, x, back_noise])
             aug_xs.append(augmented_x)
 
-    return np.append(xs, np.array(aug_xs)), np.append(ys, np.array(aug_ys))
+    return np.array(aug_xs), np.array(aug_ys)
+
+
+def augment_trim_head_tail(xs, ys, augment_prop, trim_prop=0.1):
+    '''
+    x shape=(N,3)
+    do this before shape augment
+    '''
+
+    aug_xs = []
+    aug_ys = []
+
+    for _ in range(augment_prop):
+        for i, x in enumerate(xs):
+            y = ys[i]
+            aug_ys.append(y)
+
+            front_trim_frame_num = int(np.random.random() * trim_prop)
+            back_trim_frame_num = int(np.random.random() * trim_prop)
+
+            augmented_x = x[front_trim_frame_num:back_trim_frame_num, :]
+            aug_xs.append(augmented_x)
+    return np.array(aug_xs), np.array(aug_ys)
 
 
 def dump_augmented_yprs_pngs(subject_path):

@@ -118,6 +118,7 @@ class LSTMencdec(nn.Module):
         output, (h_n, c_n) = self.lstm(x, (init_h, init_c))
         # c_n (num_layers * num_directions, batch, hidden_size)
         c_n = c_n.permute(1, 0, 2)
+        h_n = h_n.permute(1, 0, 2)
         # c_n (batch, num_layers * num_directions, hidden_size)
         c_n_flat = c_n.reshape(-1, self.n_layers*2*self.hidden_dim)
         # c_n (batch, num_layers * num_directions * hidden_size)
@@ -137,10 +138,16 @@ def main():
         resampled=False, flatten=False, keep_idx_and_td=True)
 
     def aug_head_tail(x, y):
-        x, y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=10)
-        x = data_flatten.resample_dataset_list(x)
-        x = np.array(x)
+        aug_noise_x, aug_noise_y = data_augmentation.augment_head_tail_noise(
+            x, y, augment_prop=8)
+        trimmed_x, trimmed_y = data_augmentation.augment_head_tail_noise(
+            x, y, augment_prop=8)
+        x = np.append(x, aug_noise_x)
+        y = np.append(y, aug_noise_y)
+        x = np.append(x, trimmed_x)
+        y = np.append(y, trimmed_y)
+
+        x = np.array(data_flatten.resample_dataset_list(x))
         return x, y
 
     trainx, trainy = aug_head_tail(trainx, trainy)
