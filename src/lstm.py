@@ -3,17 +3,14 @@ import torch
 import torch.nn as nn
 
 
-SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
-
-
-class LSTM_encoder_decoder_classifier(nn.Module):
+class LSTM_char_classifier(nn.Module):
     def __init__(
             self, n_channels,
             lstm_hidden_dim, lstm_n_layers,
             fc_hidden_dim, num_output,
             bidirectional, use_all_lstm_layer_state):
 
-        super(LSTM_encoder_decoder_classifier, self).__init__()
+        super(LSTM_char_classifier, self).__init__()
         self.n_channels = n_channels
         self.lstm_hidden_dim = lstm_hidden_dim
         self.lstm_n_layers = lstm_n_layers

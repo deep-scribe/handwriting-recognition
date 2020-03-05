@@ -8,10 +8,8 @@ import json
 from collections import defaultdict
 import numpy as np
 import sys
-from torch.nn.utils.rnn import pad_sequence
 import data_augmentation
 import data_flatten
-from torch.nn.utils.rnn import pack_sequence
 
 
 def get_dataloader(x, y, batch_size):
@@ -19,26 +17,6 @@ def get_dataloader(x, y, batch_size):
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, shuffle=True)
     return dataloader
-
-
-def acc(net, data_loader):
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for data in data_loader:
-            x, y = data
-            if torch.cuda.is_available():
-                x = x.cuda()
-                y = y.cuda()
-
-            outputs = net(x.float())
-            _, predicted = torch.max(outputs.data, 1)
-
-            w = torch.sum((predicted - y) != 0).item()
-            r = len(y) - w
-            correct += r
-            total += len(y)
-    return correct / total
 
 
 def acc_loss(net, data_loader, criterion):

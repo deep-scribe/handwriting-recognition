@@ -97,7 +97,41 @@ def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5
     return sample_yprs
 
 
-def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.10):
+def noise_stretch_rotate_augment(
+    train_x, train_y, augment_prop=1, is_already_flattened=True, resampled=True
+):
+    '''
+    use default data augmentation setting to append to the TRAIN_SET
+    augment_prop * len(train_set) number of samples
+    please augment TRAIN_SET only
+    return the augmented x and ys
+    '''
+    augmented_xs = []
+    augmented_ys = []
+
+    for p in range(augment_prop):
+        for i in range(train_x.shape[0]):
+            x = train_x[i]
+            y = train_y[i]
+
+            if is_already_flattened:
+                unflattened_x = x.reshape(int(x.shape[0] / 3), 3)
+            else:
+                unflattened_x = x
+            augmented_x = augment(unflattened_x)
+
+            if is_already_flattened:
+                augmented_xs.append(augmented_x.flatten())
+            else:
+                augmented_xs.append(augmented_x)
+            augmented_ys.append(y)
+    if resampled:
+        return np.vstack((train_x, np.array(augmented_xs))), np.append(train_y, np.array(augmented_ys))
+    else:
+        return np.append(train_x, augmented_xs), np.append(train_y, augmented_ys)
+
+
+def get_concat_augment(xs, ys, augment_prop, frame_prop=0.10):
     '''
     x shape=(N,3)
     do this before shape augment
@@ -117,10 +151,10 @@ def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.10):
             x_front_src = xs[np.random.choice(num_orig)]
             x_back_src = xs[np.random.choice(num_orig)]
 
-            front_noise_frame_prop = np.random.random() * noise_prop
+            front_noise_frame_prop = np.random.random() * frame_prop
             front_noise_frame_num = int(
                 front_noise_frame_prop * len(x_front_src))
-            back_noise_frame_prop = np.random.random() * noise_prop
+            back_noise_frame_prop = np.random.random() * frame_prop
             back_noise_frame_num = int(
                 back_noise_frame_prop * len(x_back_src))
 
@@ -133,7 +167,7 @@ def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.10):
     return np.array(aug_xs), np.array(aug_ys)
 
 
-def augment_trim_head_tail(xs, ys, augment_prop, trim_prop=0.1):
+def get_trim_augment(xs, ys, augment_prop, frame_prop=0.1):
     '''
     x shape=(N,3)
     do this before shape augment
@@ -149,8 +183,9 @@ def augment_trim_head_tail(xs, ys, augment_prop, trim_prop=0.1):
             aug_ys.append(y)
 
             front_trim_frame_num = int(
-                np.random.random() * trim_prop * nframes)
-            back_trim_frame_num = int(np.random.random() * trim_prop * nframes)
+                np.random.random() * frame_prop * nframes)
+            back_trim_frame_num = int(
+                np.random.random() * frame_prop * nframes)
 
             augmented_x = x[
                 front_trim_frame_num:

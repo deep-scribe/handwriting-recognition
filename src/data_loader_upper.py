@@ -46,98 +46,14 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, keep_idx_and
     return allxs, allys
 
 
-DEV_PROP = 0.1
-TRAIN_PROP = 0.01
-
-
-def load_all_classic_random_split(resampled=True, flatten=True, keep_idx_and_td=False):
+def load_all_classic_random_split(dev_prop, test_prop, resampled=True, flatten=True, keep_idx_and_td=False,):
     xs, ys = verified_subjects_calibrated_yprs(
         resampled=resampled, flatten=flatten, keep_idx_and_td=keep_idx_and_td)
     xs = np.array(xs)
     ys = np.array(ys)
-    print('Splitting out test set')
     trainx, devtestx, trainy, devtesty = train_test_split(
-        xs, ys, test_size=(DEV_PROP+TRAIN_PROP))
-    print('Splitting out dev and train set')
+        xs, ys, test_size=(dev_prop+test_prop))
     devx, testx, devy, testy = train_test_split(
-        devtestx, devtesty, test_size=(TRAIN_PROP/(TRAIN_PROP+DEV_PROP)))
+        devtestx, devtesty, test_size=(test_prop/(test_prop+dev_prop)))
 
     return trainx, devx, testx, trainy, devy, testy
-
-
-# use two subjects as test and two subjects as dev
-def load_all_subject_split(resampled=True, flatten=True):
-    shuffled_subjects = VERIFIED_SUBJECTS[:]
-    train_subjects = shuffled_subjects[:-4]
-    dev_subjects = shuffled_subjects[-4:-2]
-    test_subjects = shuffled_subjects[-2:]
-    print('train_subjects', train_subjects)
-    print('dev_subjects', dev_subjects)
-    print('test_subjects', test_subjects)
-
-    trainx, trainy = verified_subjects_calibrated_yprs(
-        resampled=resampled, flatten=flatten, subjects=train_subjects)
-    devx, devy = verified_subjects_calibrated_yprs(
-        resampled=resampled, flatten=flatten, subjects=dev_subjects)
-    testx, testy = verified_subjects_calibrated_yprs(
-        resampled=resampled, flatten=flatten, subjects=test_subjects)
-    trainx = np.array(trainx)
-    devx = np.array(devx)
-    testx = np.array(testx)
-    trainy = np.array(trainy)
-    devy = np.array(devy)
-    testy = np.array(testy)
-
-    return trainx, devx, testx, trainy, devy, testy
-
-
-def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True, resampled=True):
-    '''
-    use default data augmentation setting to append to the TRAIN_SET
-    augment_prop * len(train_set) number of samples
-    please augment TRAIN_SET only
-    return the augmented x and ys
-    '''
-    print(f'Augmenting TRAIN set with proportion {augment_prop}')
-
-    augmented_xs = []
-    augmented_ys = []
-
-    for p in range(augment_prop):
-        for i in range(train_x.shape[0]):
-            x = train_x[i]
-            y = train_y[i]
-
-            if is_flattened:
-                unflattened_x = x.reshape(int(x.shape[0] / 3), 3)
-            else:
-                unflattened_x = x
-            augmented_x = data_augmentation.augment(unflattened_x)
-
-            if is_flattened:
-                augmented_xs.append(augmented_x.flatten())
-            else:
-                augmented_xs.append(augmented_x)
-            augmented_ys.append(y)
-    if resampled:
-        return np.vstack((train_x, np.array(augmented_xs))), np.append(train_y, np.array(augmented_ys))
-    else:
-        return np.append(train_x, augmented_xs), np.append(train_y, augmented_ys)
-
-
-if __name__ == "__main__":
-    # xs, ys = verified_subjects_calibrated_yprs(resampled=True, flatten=False)
-    # print(xs[0])
-    # print(xs[0].shape)
-    trainx, devx, testx, trainy, devy, testy = load_all_classic_random_split(
-        flatten=False)
-    print(trainx.shape, devx.shape, testx.shape,
-          trainy.shape, devy.shape, testy.shape)
-
-    trainx, trainy = augment_train_set(trainx, trainy, is_flattened=False)
-    print(trainx.shape, devx.shape, testx.shape,
-          trainy.shape, devy.shape, testy.shape)
-
-    # trainx, devx, testx, trainy, devy, testy = load_all_subject_split()
-    # print(trainx.shape, devx.shape, testx.shape,
-    #       trainy.shape, devy.shape, testy.shape)
