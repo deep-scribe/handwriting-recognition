@@ -5,7 +5,10 @@ import java.lang.StringBuilder;
 
 //boolean USE_SUBJECT_NAME = true;
 String DIR_NAME = "letter_data";
+
 String SUBJECT_NAME = "Kelly";
+//String SUBJECT_NAME = "kevin_mar3";
+
 
 Serial mySerial;
 Date date;

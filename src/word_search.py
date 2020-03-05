@@ -5,7 +5,7 @@ import segmentation
 import numpy as np
 import torch
 import segmentation
-import rnn_bilstm
+import rnn_final
 from pprint import pprint
 
 
@@ -14,7 +14,7 @@ def word_search(x, n, k, model, is_flatten_ypr=False, feature_num=100):
         x, n, is_flatten_ypr, feature_num
     )
     x_split = torch.tensor(x_split)
-    probs = rnn_bilstm.get_prob(model, x_split)
+    probs = rnn_final.get_prob(model, x_split)
     logit_dict = {
         bounds[i]: np.array(probs[i]) for i in range(len(bounds))
     }

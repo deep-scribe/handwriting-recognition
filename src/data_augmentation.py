@@ -97,7 +97,7 @@ def augment(sample_yprs, rotate=True, noise=True, stretching=True, theta_range=5
     return sample_yprs
 
 
-def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.1):
+def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.10):
     '''
     x shape=(N,3)
     do this before shape augment
@@ -130,7 +130,59 @@ def augment_head_tail_noise(xs, ys, augment_prop, noise_prop=0.1):
             augmented_x = np.vstack([front_noise, x, back_noise])
             aug_xs.append(augmented_x)
 
-    return np.append(xs, np.array(aug_xs)), np.append(ys, np.array(aug_ys))
+    return np.array(aug_xs), np.array(aug_ys)
+
+
+def augment_trim_head_tail(xs, ys, augment_prop, trim_prop=0.1):
+    '''
+    x shape=(N,3)
+    do this before shape augment
+    '''
+
+    aug_xs = []
+    aug_ys = []
+
+    for _ in range(augment_prop):
+        for i, x in enumerate(xs):
+            nframes = len(x)
+            y = ys[i]
+            aug_ys.append(y)
+
+            front_trim_frame_num = int(
+                np.random.random() * trim_prop * nframes)
+            back_trim_frame_num = int(np.random.random() * trim_prop * nframes)
+
+            augmented_x = x[
+                front_trim_frame_num:
+                nframes - back_trim_frame_num, :]
+            aug_xs.append(augmented_x)
+
+    return np.array(aug_xs), np.array(aug_ys)
+
+
+def get_nonclass_samples(xs, count, nonclass_idx=26):
+    lenxs = len(xs)
+    nonclass_xs = []
+
+    # nonclass by taking small partial of a sample
+    for _ in range(count // 2):
+        x = xs[np.random.choice(lenxs)]
+        lenx = len(x)
+        num_frame = np.random.choice(lenx//4) + 2
+        begin_frame = np.random.choice(lenx - num_frame - 1)
+        partx = x[begin_frame: begin_frame + num_frame, :]
+        nonclass_xs.append(partx)
+
+    # nonclass by concating 2-4 chars
+    for _ in range(count // 2):
+        cat = []
+        n = np.random.randint(2, 5)
+        for _ in range(n):
+            cat.append(xs[np.random.choice(lenxs)])
+        nonclass_x = np.vstack(cat)
+        nonclass_xs.append(nonclass_x)
+
+    return np.array(nonclass_xs), np.array([nonclass_idx for _ in range(len(nonclass_xs))])
 
 
 def dump_augmented_yprs_pngs(subject_path):

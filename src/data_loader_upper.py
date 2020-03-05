@@ -10,8 +10,11 @@ from sklearn.model_selection import train_test_split
 # modify this list to match dirs in ../data that contain
 # valid data, one subject per dir
 VERIFIED_SUBJECTS = [
-    'kevin',
-    'russell',
+    # 'kevin',
+    # 'russell',
+    'kevin_tip_first', 'kevin_tip_second',
+    'kevin_tip_char_2',
+    'kevin_mar3'
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
@@ -43,7 +46,7 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, keep_idx_and
     return allxs, allys
 
 
-DEV_PROP = 0.05
+DEV_PROP = 0.1
 TRAIN_PROP = 0.01
 
 

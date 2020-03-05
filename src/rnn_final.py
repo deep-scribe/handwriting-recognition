@@ -17,42 +17,11 @@ import data_flatten
 # cell 1
 
 
-def split_ypr(x):
-    return x[:, :, 0], x[:, :, 1], x[:, :, 2]
-#
-# def encode(x, encoder):
-#     y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
-#     return np.stack((y,p,r), axis=2)
-
-
 def get_dataloader(x, y, batch_size):
     dataset = [(x[i].T, y[i]) for i in range(y.shape[0])]
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, shuffle=True)
     return dataloader
-
-
-def pad_x(input):
-    max_length = max(len(input[i]) for i in range(input.shape[0]))
-    result = np.zeros((input.shape[0], max_length, 3))
-    for i in range(len(input)):
-        result[i, :len(input[i]), :] = input[i]
-    return result
-
-
-def pad_all_x(trainx, devx, testx):
-    return pad_x(trainx), pad_x(devx), pad_x(testx)
-#
-# def pad_y(input):
-#     max_length = max(len(input[i]) for i in range(input.shape[0]))
-#     for i in range(len(input)):
-#         result = np.zeros((max_length, 3))
-#         result[:len(input[i]), :] = input[i]
-#         input[i] = result
-#     return input
-#
-# def pad_all_y(trainy, devy, testy):
-#     return pad_y(trainy), pad_y(devy), pad_y(testy)
 
 
 def acc(net, data_loader):
@@ -151,7 +120,7 @@ def get_prob(net, input):
     with torch.no_grad():
         logit = net(input.float())
         prob = F.log_softmax(logit, dim=-1)
-    return prob
+    return logit
 
 
 def main():
@@ -162,29 +131,28 @@ def main():
 
     if experiment_type == "subject":
         trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_subject_split(
-            resampled=True, flatten=False, keep_idx_and_td=True)
+            resampled=False, flatten=False, keep_idx_and_td=True)
     else:
         trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-            resampled=True, flatten=False, keep_idx_and_td=True)
+            resampled=False, flatten=False, keep_idx_and_td=True)
 
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
     def aug_head_tail(x, y):
         x, y = data_augmentation.augment_head_tail_noise(
-            x, y, augment_prop=10)
+            x, y, augment_prop=5)
         x = data_flatten.resample_dataset_list(x)
         x = np.array(x)
         return x, y
 
-    # trainx, trainy = aug_head_tail(trainx, trainy)
-    # print(trainx.shape)
-    # devx, devy = aug_head_tail(devx, devy)
-    # testx, testy = aug_head_tail(testx, testy)
+    trainx, trainy = aug_head_tail(trainx, trainy)
+    devx, devy = aug_head_tail(devx, devy)
+    testx, testy = aug_head_tail(testx, testy)
 
     if resampled == "resampled":
         trainx, trainy = data_loader_upper.augment_train_set(
-            trainx, trainy, augment_prop=10,
+            trainx, trainy, augment_prop=5,
             is_flattened=False, resampled=True)
         trainx, devx, testx = pad_all_x(trainx, devx, testx)
     else:
@@ -194,8 +162,6 @@ def main():
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
-    # _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
-    #
     #
     # trainx = encode(trainx, encoder)
     # devx = encode(devx, encoder)
@@ -204,7 +170,7 @@ def main():
     # del encoder
 
     # cell 4
-    BATCH_SIZE = 512
+    BATCH_SIZE = 3000
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
@@ -221,7 +187,7 @@ def main():
         net.cuda()
 
     # cell 8
-    criterion = nn.CrossEntropyLoss(size_average=True)
+    criterion = nn.CrossEntropyLoss()
     # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.005)
 
