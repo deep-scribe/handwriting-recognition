@@ -99,6 +99,30 @@ def acc_loss(net, data_loader, criterion):
 
 
 class Net(nn.Module):
+    # def __init__(self, input_dim, hidden_dim, n_layers):
+    #     super(Net, self).__init__()
+    #     self.input_dim = input_dim
+    #     self.hidden_dim = hidden_dim
+    #     self.n_layers = n_layers
+    #     self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
+    #                         batch_first=True, bidirectional=True)
+    #     # self.dropout = nn.Dropout(0.1)
+    #     self.fc = nn.Linear(hidden_dim*2, 26, bias=True)
+
+    # def forward(self, x):
+    #     init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
+    #     init_c = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
+    #     if torch.cuda.is_available():
+    #         init_h = init_h.cuda()
+    #         init_c = init_c.cuda()
+    #     x = x.permute(0, 2, 1)
+    #     out, _ = self.lstm(x, (init_h, init_c))
+    #     # out = self.dropout(out)
+    #     # print("inter: ", out.shape)
+    #     out = self.fc(out[:, -1, :])
+    #     # print("out: ", out.shape)
+    #     return out
+        
     def __init__(self, input_dim, hidden_dim, n_layers):
         super(Net, self).__init__()
         self.input_dim = input_dim

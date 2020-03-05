@@ -236,7 +236,6 @@ def visualization_example_words():
 
     print("\ndone.")
 
-
     color_red = '#980000'
     color_blue = '#003262'
 
@@ -402,5 +401,5 @@ def visualization_example():
 
 
 if __name__ == "__main__":
-    # visualization_example()
-    visualization_example_words()
+    visualization_example()
+    # visualization_example_words()
