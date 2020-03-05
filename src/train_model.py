@@ -33,13 +33,19 @@ def main():
     print()
 
     # confirm hyperparam
-    print('CONFIRM/MODIFY following training parameter as defined on top of scipt:')
+    print('CONFIRM following training parameter as defined on top of train_model.py')
     print(f'  [BATCH_SIZE]               {BATCH_SIZE}')
     print(f'  [CONCAT_TRIM_AUGMENT_PROP] {CONCAT_TRIM_AUGMENT_PROP}')
     print(f'  [NOISE_AUGMENT_PROP]       {NOISE_AUGMENT_PROP}')
     print(f'  [DEV_PROP]                 {DEV_PROP}')
     print(f'  [TEST_PROP]                {TEST_PROP}')
     print(f'  [USE_NONCLASS]             {USE_NONCLASS}')
+    print()
+    input()
+
+    # confirm data subject
+    print('CONFIRM following data subjects to be used as defined in data_laoder_upper.py')
+    print(' ', data_loader_upper.VERIFIED_SUBJECTS)
     print()
     input()
 
@@ -63,10 +69,10 @@ def main():
     print()
 
     # define filename
-    config_strs = [str(int(c)) for c in selected_config[1:]]
+    config_strs = [str(int(c)) for c in selected_config]
     s = '-'.join(config_strs)
     now = datetime.now()
-    time_str = now.strftime("%m-%d-%H:%M")
+    time_str = now.strftime("%m-%d-%H-%M")
     file_prefix = f'{model_class.__name__}.{s}.{BATCH_SIZE}-{CONCAT_TRIM_AUGMENT_PROP}-{NOISE_AUGMENT_PROP}.{time_str}'
     weight_filename = file_prefix+'.pth'
     hist_filename = file_prefix+'.json'
@@ -91,6 +97,9 @@ def main():
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
+
+    # dont augment test set
+    testx = data_flatten.resample_dataset_list(testx)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
     criterion = nn.CrossEntropyLoss()

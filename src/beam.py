@@ -2,6 +2,9 @@ import numpy as np
 from pprint import pprint
 
 
+NUM_VALID_CHARS = 26
+
+
 def top_k_logit(logit, k):
     '''
     @param logits: np.array, shape (n_class,)
@@ -11,7 +14,8 @@ def top_k_logit(logit, k):
     assert k > 0
     assert k <= logit.shape[0]
     assert len(logit.shape) == 1
-    logit = logit[:-1]  # do not consider nonclass
+    # do not consider nonclass, remove its logits
+    logit = logit[:NUM_VALID_CHARS]
     sorted_class_idx = list(np.argsort(logit))[::-1]
     top_k_class_idx = sorted_class_idx[:k]
     return [(class_idx, logit[class_idx]) for class_idx in top_k_class_idx]
