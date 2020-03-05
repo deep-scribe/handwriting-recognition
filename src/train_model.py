@@ -100,7 +100,7 @@ def main():
         trainloader = get_dataloader(a_trainx, a_trainy, BATCH_SIZE)
         print('  ', end='')
         for i, data in enumerate(trainloader):
-            print(f'{i if i%20==0 else ""}.', end='', flush=True)
+            print(f'{i/10 if i%20==0 else ""}.', end='', flush=True)
             inputs, labels = data
             if torch.cuda.is_available():
                 inputs = inputs.cuda()
