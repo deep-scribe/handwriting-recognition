@@ -47,27 +47,27 @@ if __name__ == "__main__":
     # model = rnn_final.get_net(MODEL_WEIGHT_PATH)
     model = lstm_encdec.get_net(MODEL_WEIGHT_PATH)
 
-    # # word_df = data_utils.load_subject('../data_words/kevin_mar3')
-    # word_df = data_utils.load_subject('../data_words/kevin_tip')
-    # wordxs, wordys = data_utils.get_calibrated_yprs_samples(
-    #     word_df, resampled=False, flatten=False,
-    #     is_word_samples=True, keep_idx_and_td=True
-    # )
+    # word_df = data_utils.load_subject('../data_words/kevin_mar3')
+    word_df = data_utils.load_subject('../data_words/kevin_tip')
+    wordxs, wordys = data_utils.get_calibrated_yprs_samples(
+        word_df, resampled=False, flatten=False,
+        is_word_samples=True, keep_idx_and_td=True
+    )
 
-    # for idx in range(len(wordys)):
-    #     x = wordxs[idx]
-    #     y = wordys[idx]
+    for idx in range(len(wordys)):
+        x = wordxs[idx]
+        y = wordys[idx]
 
-    #     NUM_PART = len(x) // 12
-    #     print(NUM_PART)
-    #     trajs = word_search.word_search(x, NUM_PART, 10, model)
-    #     print(f'predicting {y}')
+        NUM_PART = len(x) // 12
+        print(NUM_PART)
+        trajs = word_search.word_search(x, NUM_PART, 10, model)
+        print(f'predicting {y}')
 
-    #     for i, (likelihood, traj) in enumerate(trajs):
-    #         word = ''
-    #         for seg_begin, seg_end, pred, prob in traj:
-    #             word += chr(pred+97)
-    #         print(f', pred {i}: likelihood {likelihood}', word)
+        for i, (likelihood, traj) in enumerate(trajs):
+            word = ''
+            for seg_begin, seg_end, pred, prob in traj:
+                word += chr(pred+ord('A'))
+            print(f', pred {i}: likelihood {likelihood}', word)
 
     TARGET_WORDS = [
         'exams',
@@ -84,54 +84,54 @@ if __name__ == "__main__":
         'international'
     ]
 
-    char_df = data_utils.load_subject('../data_upper/kevin_tip_char_2')
-    calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
+    # char_df = data_utils.load_subject('../data_upper/kevin_tip_char_2')
+    # calibration_yprs = data_utils.get_yprs_calibration_vector(char_df)
 
-    for target_word in TARGET_WORDS:
-        print('-'*80)
-        print(f'checking word {target_word}')
-        print('-'*80)
-        sample_chs = []
-        for i, ch in enumerate(target_word):
-            sample_df = data_utils.get_random_sample_by_label(char_df, ch)
-            sample_yprs = sample_df[data_utils.YPRS_COLUMNS].to_numpy()
-            # calibrate
-            sample_yprs = sample_yprs - calibration_yprs - sample_yprs[0]
+    # for target_word in TARGET_WORDS:
+    #     print('-'*80)
+    #     print(f'checking word {target_word}')
+    #     print('-'*80)
+    #     sample_chs = []
+    #     for i, ch in enumerate(target_word):
+    #         sample_df = data_utils.get_random_sample_by_label(char_df, ch)
+    #         sample_yprs = sample_df[data_utils.YPRS_COLUMNS].to_numpy()
+    #         # calibrate
+    #         sample_yprs = sample_yprs - calibration_yprs - sample_yprs[0]
 
-            # check each char predicted is correct
-            # resample to test forward
-            sample_id_col = sample_df[data_utils.ID_COLUMN].to_numpy().reshape(
-                (-1, 1))
-            sample_td_col = sample_df[data_utils.TIME_DELTA_COLUMN].to_numpy().reshape(
-                (-1, 1))
-            yprs_with_id_td = np.hstack(
-                (sample_id_col, sample_td_col, sample_yprs))
-            sample_yprs = data_flatten.resample_sequence(
-                yprs_with_id_td,
-                is_flatten_ypr=False,
-                feature_num=100
-            )
-            yhat = lstm_encdec.get_prob(model, torch.tensor([sample_yprs.T]))
-            pred = chr(97+np.argmax(yhat))
-            print(f'expect [{ch}] predict [{pred}]')
+    #         # check each char predicted is correct
+    #         # resample to test forward
+    #         sample_id_col = sample_df[data_utils.ID_COLUMN].to_numpy().reshape(
+    #             (-1, 1))
+    #         sample_td_col = sample_df[data_utils.TIME_DELTA_COLUMN].to_numpy().reshape(
+    #             (-1, 1))
+    #         yprs_with_id_td = np.hstack(
+    #             (sample_id_col, sample_td_col, sample_yprs))
+    #         sample_yprs = data_flatten.resample_sequence(
+    #             yprs_with_id_td,
+    #             is_flatten_ypr=False,
+    #             feature_num=100
+    #         )
+    #         yhat = lstm_encdec.get_prob(model, torch.tensor([sample_yprs.T]))
+    #         pred = chr(97+np.argmax(yhat))
+    #         print(f'expect [{ch}] predict [{pred}]')
 
-            sample_chs.append(yprs_with_id_td)
+    #         sample_chs.append(yprs_with_id_td)
 
-            # insert noise
-            num_noise_frame = random.randint(4, 10)
-            noise_start = random.randint(0, yprs_with_id_td.shape[0])
-            noise = yprs_with_id_td[
-                noise_start:noise_start+num_noise_frame, :]
-            sample_chs.append(noise)
+    #         # insert noise
+    #         num_noise_frame = random.randint(4, 10)
+    #         noise_start = random.randint(0, yprs_with_id_td.shape[0])
+    #         noise = yprs_with_id_td[
+    #             noise_start:noise_start+num_noise_frame, :]
+    #         sample_chs.append(noise)
 
-        # concat each char sequence to word sequence
-        x = np.vstack(sample_chs)
+    #     # concat each char sequence to word sequence
+    #     x = np.vstack(sample_chs)
 
-        NUM_PART = len(x) // 12
-        trajs = word_search.word_search(x, NUM_PART, 10, model)
+    #     NUM_PART = len(x) // 12
+    #     trajs = word_search.word_search(x, NUM_PART, 10, model)
 
-        for i, (likelihood, traj) in enumerate(trajs):
-            word = ''
-            for seg_begin, seg_end, pred, prob in traj:
-                word += chr(pred+97)
-            print(f'pred {i}:', word)
+    #     for i, (likelihood, traj) in enumerate(trajs):
+    #         word = ''
+    #         for seg_begin, seg_end, pred, prob in traj:
+    #             word += chr(pred+97)
+    #         print(f'pred {i}:', word)
