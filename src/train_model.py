@@ -11,6 +11,9 @@ import data_flatten
 from collections import defaultdict
 from datetime import datetime
 
+# training hyperparameter
+# pertaining anything that does not modify the model structure
+# modify this before running training script
 BATCH_SIZE = 1500
 CONCAT_TRIM_AUGMENT_PROP = 1
 NOISE_AUGMENT_PROP = 3
@@ -19,15 +22,18 @@ TEST_PROP = 0.001
 NUM_EPOCH = 100
 USE_NONCLASS = True
 
+# should not change
 MODEL_WEIGHT_PATH = '../saved_model/'
 MODEL_HIST_PATH = '../output/'
 
 
 def main():
     model_class = lstm.LSTM_char_classifier
-
     print(f'Training model class [{model_class.__name__}]')
-    print('CONFIRM/MODIFY following config as defined on top of scipt:')
+    print()
+
+    # confirm hyperparam
+    print('CONFIRM/MODIFY following training parameter as defined on top of scipt:')
     print(f'  [BATCH_SIZE]               {BATCH_SIZE}')
     print(f'  [CONCAT_TRIM_AUGMENT_PROP] {CONCAT_TRIM_AUGMENT_PROP}')
     print(f'  [NOISE_AUGMENT_PROP]       {NOISE_AUGMENT_PROP}')
@@ -82,6 +88,7 @@ def main():
     print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     print()
 
+    # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
@@ -95,6 +102,11 @@ def main():
         for epoch in range(NUM_EPOCH):
             running_loss = 0.0
             print(f'Epoch [{epoch}]')
+
+            # augment train set differently every epoch
+            # do not keep raw sequence
+            # model should only overfit to true handwriting char part
+            # but not any other unnecesary signal
             print('  augment')
             a_trainx, a_trainy = aug_concat_trim(
                 trainx, trainy, keep_orig=False)
@@ -129,6 +141,9 @@ def main():
 
             print(f'  trainacc={trainacc} devacc={devacc}')
             print(f'  trainloss={trainloss} devloss={devloss}')
+
+            # save model if achieve lower dev loss
+            # i.e. early stopping
             if best_loss > devloss:
                 best_loss = devloss
                 torch.save(model.state_dict(), os.path.join(
