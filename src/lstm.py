@@ -97,4 +97,5 @@ config_keys = {
 
 config = [
     (3, 200, 3, 200, 27, False, True),
+    (3, 100, 5, 100, 27, False, True)
 ]

@@ -17,6 +17,7 @@ NOISE_AUGMENT_PROP = 3
 DEV_PROP = 0.1
 TEST_PROP = 0.001
 NUM_EPOCH = 100
+USE_NONCLASS = True
 
 MODEL_WEIGHT_PATH = '../saved_model/'
 MODEL_HIST_PATH = '../output/'
@@ -26,13 +27,15 @@ def main():
     model_class = lstm.LSTM_char_classifier
 
     print(f'Training model class [{model_class.__name__}]')
-    print('  confirm / modify config as defined on top of scipt:')
+    print('CONFIRM/MODIFY following config as defined on top of scipt:')
     print(f'  [BATCH_SIZE]               {BATCH_SIZE}')
     print(f'  [CONCAT_TRIM_AUGMENT_PROP] {CONCAT_TRIM_AUGMENT_PROP}')
     print(f'  [NOISE_AUGMENT_PROP]       {NOISE_AUGMENT_PROP}')
     print(f'  [DEV_PROP]                 {DEV_PROP}')
     print(f'  [TEST_PROP]                {TEST_PROP}')
+    print(f'  [USE_NONCLASS]             {USE_NONCLASS}')
     print()
+    input()
 
     # pick config as defined
     print('Select model config to train')
@@ -160,11 +163,12 @@ def aug_concat_trim(x, y, keep_orig=True):
         x = np.append(aug_noise_x, trimmed_x)
         y = np.append(aug_noise_y, trimmed_y)
 
-    num_nonclass = len(x) // 20
-    nonclass_x, nonclass_y = data_augmentation.get_nonclass_samples(
-        x, num_nonclass)
-    x = np.append(x, nonclass_x)
-    y = np.append(y, nonclass_y)
+    if USE_NONCLASS:
+        num_nonclass = len(x) // 20
+        nonclass_x, nonclass_y = data_augmentation.get_nonclass_samples(
+            x, num_nonclass)
+        x = np.append(x, nonclass_x)
+        y = np.append(y, nonclass_y)
 
     x = np.array(data_flatten.resample_dataset_list(x))
     return x, y
