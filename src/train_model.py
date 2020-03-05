@@ -12,8 +12,8 @@ from collections import defaultdict
 from datetime import datetime
 
 BATCH_SIZE = 1500
-CONCAT_TRIM_AUGMENT_PROP = 3
-NOISE_AUGMENT_PROP = 3
+CONCAT_TRIM_AUGMENT_PROP = 1
+NOISE_AUGMENT_PROP = 1
 DEV_PROP = 0.1
 TEST_PROP = 0.001
 NUM_EPOCH = 100
@@ -79,7 +79,7 @@ def main():
     print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     print()
 
-    devx, devy = aug_head_tail(devx, devy)
+    devx, devy = aug_concat_trim(devx, devy)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
@@ -87,45 +87,52 @@ def main():
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
     best_loss = 1000
-    for epoch in range(NUM_EPOCH):
-        running_loss = 0.0
-        print(f'Begin epoch [{epoch}]')
-        print('  augment')
-        a_trainx, a_trainy = aug_head_tail(trainx, trainy)
-        a_trainx, a_trainy = data_augmentation.noise_stretch_rotate_augment(
-            a_trainx, a_trainy, augment_prop=NOISE_AUGMENT_PROP,
-            is_already_flattened=False, resampled=True)
 
-        print('  forward')
-        trainloader = get_dataloader(a_trainx, a_trainy, BATCH_SIZE)
-        print('  ', end='')
-        for i, data in enumerate(trainloader):
-            print(f'{i/10 if i%20==0 else ""}.', end='', flush=True)
-            inputs, labels = data
-            if torch.cuda.is_available():
-                inputs = inputs.cuda()
-                labels = labels.cuda()
+    try:
+        for epoch in range(NUM_EPOCH):
+            running_loss = 0.0
+            print(f'Epoch [{epoch}]')
+            print('  augment')
+            a_trainx, a_trainy = aug_concat_trim(
+                trainx, trainy, keep_orig=False)
+            a_trainx, a_trainy = data_augmentation.noise_stretch_rotate_augment(
+                a_trainx, a_trainy, augment_prop=NOISE_AUGMENT_PROP,
+                is_already_flattened=False, resampled=True)
 
-            optimizer.zero_grad()
-            outputs = model(inputs.float())
-            loss = criterion(outputs, labels.long())
-            loss.backward()
-            optimizer.step()
+            print('  train')
+            trainloader = get_dataloader(a_trainx, a_trainy, BATCH_SIZE)
+            print('  ', end='')
+            for i, data in enumerate(trainloader):
+                print(f'{[i//10] if i%10==0 else ""}', end='', flush=True)
+                print(i % 10, end='', flush=True)
 
-        trainacc, trainloss = acc_loss(model, trainloader, criterion)
-        devacc, devloss = acc_loss(model, devloader, criterion)
-        hist['trainacc'].append(trainacc)
-        hist['trainloss'].append(trainloss)
-        hist['devacc'].append(devacc)
-        hist['devloss'].append(devloss)
+                inputs, labels = data
+                if torch.cuda.is_available():
+                    inputs = inputs.cuda()
+                    labels = labels.cuda()
+                optimizer.zero_grad()
+                outputs = model(inputs.float())
+                loss = criterion(outputs, labels.long())
+                loss.backward()
+                optimizer.step()
+            print()
 
-        print(f'  trainacc={trainacc} devacc={devacc}')
-        print(f'  trainloss={trainloss} devloss={devloss}')
-        if best_loss > devloss:
-            print(f'  best dev loss, save weight')
-            best_loss = devloss
-            torch.save(model.state_dict(), os.path.join(
-                MODEL_WEIGHT_PATH, weight_filename))
+            trainacc, trainloss = acc_loss(model, trainloader, criterion)
+            devacc, devloss = acc_loss(model, devloader, criterion)
+            hist['trainacc'].append(trainacc)
+            hist['trainloss'].append(trainloss)
+            hist['devacc'].append(devacc)
+            hist['devloss'].append(devloss)
+
+            print(f'  trainacc={trainacc} devacc={devacc}')
+            print(f'  trainloss={trainloss} devloss={devloss}')
+            if best_loss > devloss:
+                best_loss = devloss
+                torch.save(model.state_dict(), os.path.join(
+                    MODEL_WEIGHT_PATH, weight_filename))
+                print(f'  new best dev loss, weight saved')
+    except KeyboardInterrupt:
+        pass
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
@@ -139,15 +146,19 @@ def main():
         json.dump(hist, f)
 
 
-def aug_head_tail(x, y):
+def aug_concat_trim(x, y, keep_orig=True):
     aug_noise_x, aug_noise_y = data_augmentation.get_concat_augment(
         x, y, augment_prop=CONCAT_TRIM_AUGMENT_PROP)
     trimmed_x, trimmed_y = data_augmentation.get_trim_augment(
         x, y, augment_prop=CONCAT_TRIM_AUGMENT_PROP)
-    x = np.append(x, aug_noise_x)
-    y = np.append(y, aug_noise_y)
-    x = np.append(x, trimmed_x)
-    y = np.append(y, trimmed_y)
+    if keep_orig:
+        x = np.append(x, aug_noise_x)
+        y = np.append(y, aug_noise_y)
+        x = np.append(x, trimmed_x)
+        y = np.append(y, trimmed_y)
+    else:
+        x = np.append(aug_noise_x, trimmed_x)
+        y = np.append(aug_noise_y, trimmed_y)
 
     num_nonclass = len(x) // 20
     nonclass_x, nonclass_y = data_augmentation.get_nonclass_samples(
