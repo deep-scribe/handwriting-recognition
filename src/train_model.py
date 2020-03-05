@@ -13,7 +13,7 @@ from datetime import datetime
 
 BATCH_SIZE = 1500
 CONCAT_TRIM_AUGMENT_PROP = 1
-NOISE_AUGMENT_PROP = 1
+NOISE_AUGMENT_PROP = 3
 DEV_PROP = 0.1
 TEST_PROP = 0.001
 NUM_EPOCH = 100
@@ -136,7 +136,7 @@ def main():
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
-    testacc, testloss = acc_loss(net, testloader, nn.CrossEntropyLoss())
+    testacc, testloss = acc_loss(model, testloader, nn.CrossEntropyLoss())
     testacc, testloss
     hist['testacc'] = testacc
     hist['testloss'] = testloss
