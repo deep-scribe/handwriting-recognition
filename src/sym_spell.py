@@ -42,6 +42,19 @@ def __create_sym_spell(max_edit_distance_dictionary, prefix_length):
 
 
 def auto_correct(input_term, max_edit_distance_lookup = 2, max_edit_distance_dictionary = 2, prefix_length = 7, verbose = 0):
+    suggestions = __auto_correct(input_term.lower(), max_edit_distance_lookup, max_edit_distance_dictionary, prefix_length, verbose)
+
+    if suggestions == []:
+        return None
+        
+    return suggestions[0].term, suggestions[0].distance, suggestions[0].count
+
+
+def full_auto_correct(input_term, max_edit_distance_lookup = 2, max_edit_distance_dictionary = 2, prefix_length = 7, verbose = 0):
+    return __auto_correct(input_term, max_edit_distance_lookup, max_edit_distance_dictionary, prefix_length, verbose)
+
+
+def __auto_correct(input_term, max_edit_distance_lookup = 2, max_edit_distance_dictionary = 2, prefix_length = 7, verbose = 0):
     '''
     Input a word and return the auto corrected word
 
@@ -67,8 +80,7 @@ def auto_correct(input_term, max_edit_distance_lookup = 2, max_edit_distance_dic
             print("{}, {}, {}".format(suggestion.term, suggestion.distance,
                                       suggestion.count))
 
-    return suggestions[0].term
-
+    return suggestions
 
 def main():
     # maximum edit distance per dictionary precalculation
@@ -105,3 +117,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # test_trajectory()

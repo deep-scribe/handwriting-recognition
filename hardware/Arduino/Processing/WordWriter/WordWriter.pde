@@ -14,8 +14,8 @@ String[] words_mini_hard_2 = new String[]{
 "kanji", "flick", "beach", "cabin", "hack", "lack", "kami", "kid" , "ban", "bad"
 };
 
-String[] words_20 = new String[]{
-"EXAMS", "FOCUS", "SAUCE", "COAX", "SAME", "SEX", "AWE", "FEM", "AXE", "AGE", "KANJI", "FLICK", "BEACH", "CABIN", "HACK", "LACK", "KAMI", "KID" , "BAN", "BAD"
+String[] words_27 = new String[]{
+"EXAMS", "FOCUS", "SAUCE", "COAX", "SAME", "SEX", "AWE", "FEM", "AXE", "AGE", "KANJI", "FLICK", "BEACH", "CABIN", "HACK", "LACK", "KAMI", "KID" , "BAN", "BAD", "QUICK", "BROWN", "FOX", "JUMPS", "OVER", "LAZY", "DOG"
 };
 
 String[] az = new String[]{
@@ -27,8 +27,8 @@ String[] az = new String[]{
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "kelly";
-String[] word_list = words_20.clone();
+String FOLDER_NAME = "kelly_new";
+String[] word_list = words_27.clone();
 
 //String FOLDER_NAME = "kevin_mar3";
 //String[] word_list = az.clone();
