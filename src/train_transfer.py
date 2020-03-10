@@ -29,17 +29,17 @@ MODEL_HIST_PATH = '../output/'
 
 def main():
     model_class = lstm.LSTM_char_classifier
-    print(f'Training model class [{model_class.__name__}]')
+    print('Training model class [{}]'.format(model_class.__name__))
     print()
 
     # confirm hyperparam
     print('CONFIRM following training parameter as defined on top of train_model.py')
-    print(f'  [BATCH_SIZE]               {BATCH_SIZE}')
-    print(f'  [CONCAT_TRIM_AUGMENT_PROP] {CONCAT_TRIM_AUGMENT_PROP}')
-    print(f'  [NOISE_AUGMENT_PROP]       {NOISE_AUGMENT_PROP}')
-    print(f'  [DEV_PROP]                 {DEV_PROP}')
-    print(f'  [TEST_PROP]                {TEST_PROP}')
-    print(f'  [USE_NONCLASS]             {USE_NONCLASS}')
+    print('  [BATCH_SIZE]               {}'.format(BATCH_SIZE))
+    print('  [CONCAT_TRIM_AUGMENT_PROP] {}'.format(CONCAT_TRIM_AUGMENT_PROP))
+    print('  [NOISE_AUGMENT_PROP]       {}'.format(NOISE_AUGMENT_PROP))
+    print('  [DEV_PROP]                 {}'.format(DEV_PROP))
+    print('  [TEST_PROP]                {}'.format(TEST_PROP))
+    print('  [USE_NONCLASS]             {}'.format(USE_NONCLASS))
     print()
     input()
 
@@ -53,9 +53,9 @@ def main():
     print('Select model config to train')
     for idx, c in enumerate(lstm.config):
         assert len(c) == len(lstm.config_keys)
-        print(f'[{idx}] ', end='')
+        print('[{}] '.format(idx, end=''))
         for i, item in enumerate(lstm.config_keys):
-            print(f'{item}={c[i]} ', end='')
+            print('{}={} '.format(item, c[i], end=''))
         print()
     selected_config = None
     while not selected_config:
@@ -73,24 +73,26 @@ def main():
     s = '-'.join(config_strs)
     now = datetime.now()
     time_str = now.strftime("%m-%d-%H-%M")
-    file_prefix = f'{model_class.__name__}.{s}.{BATCH_SIZE}-{CONCAT_TRIM_AUGMENT_PROP}-{NOISE_AUGMENT_PROP}.{time_str}'
+    file_prefix = '{}.{}.{}-{}-{}.{}'.format(
+    model_class.__name__, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str
+    )
     weight_filename = file_prefix+'.pth'
     hist_filename = file_prefix+'.json'
-    print(f'Model weights will be saved to [{MODEL_WEIGHT_PATH}]')
-    print(f'Model weights will be saved as [{weight_filename}]')
-    print(f'Training history will be saved to [{MODEL_HIST_PATH}]')
-    print(f'Training history will be saved as [{hist_filename}]')
+    print('Model weights will be saved to [{}]'.format(MODEL_WEIGHT_PATH))
+    print('Model weights will be saved as [{}]'.format(weight_filename))
+    print('Training history will be saved to [{}]'.format(MODEL_HIST_PATH))
+    print('Training history will be saved as [{}]'.format(hist_filename))
     print()
 
     model = model_class(*selected_config)
-    print(f'torch.cuda.is_available()={torch.cuda.is_available()}')
+    print('torch.cuda.is_available()={}'.format(torch.cuda.is_available()))
     if torch.cuda.is_available():
         model = model.cuda()
 
     print('Select weight files to load')
     pth_files_paths = get_all_pth_files()
     for idx, path in enumerate(pth_files_paths):
-        print(f'[{idx}] {path[0]}')
+        print('[{}] {}'.format(idx, path[0]))
     selected_file_path = None
     while not selected_file_path:
         try:
@@ -111,16 +113,16 @@ def main():
     model_param_list[-2] = bool(model_param_list[-2])
     train_param_list = train_param.split('-')
 
-    print(f'[SELECTED MODEL]')
-    print(f'  {model_class}')
-    print(f'[MODEL PARAMS]')
+    print('[SELECTED MODEL]')
+    print('  {}'.format(model_class))
+    print('[MODEL PARAMS]')
     assert len(model_param_list) == len(lstm.config_keys)
     for i, c in enumerate(lstm.config_keys):
-        print(f'  {c}: {model_param_list[i]}')
-    print(f'[TRAIN PARAMS]')
-    print(f'  batchsize {train_param_list[0]}')
-    print(f'  concat_trim_aug_prop {train_param_list[1]}')
-    print(f'  noise_aug_prop {train_param_list[2]}')
+        print('  {}: {}'.format(c, model_param_list[i]))
+    print('[TRAIN PARAMS]')
+    print('  batchsize {}'.format(train_param_list[0]))
+    print('  concat_trim_aug_prop {}'.format(train_param_list[1]))
+    print('  noise_aug_prop {}'.format(train_param_list[2]))
     print()
 
     # get the class, instantiate model, load weight
@@ -159,7 +161,7 @@ def main():
     try:
         for epoch in range(NUM_EPOCH):
             running_loss = 0.0
-            print(f'Epoch [{epoch}]')
+            print('Epoch [{}]'.format(epoch))
 
             # augment train set differently every epoch
             # do not keep raw sequence
@@ -174,10 +176,10 @@ def main():
 
             print('  train')
             trainloader = get_dataloader(a_trainx, a_trainy, BATCH_SIZE)
-            print('  ', end='')
+            print('  '.format(end=''))
             for i, data in enumerate(trainloader):
-                print(f'{[i//10] if i%10==0 else ""}', end='', flush=True)
-                print(i % 10, end='', flush=True)
+                print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
+                print('{}'.format(i % 10, end='', flush=True))
 
                 inputs, labels = data
                 if torch.cuda.is_available():
@@ -197,8 +199,8 @@ def main():
             hist['devacc'].append(devacc)
             hist['devloss'].append(devloss)
 
-            print(f'  trainacc={trainacc} devacc={devacc}')
-            print(f'  trainloss={trainloss} devloss={devloss}')
+            print('  trainacc={} devacc={}'.format(trainacc, devacc))
+            print('  trainloss={} devloss={}'.format(trainloss, devloss))
 
             # save model if achieve lower dev loss
             # i.e. early stopping
@@ -206,7 +208,7 @@ def main():
                 best_loss = devloss
                 torch.save(model.state_dict(), os.path.join(
                     MODEL_WEIGHT_PATH, weight_filename))
-                print(f'  new best dev loss, weight saved')
+                print('  new best dev loss, weight saved')
     except KeyboardInterrupt:
         pass
 
@@ -216,7 +218,7 @@ def main():
     testacc, testloss
     hist['testacc'] = testacc
     hist['testloss'] = testloss
-    print(f'test loss={testloss} test acc={testacc}')
+    print('test loss={} test acc={}'.format(testloss, testacc))
 
     with open(os.path.join(MODEL_HIST_PATH, hist_filename), 'w') as f:
         json.dump(hist, f)
