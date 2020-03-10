@@ -6,7 +6,7 @@ import java.lang.StringBuilder;
 //boolean USE_SUBJECT_NAME = true;
 String DIR_NAME = "letter_data";
 
-String SUBJECT_NAME = "Kelly_new";
+String SUBJECT_NAME = "russell_upper_3";
 //String SUBJECT_NAME = "kevin_mar3";
 
 

@@ -45,8 +45,9 @@ def auto_correct(input_term, max_edit_distance_lookup = 2, max_edit_distance_dic
     suggestions = __auto_correct(input_term.lower(), max_edit_distance_lookup, max_edit_distance_dictionary, prefix_length, verbose)
 
     if suggestions == []:
-        return None
-        
+        print("Word",input_term,"has no suggestion")
+        return input_term.lower(), 100, 100
+
     return suggestions[0].term, suggestions[0].distance, suggestions[0].count
 
 
