@@ -6,7 +6,7 @@ import java.lang.StringBuilder;
 //boolean USE_SUBJECT_NAME = true;
 String DIR_NAME = "letter_data";
 
-String SUBJECT_NAME = "russell_upper_3";
+String SUBJECT_NAME = "russell_upper_5";
 //String SUBJECT_NAME = "kevin_mar3";
 
 
@@ -29,7 +29,7 @@ void setup() {
    buffer = new StringBuilder();
    
    // use "-1" if you wish to start with calibration, else enter corresponding letter's number
-   char_counter = -1;
+   char_counter = 22;
 }
 
 void draw() {
