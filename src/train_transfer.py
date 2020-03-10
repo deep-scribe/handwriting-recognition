@@ -25,6 +25,7 @@ USE_NONCLASS = True
 # should not change
 MODEL_WEIGHT_PATH = '../saved_model/'
 MODEL_HIST_PATH = '../output/'
+WEIGHT_DIR = '../saved_model/'
 
 
 def main():
