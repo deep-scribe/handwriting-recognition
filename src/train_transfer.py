@@ -140,7 +140,7 @@ def main():
             param.requires_grad = True
 
     # load raw data
-    trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_subjects_classic_random_split(
+    trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_subject_classic_random_split(
         DEV_PROP, TEST_PROP,
         resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
     print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
