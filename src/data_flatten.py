@@ -73,7 +73,7 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
     if calibrationdf.empty:
         print('!' * 80)
         print(
-            f'WARN: no {data_utils.CALIBRATION_FILENAME}, using default [0,0,0] to calibrate yprs.'
+            'WARN: no {}, using default [0,0,0] to calibrate yprs.'.format(data_utils.CALIBRATION_FILENAME)
         )
         print('!' * 80)
         calibrationyprs = np.zeros(3)
@@ -106,8 +106,7 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
             num_samples = sampleids.shape[0]
 
             if verbose:
-                print(f'Processing label {label_name}, with {num_samples} samples, '
-                      f'from {total_lines} lines...')
+                print('Processing label {}, with {} samples, from {} lines...'.format(label_name, num_samples, total_lines))
 
             data_sequences = []
 
@@ -134,8 +133,8 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
             # each data sample has 5 columns [index, time, yaw, pitch, roll]
             dataset_dict[label_name] = np.asarray(data_sequences)
 
-    print(f'Successfully loaded ypr data from', len(
-        dataset_dict), f'files in folder {subject_path}.')
+    print('Successfully loaded ypr data from files in folder {}.'.format(len(
+        dataset_dict), subject_path))
 
     return dataset_dict
 
@@ -365,7 +364,7 @@ def visualization_example():
         plt.ylim(-40, 60)
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
-        
+
 
         plt.subplot(2, 2, 2)
         plt.plot(resampled_dataset[key][7].T[1],
