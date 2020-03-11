@@ -81,7 +81,7 @@ class LSTM_char_classifier(nn.Module):
 
         out = self.fc(combined)
         embedding = torch.nn.functional.relu(out)
-        out = self.fc2(out)
+        out = self.fc2(embedding)
         return out, embedding
 
 
