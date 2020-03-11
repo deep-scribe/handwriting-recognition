@@ -1,4 +1,4 @@
-import lstm
+import lstm_siamese
 import torch
 import data_loader_upper
 import torch.nn as nn
@@ -17,14 +17,14 @@ CONCAT_TRIM_AUGMENT_PROP = 1
 NOISE_AUGMENT_PROP = 3
 DEV_PROP = 0.45
 TEST_PROP = 0.45
-NUM_EPOCH = 250
+NUM_EPOCH = 500
 USE_NONCLASS = True
 
 MODEL_WEIGHT_PATH = '../saved_model/siamese'
-MODEL_HIST_PATH = '../output/'
+MODEL_HIST_PATH = '../output/siamese'
 WEIGHT_DIR = '../saved_model/'
 
-ERIFIED_SUBJECTS = [
+VERIFIED_SUBJECTS = [
     'kevin_tip_first',
     'kevin_tip_second',
     'kevin_tip_char_2',
@@ -53,7 +53,7 @@ class ContrastiveLoss(torch.nn.Module):
 
 def main():
 
-    model_class = lstm.LSTM_char_classifier
+    model_class = lstm_siamese.LSTM_char_classifier
     print('Training model class [{}]'.format(model_class.__name__))
     print()
 
@@ -76,17 +76,17 @@ def main():
 
     # pick config as defined
     print('Select model config to train')
-    for idx, c in enumerate(lstm.config):
-        assert len(c) == len(lstm.config_keys)
+    for idx, c in enumerate(lstm_siamese.config):
+        assert len(c) == len(lstm_siamese.config_keys)
         print('[{}] '.format(idx, end=''))
-        for i, item in enumerate(lstm.config_keys):
+        for i, item in enumerate(lstm_siamese.config_keys):
             print('{}={} '.format(item, c[i], end=''))
         print()
     selected_config = None
     while not selected_config:
         try:
             n = int(input('type a number: '))
-            selected_config = lstm.config[n]
+            selected_config = lstm_siamese.config[n]
         except KeyboardInterrupt:
             quit()
         except:
@@ -141,8 +141,8 @@ def main():
     print('[SELECTED MODEL]')
     print('  {}'.format(model_class))
     print('[MODEL PARAMS]')
-    assert len(model_param_list) == len(lstm.config_keys)
-    for i, c in enumerate(lstm.config_keys):
+    assert len(model_param_list) == len(lstm_siamese.config_keys)
+    for i, c in enumerate(lstm_siamese.config_keys):
         print('  {}: {}'.format(c, model_param_list[i]))
     print('[TRAIN PARAMS]')
     print('  batchsize {}'.format(train_param_list[0]))
@@ -157,6 +157,11 @@ def main():
     else:
         model.load_state_dict(torch.load(
             selected_file_path[1], map_location=torch.device('cpu')))
+
+    for name, param in model.named_parameters():
+        param.requires_grad = False
+        if "fc" in name:
+            param.requires_grad = True
 
     trainx, _, _, trainy, _, _ = data_loader_upper.load_subject_classic_random_split(
         0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = VERIFIED_SUBJECTS)
@@ -173,7 +178,7 @@ def main():
 
     # dont augment test set
     testx = data_flatten.resample_dataset_list(test_s_x)
-    print(testx.shape, test_s_y.shape)
+    # print(len(testx), len(test_s_y))
     testloader = get_dataloader(testx, test_s_y, BATCH_SIZE)
 
 
@@ -216,7 +221,7 @@ def main():
             print('  '.format(end=''))
             trainloss = 0
             for i, data in enumerate(zip(trainloader, s_trainloader)):
-                print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
+                # print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
 
                 (inputs, labels), (s_inputs, s_labels) = data
@@ -226,8 +231,8 @@ def main():
                     s_inputs = inputs.cuda()
                     s_labels = labels.cuda()
                 optimizer.zero_grad()
-                outputs = model(inputs.float())
-                s_outputs = model(s_inputs.float())
+                _, outputs = model(inputs.float())
+                _, s_outputs = model(s_inputs.float())
                 loss = siamese_criterion(outputs, s_outputs, labels.long(), s_labels.long())
                 loss.backward()
                 optimizer.step()
@@ -308,7 +313,7 @@ def acc(net, data_loader):
                 x = x.cuda()
                 y = y.cuda()
 
-            outputs = net(x.float())
+            outputs, _ = net(x.float())
             _, predicted = torch.max(outputs.data, 1)
 
             w = torch.sum((predicted - y) != 0).item()
@@ -329,7 +334,7 @@ def acc_loss(net, data_loader, criterion):
                 x = x.cuda()
                 y = y.cuda()
 
-            outputs = net(x.float())
+            outputs, _ = net(x.float())
             _, predicted = torch.max(outputs.data, 1)
 
             w = torch.sum((predicted - y) != 0).item()
