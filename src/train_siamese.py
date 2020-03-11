@@ -162,12 +162,13 @@ def main():
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
-    print(devx.shape)
-    devloader = get_dataloader(dev_s_x, dev_s_y, BATCH_SIZE)
+    # print(devx.shape)
+    devloader = get_dataloader(devx, devy, BATCH_SIZE)
 
     # dont augment test set
     testx = data_flatten.resample_dataset_list(test_s_x)
-    testloader = get_dataloader(test_s_x, test_s_y, BATCH_SIZE)
+    print(testx.shape, test_s_y.shape)
+    testloader = get_dataloader(testx, test_s_y, BATCH_SIZE)
 
 
     criterion = nn.CrossEntropyLoss()
@@ -191,7 +192,7 @@ def main():
             a_trainx, a_trainy = data_augmentation.noise_stretch_rotate_augment(
                 a_trainx, a_trainy, augment_prop=NOISE_AUGMENT_PROP,
                 is_already_flattened=False, resampled=True)
-            print(a_trainx.shape)
+            # print(a_trainx.shape)
 
             a_siamesex, a_siamesey = aug_concat_trim(
                 train_s_x, train_s_y, keep_orig=False)
@@ -209,7 +210,7 @@ def main():
             print('  '.format(end=''))
             trainloss = 0
             for i, data in enumerate(zip(trainloader, s_trainloader)):
-                print('{}'.format([i//10] if i%10==0 else "", end='', flush=False))
+                print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
 
                 (inputs, labels), (s_inputs, s_labels) = data
