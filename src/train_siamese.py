@@ -149,7 +149,7 @@ def main():
     print('  concat_trim_aug_prop {}'.format(train_param_list[1]))
     print('  noise_aug_prop {}'.format(train_param_list[2]))
     print()
-x
+
     # get the class, instantiate model, load weight
     # model = globals()[model_class](*model_param_list)
     if torch.cuda.is_available():
