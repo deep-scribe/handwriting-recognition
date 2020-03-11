@@ -53,7 +53,7 @@ class ContrastiveLoss(torch.nn.Module):
 
 def main():
 
-    model_class = lstm.LSTM_char_classifier
+    model_class = lstm_siamese.LSTM_char_classifier
     print('Training model class [{}]'.format(model_class.__name__))
     print()
 
@@ -76,17 +76,17 @@ def main():
 
     # pick config as defined
     print('Select model config to train')
-    for idx, c in enumerate(lstm.config):
-        assert len(c) == len(lstm.config_keys)
+    for idx, c in enumerate(lstm_siamese.config):
+        assert len(c) == len(lstm_siamese.config_keys)
         print('[{}] '.format(idx, end=''))
-        for i, item in enumerate(lstm.config_keys):
+        for i, item in enumerate(lstm_siamese.config_keys):
             print('{}={} '.format(item, c[i], end=''))
         print()
     selected_config = None
     while not selected_config:
         try:
             n = int(input('type a number: '))
-            selected_config = lstm.config[n]
+            selected_config = lstm_siamese.config[n]
         except KeyboardInterrupt:
             quit()
         except:
@@ -141,15 +141,15 @@ def main():
     print('[SELECTED MODEL]')
     print('  {}'.format(model_class))
     print('[MODEL PARAMS]')
-    assert len(model_param_list) == len(lstm.config_keys)
-    for i, c in enumerate(lstm.config_keys):
+    assert len(model_param_list) == len(lstm_siamese.config_keys)
+    for i, c in enumerate(lstm_siamese.config_keys):
         print('  {}: {}'.format(c, model_param_list[i]))
     print('[TRAIN PARAMS]')
     print('  batchsize {}'.format(train_param_list[0]))
     print('  concat_trim_aug_prop {}'.format(train_param_list[1]))
     print('  noise_aug_prop {}'.format(train_param_list[2]))
     print()
-
+x
     # get the class, instantiate model, load weight
     # model = globals()[model_class](*model_param_list)
     if torch.cuda.is_available():
