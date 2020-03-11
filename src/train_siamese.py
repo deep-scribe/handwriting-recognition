@@ -189,7 +189,7 @@ def main():
     # s_testloader = get_dataloader(siamese_test_x, siamese_test_y, BATCH_SIZE)
 
 
-    clf_criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss()
     siamese_criterion = ContrastiveLoss()
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
