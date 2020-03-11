@@ -159,7 +159,7 @@ def main():
             selected_file_path[1], map_location=torch.device('cpu')))
 
     trainx, _, _, trainy, _, _ = data_loader_upper.load_subject_classic_random_split(
-        0.0001, 0.0001,resampled=False, flatten=False, keep_idx_and_td=True, subjects = VERIFIED_SUBJECTS)
+        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = VERIFIED_SUBJECTS)
     # print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     # print()
 
