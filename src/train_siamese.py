@@ -21,7 +21,7 @@ NUM_EPOCH = 0
 USE_NONCLASS = True
 
 MODEL_WEIGHT_PATH = '../saved_model/siamese'
-MODEL_HIST_PATH = '../output/'
+MODEL_HIST_PATH = '../output/siamese'
 WEIGHT_DIR = '../saved_model/'
 
 VERIFIED_SUBJECTS = [
