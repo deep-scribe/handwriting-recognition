@@ -64,7 +64,7 @@ def load_all_classic_random_split(dev_prop, test_prop, resampled=True, flatten=T
     return trainx, devx, testx, trainy, devy, testy
 
 
-def load_subject_classic_random_split(dev_prop, test_prop, subjects=None, resampled=True, flatten=True, keep_idx_and_td=False,):
+def load_subject_classic_random_split(dev_prop, test_prop, subjects=None, resampled=True, flatten=True, keep_idx_and_td=False, subjects = None):
     xs, ys = verified_subjects_calibrated_yprs(
         resampled=resampled, flatten=flatten, keep_idx_and_td=keep_idx_and_td, subjects=subjects)
     xs = np.array(xs)
