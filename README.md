@@ -17,6 +17,16 @@ Our current best model using RNN (LSTM) achieves 86.6% accuracy in the random sp
 * [TensorFlow, PyTorch]() - The library used
 * [Arduino Uno, MPU-9250 Sensor]() - Hardware
 
+## Dependencies
+
+We recommend using anacdonda for environment setup, and use a virtual environment to install dependencies.
+
+```
+conda create -n <env_name> python=3.7
+conda activate <env_name>
+conda install numpy scikit-learn pandas matplotlib pytorch torchvision cudatoolkit=10.1 -c pytorch
+```
+
 ## Development Team
 
 * [**Wanze (Russell) Xie**](https://github.com/russellxie7)
