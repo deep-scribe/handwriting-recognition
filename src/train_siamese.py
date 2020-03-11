@@ -245,7 +245,7 @@ def main():
                 trainloss += loss.item()
 
             trainacc = acc(model, s_trainloader)
-            devacc, devloss = acc_loss(model, devloader, s_devloader, siamese_criterion)
+            devacc, devloss = acc_loss(model, devloader, criterion)
             hist['trainacc'].append(trainacc)
             hist['trainloss'].append(trainloss/len(trainloader))
             hist['devacc'].append(devacc)
@@ -266,7 +266,7 @@ def main():
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
-    testacc, testloss = acc_loss(model, testloader, s_testloader, siamese_criterion)
+    testacc, testloss = acc_loss(model, testloader, criterion)
     print("Test ACC:", testacc, "Test Loss:", testloss)
     hist['testacc'] = testacc
     hist['testloss'] = testloss
@@ -329,32 +329,27 @@ def acc(net, data_loader):
     return correct / total
 
 
-def acc_loss(net, data_loader, s_data_loader, criterion):
+def acc_loss(net, data_loader, criterion):
     correct = 0
     total = 0
     total_loss = 0.0
     with torch.no_grad():
-        for data, s_data in zip(data_loader, s_data_loader):
+        for data in data_loader:
             x, y = data
-            s_x, s_y = data
             if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
-                s_x = x.cuda()
-                s_y = y.cuda()
 
             outputs = net(x.float())
-            s_outputs = net(s_x.float())
-            _, predicted = torch.max(s_outputs.data, 1)
+            _, predicted = torch.max(outputs.data, 1)
 
             w = torch.sum((predicted - y) != 0).item()
             r = len(y) - w
             correct += r
             total += len(y)
 
-            total_loss += criterion(outputs, s_outputs, y.long(), s_y.long()).item() * len(x)
+            total_loss += criterion(outputs, y.long()).item() * len(x)
     return correct / total, total_loss / total
-
 
 
 def get_all_word_data_dirs():
