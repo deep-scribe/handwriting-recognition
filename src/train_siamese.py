@@ -14,9 +14,9 @@ from pprint import pprint
 BATCH_SIZE = 150
 CONCAT_TRIM_AUGMENT_PROP = 1
 NOISE_AUGMENT_PROP = 3
-DEV_PROP = 0.1
-TEST_PROP = 0.001
-NUM_EPOCH = 100
+DEV_PROP = 0.45
+TEST_PROP = 0.45
+NUM_EPOCH = 250
 USE_NONCLASS = True
 
 WEIGHT_DIR = '../saved_model/'
@@ -43,10 +43,72 @@ class ContrastiveLoss(torch.nn.Module):
 
 
 def main():
+
+    model_class = lstm.LSTM_char_classifier
+    print('Training model class [{}]'.format(model_class.__name__))
+    print()
+
+    # confirm hyperparam
+    print('CONFIRM following training parameter as defined on top of train_model.py')
+    print('  [BATCH_SIZE]               {}'.format(BATCH_SIZE))
+    print('  [CONCAT_TRIM_AUGMENT_PROP] {}'.format(CONCAT_TRIM_AUGMENT_PROP))
+    print('  [NOISE_AUGMENT_PROP]       {}'.format(NOISE_AUGMENT_PROP))
+    print('  [DEV_PROP]                 {}'.format(DEV_PROP))
+    print('  [TEST_PROP]                {}'.format(TEST_PROP))
+    print('  [USE_NONCLASS]             {}'.format(USE_NONCLASS))
+    print()
+    input()
+
+    # confirm data subject
+    print('CONFIRM following data subjects to be used as defined in data_laoder_upper.py')
+    print(' ', data_loader_upper.VERIFIED_SUBJECTS)
+    print()
+    input()
+
+    # pick config as defined
+    print('Select model config to train')
+    for idx, c in enumerate(lstm.config):
+        assert len(c) == len(lstm.config_keys)
+        print('[{}] '.format(idx, end=''))
+        for i, item in enumerate(lstm.config_keys):
+            print('{}={} '.format(item, c[i], end=''))
+        print()
+    selected_config = None
+    while not selected_config:
+        try:
+            n = int(input('type a number: '))
+            selected_config = lstm.config[n]
+        except KeyboardInterrupt:
+            quit()
+        except:
+            pass
+    print()
+
+    # define filename
+    config_strs = [str(int(c)) for c in selected_config]
+    s = '-'.join(config_strs)
+    now = datetime.now()
+    time_str = now.strftime("%m-%d-%H-%M")
+    file_prefix = '{}.{}.{}-{}-{}.{}'.format(
+    model_class.__name__, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str
+    )
+    weight_filename = file_prefix+'.pth'
+    hist_filename = file_prefix+'.json'
+    print('Model weights will be saved to [{}]'.format(MODEL_WEIGHT_PATH))
+    print('Model weights will be saved as [{}]'.format(weight_filename))
+    print('Training history will be saved to [{}]'.format(MODEL_HIST_PATH))
+    print('Training history will be saved as [{}]'.format(hist_filename))
+    print()
+
+    model = model_class(*selected_config)
+    print('torch.cuda.is_available()={}'.format(torch.cuda.is_available()))
+    if torch.cuda.is_available():
+        model = model.cuda()
+
     print('Select weight files to load')
     pth_files_paths = get_all_pth_files()
     for idx, path in enumerate(pth_files_paths):
-        print(f'[{idx}] {path[0]}')
+        print('[{}] {}'.format(idx, path[0]))
     selected_file_path = None
     while not selected_file_path:
         try:
@@ -67,59 +129,62 @@ def main():
     model_param_list[-2] = bool(model_param_list[-2])
     train_param_list = train_param.split('-')
 
-    print(f'[SELECTED MODEL]')
-    print(f'  {model_class}')
-    print(f'[MODEL PARAMS]')
+    print('[SELECTED MODEL]')
+    print('  {}'.format(model_class))
+    print('[MODEL PARAMS]')
     assert len(model_param_list) == len(lstm.config_keys)
     for i, c in enumerate(lstm.config_keys):
-        print(f'  {c}: {model_param_list[i]}')
-    print(f'[TRAIN PARAMS]')
-    print(f'  batchsize {train_param_list[0]}')
-    print(f'  concat_trim_aug_prop {train_param_list[1]}')
-    print(f'  noise_aug_prop {train_param_list[2]}')
+        print('  {}: {}'.format(c, model_param_list[i]))
+    print('[TRAIN PARAMS]')
+    print('  batchsize {}'.format(train_param_list[0]))
+    print('  concat_trim_aug_prop {}'.format(train_param_list[1]))
+    print('  noise_aug_prop {}'.format(train_param_list[2]))
     print()
 
     # get the class, instantiate model, load weight
-    model = globals()[model_class](*model_param_list)
+    # model = globals()[model_class](*model_param_list)
     if torch.cuda.is_available():
         model.load_state_dict(torch.load(selected_file_path[1]))
     else:
         model.load_state_dict(torch.load(
             selected_file_path[1], map_location=torch.device('cpu')))
 
-    trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
-        DEV_PROP, TEST_PROP,
+    trainx, _, _, trainy, _, _ = data_loader_upper.load_all_classic_random_split(
+        0, 0,
         resampled=False, flatten=False, keep_idx_and_td=True)
-    print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
-    print()
+    # print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
+    # print()
 
-    a_siamesex, a_siamesey = aug_concat_trim(
-        siamese_x, siamese_y, keep_orig=False)
-    a_siamesex, a_siamesey = data_augmentation.noise_stretch_rotate_augment(
-        a_siamesex, a_siamesey, augment_prop=NOISE_AUGMENT_PROP,
-        is_already_flattened=False, resampled=True)
+    train_s_x, dev_s_x, test_s_x, train_s_y, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
+        DEV_PROP, TEST_PROP, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
+
+    # a_siamesex, a_siamesey = aug_concat_trim(
+    #     train_s_x, train_s_y, keep_orig=False)
+    # a_siamesex, a_siamesey = data_augmentation.noise_stretch_rotate_augment(
+    #     train_s_x, train_s_y, augment_prop=NOISE_AUGMENT_PROP,
+    #     is_already_flattened=False, resampled=True)
 
     # augment dev set, keeping raw sequences in
-    devx, devy = aug_concat_trim(devx, devy)
-    devloader = get_dataloader(devx, devy, BATCH_SIZE)
+    devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
+    devloader = get_dataloader(dev_s_x, dev_s_y, BATCH_SIZE)
 
     # dont augment test set
-    testx = data_flatten.resample_dataset_list(testx)
-    testloader = get_dataloader(testx, testy, BATCH_SIZE)
-
-    siamese_df = data_utils.load_subject(selected_word_dir[1])
-    siamese_x, siamese_y = data_utils.get_calibrated_yprs_samples(
-        word_df, resampled=False, flatten=False,
-        is_word_samples=True, keep_idx_and_td=True
-    )
-
-    siamese_dev_x = np.resize(a_siamesex, devx.shape)
-    siamese_dev_y = np.resize(a_siamesey, devy.shape)
-    s_devloader = get_dataloader(siamese_dev_x, siamese_dev_y, BATCH_SIZE)
-
-    siamese_test_x = np.resize(a_siamesex, testx.shape)
-    siamese_test_y = np.resize(a_siamesey, testy.shape)
-    s_testloader = get_dataloader(siamese_test_x, siamese_test_y, BATCH_SIZE)
+    testx = data_flatten.resample_dataset_list(test_s_x)
+    testloader = get_dataloader(test_s_x, test_s_y, BATCH_SIZE)
+    #
+    # siamese_df = data_utils.load_subject(selected_word_dir[1])
+    # siamese_x, siamese_y = data_utils.get_calibrated_yprs_samples(
+    #     word_df, resampled=False, flatten=False,
+    #     is_word_samples=True, keep_idx_and_td=True
+    # )
+    #
+    # siamese_dev_x = np.resize(a_siamesex, devx.shape)
+    # siamese_dev_y = np.resize(a_siamesey, devy.shape)
+    # s_devloader = get_dataloader(siamese_dev_x, siamese_dev_y, BATCH_SIZE)
+    #
+    # siamese_test_x = np.resize(a_siamesex, testx.shape)
+    # siamese_test_y = np.resize(a_siamesey, testy.shape)
+    # s_testloader = get_dataloader(siamese_test_x, siamese_test_y, BATCH_SIZE)
 
 
     clf_criterion = nn.CrossEntropyLoss()
@@ -131,7 +196,7 @@ def main():
     try:
         for epoch in range(NUM_EPOCH):
             running_loss = 0.0
-            print(f'Epoch [{epoch}]')
+            print('Epoch [{}]'.format(epoch))
 
             # augment train set differently every epoch
             # do not keep raw sequence
@@ -145,7 +210,7 @@ def main():
                 is_already_flattened=False, resampled=True)
 
             a_siamesex, a_siamesey = aug_concat_trim(
-                siamese_x, siamese_y, keep_orig=False)
+                train_s_x, train_s_y, keep_orig=False)
             a_siamesex, a_siamesey = data_augmentation.noise_stretch_rotate_augment(
                 a_siamesex, a_siamesey, augment_prop=NOISE_AUGMENT_PROP,
                 is_already_flattened=False, resampled=True)
@@ -157,11 +222,11 @@ def main():
             print('  train')
             trainloader = get_dataloader(a_trainx, a_trainy, BATCH_SIZE)
             s_trainloader = get_dataloader(siamese_batch_x, siamese_batch_y, BATCH_SIZE)
-            print('  ', end='')
+            print('  '.format(end=''))
             trainloss = 0
             for i, data in enumerate(zip(trainloader, s_trainloader)):
-                print(f'{[i//10] if i%10==0 else ""}', end='', flush=True)
-                print(i % 10, end='', flush=True)
+                print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
+                print('{}'.format(i % 10, end='', flush=True))
 
                 (inputs, labels), (s_inputs, s_labels) = data
                 if torch.cuda.is_available():
@@ -185,8 +250,8 @@ def main():
             hist['devacc'].append(devacc)
             hist['devloss'].append(devloss)
 
-            print(f'  trainacc={trainacc} devacc={devacc}')
-            print(f'  trainloss={trainloss} devloss={devloss}')
+            print('  trainacc={} devacc={}'.format(trainacc, devacc))
+            print('  trainloss={} devloss={}'.format(trainloss, devloss))
 
             # save model if achieve lower dev loss
             # i.e. early stopping
@@ -194,7 +259,7 @@ def main():
                 best_loss = devloss
                 torch.save(model.state_dict(), os.path.join(
                     MODEL_WEIGHT_PATH, weight_filename))
-                print(f'  new best dev loss, weight saved')
+                print('new best dev loss, weight saved')
     except KeyboardInterrupt:
         pass
 
@@ -204,7 +269,7 @@ def main():
     print("Test ACC:", testacc, "Test Loss:", testloss)
     hist['testacc'] = testacc
     hist['testloss'] = testloss
-    print(f'test loss={testloss} test acc={testacc}')
+    # print(f'test loss={testloss} test acc={testacc}')
 
     with open(os.path.join(MODEL_HIST_PATH, hist_filename), 'w') as f:
         json.dump(hist, f)
