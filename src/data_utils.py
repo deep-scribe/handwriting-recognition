@@ -142,7 +142,7 @@ def get_yprs_calibration_vector(df):
     calibrationdf = df[df['label'] == CALIBRATION_LABEL_NAME]
     if calibrationdf.empty:
         print(
-            f'[WARN] data_utils.get_yprs_calibration_vector: no calibration data in df, returning [0,0,0]'
+            '[WARN] data_utils.get_yprs_calibration_vector: no calibration data in df, returning [0,0,0]'
         )
         return np.zeros(3)
 

@@ -114,7 +114,7 @@ def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True, resam
     please augment TRAIN_SET only
     return the augmented x and ys
     '''
-    print(f'Augmenting TRAIN set with proportion {augment_prop}')
+    print('Augmenting TRAIN set with proportion {}'.format(augment_prop))
 
     augmented_xs = []
     augmented_ys = []

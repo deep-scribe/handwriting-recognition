@@ -243,7 +243,7 @@ def dump_augmented_yprs_pngs(subject_path):
     if calibrationdf.empty:
         print('!' * 80)
         print(
-            f'WARN: no {data_utils.CALIBRATION_FILENAME}, using default [0,0,0] to calibrate yprs.'
+            'WARN: no {}, using default [0,0,0] to calibrate yprs.'.format(data_utils.CALIBRATION_FILENAME)
         )
         print('!' * 80)
         calibrationyprs = np.zeros(3)
@@ -262,7 +262,7 @@ def dump_augmented_yprs_pngs(subject_path):
             samplesdf = df[df['label'] == label_name]
             sampleids = samplesdf.id.unique()
 
-            print(f'Processing label {label_name}...')
+            print('Processing label {}...'.format(label_name))
 
             for sample_id in sampleids:
                 sampledf = samplesdf[samplesdf['id'] == sample_id]
@@ -288,7 +288,7 @@ def dump_augmented_yprs_pngs(subject_path):
                     os.path.join(
                         subject_path,
                         PNG_DIRNAME_YPRS_2D,
-                        f'{label_name}_{sample_id}_aug.png'
+                        '{}_{}_aug.png'.format(label_name, sample_id)
                     )
                 )
 
@@ -299,7 +299,7 @@ def dump_augmented_yprs_pngs(subject_path):
                     os.path.join(
                         subject_path,
                         PNG_DIRNAME_YPRS_3D,
-                        f'{label_name}_{sample_id}_aug.png'
+                        '{}_{}_aug.png'.format(label_name, sample_id)
                     )
                 )
 
