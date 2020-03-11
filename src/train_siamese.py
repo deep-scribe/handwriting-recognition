@@ -162,7 +162,7 @@ def main():
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
-    print(devx.shape, devy.shape)
+    print(devx.shape)
     devloader = get_dataloader(dev_s_x, dev_s_y, BATCH_SIZE)
 
     # dont augment test set
@@ -191,6 +191,7 @@ def main():
             a_trainx, a_trainy = data_augmentation.noise_stretch_rotate_augment(
                 a_trainx, a_trainy, augment_prop=NOISE_AUGMENT_PROP,
                 is_already_flattened=False, resampled=True)
+            print(a_trainx.shape)
 
             a_siamesex, a_siamesey = aug_concat_trim(
                 train_s_x, train_s_y, keep_orig=False)
