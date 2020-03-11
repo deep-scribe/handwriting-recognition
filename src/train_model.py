@@ -69,11 +69,14 @@ def main():
     print()
 
     # define filename
+    description = ''
+    while description == '':
+        description = input('input a model description (part of filename): ')
     config_strs = [str(int(c)) for c in selected_config]
     s = '-'.join(config_strs)
     now = datetime.now()
     time_str = now.strftime("%m-%d-%H-%M")
-    file_prefix = f'{model_class.__name__}.{s}.{BATCH_SIZE}-{CONCAT_TRIM_AUGMENT_PROP}-{NOISE_AUGMENT_PROP}.{time_str}'
+    file_prefix = f'{model_class.__name__}.{s}.{BATCH_SIZE}-{CONCAT_TRIM_AUGMENT_PROP}-{NOISE_AUGMENT_PROP}.{time_str}.{description}'
     weight_filename = file_prefix+'.pth'
     hist_filename = file_prefix+'.json'
     print(f'Model weights will be saved to [{MODEL_WEIGHT_PATH}]')

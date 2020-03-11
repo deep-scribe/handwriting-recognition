@@ -15,7 +15,7 @@ VERIFIED_SUBJECTS = [
     'kevin_tip_first',
     'kevin_tip_second',
     'kevin_tip_char_2',
-    'kevin_mar3'
+    'kevin_mar3',
     'russell_upper_2',
     'russell_upper_3',
     'russell_upper_4',
