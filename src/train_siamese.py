@@ -24,7 +24,7 @@ MODEL_WEIGHT_PATH = '../saved_model/siamese'
 MODEL_HIST_PATH = '../output/'
 WEIGHT_DIR = '../saved_model/'
 
-ERIFIED_SUBJECTS = [
+VERIFIED_SUBJECTS = [
     'kevin_tip_first',
     'kevin_tip_second',
     'kevin_tip_char_2',
