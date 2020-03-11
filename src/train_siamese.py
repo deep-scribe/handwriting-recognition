@@ -160,33 +160,14 @@ def main():
     train_s_x, dev_s_x, test_s_x, train_s_y, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
         DEV_PROP, TEST_PROP, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
 
-    # a_siamesex, a_siamesey = aug_concat_trim(
-    #     train_s_x, train_s_y, keep_orig=False)
-    # a_siamesex, a_siamesey = data_augmentation.noise_stretch_rotate_augment(
-    #     train_s_x, train_s_y, augment_prop=NOISE_AUGMENT_PROP,
-    #     is_already_flattened=False, resampled=True)
-
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
+    print(devx.shape, devy.shape)
     devloader = get_dataloader(dev_s_x, dev_s_y, BATCH_SIZE)
 
     # dont augment test set
     testx = data_flatten.resample_dataset_list(test_s_x)
     testloader = get_dataloader(test_s_x, test_s_y, BATCH_SIZE)
-    #
-    # siamese_df = data_utils.load_subject(selected_word_dir[1])
-    # siamese_x, siamese_y = data_utils.get_calibrated_yprs_samples(
-    #     word_df, resampled=False, flatten=False,
-    #     is_word_samples=True, keep_idx_and_td=True
-    # )
-    #
-    # siamese_dev_x = np.resize(a_siamesex, devx.shape)
-    # siamese_dev_y = np.resize(a_siamesey, devy.shape)
-    # s_devloader = get_dataloader(siamese_dev_x, siamese_dev_y, BATCH_SIZE)
-    #
-    # siamese_test_x = np.resize(a_siamesex, testx.shape)
-    # siamese_test_y = np.resize(a_siamesey, testy.shape)
-    # s_testloader = get_dataloader(siamese_test_x, siamese_test_y, BATCH_SIZE)
 
 
     criterion = nn.CrossEntropyLoss()
@@ -227,7 +208,7 @@ def main():
             print('  '.format(end=''))
             trainloss = 0
             for i, data in enumerate(zip(trainloader, s_trainloader)):
-                print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
+                print('{}'.format([i//10] if i%10==0 else "", end='', flush=False))
                 # print('{}'.format(i % 10, end='', flush=True))
 
                 (inputs, labels), (s_inputs, s_labels) = data
