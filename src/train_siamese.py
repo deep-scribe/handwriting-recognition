@@ -44,7 +44,6 @@ class ContrastiveLoss(torch.nn.Module):
 
     def forward(self, output1, output2, label1, label2):
         euclidean_distance = F.pairwise_distance(output1, output2, keepdim = True)
-        print((label1==label2).float().shape)
         loss_contrastive = torch.mean((label1==label2).float() * torch.pow(euclidean_distance, 2) +
                                       (1-(label1==label2).float()) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
 
@@ -158,6 +157,11 @@ def main():
     else:
         model.load_state_dict(torch.load(
             selected_file_path[1], map_location=torch.device('cpu')))
+
+    for name, param in model.named_parameters():
+        param.requires_grad = False
+        if "fc" in name:
+            param.requires_grad = True
 
     trainx, _, _, trainy, _, _ = data_loader_upper.load_subject_classic_random_split(
         0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = VERIFIED_SUBJECTS)
