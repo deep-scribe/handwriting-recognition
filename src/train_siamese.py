@@ -3,7 +3,6 @@ import data_loader_upper
 import random
 import segmentation
 import os
-import word_search
 import torch
 import data_utils
 
