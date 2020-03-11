@@ -238,7 +238,7 @@ def main():
                 optimizer.zero_grad()
                 outputs = model(inputs.float())
                 s_outputs = model(s_inputs.float())
-                loss = siamese_criterion(outputs, labels.long(), s_outputs, labels.long(), s_labels.long())
+                loss = siamese_criterion(outputs, s_outputs, labels.long(), s_labels.long())
                 loss.backward()
                 optimizer.step()
                 trainloss += loss.item()
