@@ -10,6 +10,7 @@ import numpy as np
 import data_flatten
 from collections import defaultdict
 from datetime import datetime
+import torch.nn.functional as F
 
 BATCH_SIZE = 150
 CONCAT_TRIM_AUGMENT_PROP = 1
