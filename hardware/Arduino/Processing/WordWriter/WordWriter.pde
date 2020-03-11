@@ -27,7 +27,7 @@ String[] az = new String[]{
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "kelly_new";
+String FOLDER_NAME = "russell_new_2";
 String[] word_list = words_27.clone();
 
 //String FOLDER_NAME = "kevin_mar3";
@@ -36,7 +36,7 @@ String[] word_list = words_27.clone();
 boolean start_from_first_word = true;
 String word_to_start_at = "NO_WORD_DEFINED";
 //boolean start_from_first_word = false;
-//String word_to_start_at = "fem";
+//String word_to_start_at = "AXE";
 
 boolean addCalibration = true;
 

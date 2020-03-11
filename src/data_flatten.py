@@ -293,7 +293,7 @@ def visualization_example():
         loaded_dataset, is_flatten_ypr=True, feature_num=100)
 
     quit()
-
+    
     print("\nSanity check for Example 1, ypr data is flattened...")
     # the shape of should be (20, 3 * 100)
     assert(flattened_dataset['a'].shape == (20, 300))
