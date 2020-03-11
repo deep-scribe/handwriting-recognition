@@ -15,7 +15,7 @@ from datetime import datetime
 # pertaining anything that does not modify the model structure
 # modify this before running training script
 BATCH_SIZE = 1500
-CONCAT_TRIM_AUGMENT_PROP = 1
+CONCAT_TRIM_AUGMENT_PROP = 3
 NOISE_AUGMENT_PROP = 3
 DEV_PROP = 0.1
 TEST_PROP = 0.001
