@@ -243,7 +243,6 @@ def main():
                 loss.backward()
                 optimizer.step()
                 trainloss += loss.item()
-            print()
 
             trainacc = acc(model, s_trainloader)
             devacc, devloss = acc_loss(model, devloader, s_devloader, siamese_criterion)
