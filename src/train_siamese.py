@@ -1,4 +1,4 @@
-import lstm
+import lstm_siamese
 import torch
 import data_loader_upper
 import torch.nn as nn
@@ -226,8 +226,8 @@ def main():
                     s_inputs = inputs.cuda()
                     s_labels = labels.cuda()
                 optimizer.zero_grad()
-                outputs = model(inputs.float())
-                s_outputs = model(s_inputs.float())
+                _, outputs = model(inputs.float())
+                _, s_outputs = model(s_inputs.float())
                 loss = siamese_criterion(outputs, s_outputs, labels.long(), s_labels.long())
                 loss.backward()
                 optimizer.step()
@@ -308,7 +308,7 @@ def acc(net, data_loader):
                 x = x.cuda()
                 y = y.cuda()
 
-            outputs = net(x.float())
+            outputs, _ = net(x.float())
             _, predicted = torch.max(outputs.data, 1)
 
             w = torch.sum((predicted - y) != 0).item()
@@ -329,7 +329,7 @@ def acc_loss(net, data_loader, criterion):
                 x = x.cuda()
                 y = y.cuda()
 
-            outputs = net(x.float())
+            outputs, _ = net(x.float())
             _, predicted = torch.max(outputs.data, 1)
 
             w = torch.sum((predicted - y) != 0).item()
