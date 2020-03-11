@@ -173,7 +173,7 @@ def main():
 
     # dont augment test set
     testx = data_flatten.resample_dataset_list(test_s_x)
-    print(len(testx), len(test_s_y))
+    # print(len(testx), len(test_s_y))
     testloader = get_dataloader(testx, test_s_y, BATCH_SIZE)
 
 
@@ -216,7 +216,7 @@ def main():
             print('  '.format(end=''))
             trainloss = 0
             for i, data in enumerate(zip(trainloader, s_trainloader)):
-                print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
+                # print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
 
                 (inputs, labels), (s_inputs, s_labels) = data
