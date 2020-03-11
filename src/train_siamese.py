@@ -173,7 +173,7 @@ def main():
 
     # dont augment test set
     testx = data_flatten.resample_dataset_list(test_s_x)
-    print(testx.shape, len(test_s_y))
+    print(len(testx), len(test_s_y))
     testloader = get_dataloader(testx, test_s_y, BATCH_SIZE)
 
 
