@@ -1,15 +1,15 @@
 import lstm
-import data_loader_upper
-import random
-import segmentation
-import os
 import torch
-import data_utils
-import datetime
-
-from lstm import LSTM_char_classifier
-
-from pprint import pprint
+import data_loader_upper
+import torch.nn as nn
+import torch.optim as optim
+import data_augmentation
+import os
+import json
+import numpy as np
+import data_flatten
+from collections import defaultdict
+from datetime import datetime
 
 BATCH_SIZE = 150
 CONCAT_TRIM_AUGMENT_PROP = 1
