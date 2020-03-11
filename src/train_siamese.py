@@ -19,9 +19,10 @@ TEST_PROP = 0.45
 NUM_EPOCH = 250
 USE_NONCLASS = True
 
+MODEL_WEIGHT_PATH = '../saved_model/siamese'
+MODEL_HIST_PATH = '../output/'
 WEIGHT_DIR = '../saved_model/'
-WORD_DATA_DIR = '../data_words/'
-WEIGHT_SIAMESE_DIR = '../saved_model/siamese'
+
 
 class ContrastiveLoss(torch.nn.Module):
     """
