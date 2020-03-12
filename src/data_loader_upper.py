@@ -70,8 +70,7 @@ def load_subject_classic_random_split(dev_prop, test_prop, subjects=None, resamp
     xs = np.array(xs)
     ys = np.array(ys)
     trainy = []
-    print(ys)
-    while not (all(x in trainy for x in range(27))):
+    while not (all(x in trainy for x in range(26))):
         trainx, devtestx, trainy, devtesty = train_test_split(
             xs, ys, test_size=(dev_prop+test_prop))
     devx, testx, devy, testy = train_test_split(
