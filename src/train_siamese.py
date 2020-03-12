@@ -266,7 +266,7 @@ def main():
 
     print(' Testing')
     s_trainloader = get_dataloader(a_siamesex, a_siamesey, 1)
-    testacc = acc(model, s_trainloader, testloader, siamese_criterion)
+    testacc = acc(model, s_trainloader, s_trainloader, siamese_criterion)
     print("Test ACC:", testacc)
     hist['testacc'] = testacc
     # hist['testloss'] = testloss
