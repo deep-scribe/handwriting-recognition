@@ -233,8 +233,10 @@ def main():
                     s_inputs = inputs.cuda()
                     s_labels = labels.cuda()
                 optimizer.zero_grad()
-                _, outputs = model(inputs.float())
-                _, s_outputs = model(s_inputs.float())
+                # _, outputs = model(inputs.float())
+                # _, s_outputs = model(s_inputs.float())
+                outputs, _ = model(inputs.float())
+                s_outputs, _ = model(s_inputs.float())
                 loss = siamese_criterion(outputs, s_outputs, labels.long(), s_labels.long())
                 loss.backward()
                 optimizer.step()
@@ -318,14 +320,15 @@ def acc(net, pivot_data_loader, data_loader, criterion):
     correct = 0
     total = 0
     with torch.no_grad():
-        pivot_list = torch.zeros(27, 200).cuda()
+        pivot_list = torch.zeros(27, 27).cuda()
         pivot_count = torch.zeros(27).cuda()
         for pivot_data in pivot_data_loader:
             x, y = pivot_data
             if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
-            _, vector = net(x.float())
+            # _, vector = net(x.float())
+            vector. _ = net(x.float())
             pivot_list[y.cpu()] += vector.squeeze(0)
             pivot_count[y.cpu()] += 1
         # print(pivot_list)
@@ -337,7 +340,8 @@ def acc(net, pivot_data_loader, data_loader, criterion):
                 x = x.cuda()
                 y = y.cuda()
 
-            _, outputs = net(x.float())
+            # _, outputs = net(x.float())
+            outputs, _ = net(x.float())
 
             predicted = -1*torch.ones_like(y)
             for i in range(x.shape[0]):
