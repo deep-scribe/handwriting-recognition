@@ -61,24 +61,6 @@ def main():
 
     model_class = lstm_siamese.LSTM_char_classifier
     print('Training model class [{}]'.format(model_class.__name__))
-    print()
-
-    # confirm hyperparam
-    print('CONFIRM following training parameter as defined on top of train_model.py')
-    print('  [BATCH_SIZE]               {}'.format(BATCH_SIZE))
-    print('  [CONCAT_TRIM_AUGMENT_PROP] {}'.format(CONCAT_TRIM_AUGMENT_PROP))
-    print('  [NOISE_AUGMENT_PROP]       {}'.format(NOISE_AUGMENT_PROP))
-    print('  [DEV_PROP]                 {}'.format(DEV_PROP))
-    print('  [TEST_PROP]                {}'.format(TEST_PROP))
-    print('  [USE_NONCLASS]             {}'.format(USE_NONCLASS))
-    print()
-    input()
-
-    # confirm data subject
-    print('CONFIRM following data subjects to be used as defined in data_laoder_upper.py')
-    print(' ', data_loader_upper.VERIFIED_SUBJECTS)
-    print()
-    input()
 
     print('Number of epoches:')
     NUM_EPOCH = int(input())
