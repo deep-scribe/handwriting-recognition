@@ -235,7 +235,7 @@ def main():
                 optimizer.step()
                 trainloss += loss.item()
 
-            trainacc = acc(model, s_trainloader, train_loader, siamese_criterion)
+            trainacc = acc(model, s_trainloader, s_trainloader, siamese_criterion)
             devacc = acc(model, s_trainloader, devloader, criterion)
             # devacc, devloss = acc_loss(model, devloader, criterion)
             hist['trainacc'].append(trainacc)
@@ -266,7 +266,7 @@ def main():
 
     print(' Testing')
     s_trainloader = get_dataloader(a_siamesex, a_siamesey, 1)
-    testacc = acc(model, s_trainloader, s_trainloader, siamese_criterion)
+    testacc = acc(model, s_trainloader, testloader, siamese_criterion)
     print("Test ACC:", testacc)
     hist['testacc'] = testacc
     # hist['testloss'] = testloss
