@@ -334,7 +334,8 @@ def acc(net, pivot_data_loader, data_loader, criterion):
         pivot_list = torch.zeros(27, 200)
         pivot_count = torch.zeros(27)
         for pivot_data in pivot_data_loader:
-            x, y = data
+            x, y = pivot_data
+            print(x.shape)
             if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
