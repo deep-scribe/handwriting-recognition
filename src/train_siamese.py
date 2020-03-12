@@ -170,7 +170,7 @@ def main():
     #     0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = SIAMESE_SUBJECTS)
 
     train_s_x, dev_s_x, test_s_x, train_s_y, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
-        0.499, 0.499, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
+        DEV_PROP, TEST_PROP, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
     # _, dev_s_x, test_s_x, _, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
     #     0.499, 0.499, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
 
