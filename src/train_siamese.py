@@ -276,6 +276,14 @@ def main():
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
+    a_siamesex, a_siamesey = aug_concat_trim(
+        train_s_x, train_s_y, keep_orig=False)
+    a_siamesex, a_siamesey = data_augmentation.noise_stretch_rotate_augment(
+        a_siamesex, a_siamesey, augment_prop=NOISE_AUGMENT_PROP,
+        is_already_flattened=False, resampled=True)
+
+    print(' Testing')
+    s_trainloader = get_dataloader(a_siamesex, a_siamesey, 1)
     testacc = acc(model, s_trainloader, testloader, siamese_criterion)
     print("Test ACC:", testacc)
     hist['testacc'] = testacc
