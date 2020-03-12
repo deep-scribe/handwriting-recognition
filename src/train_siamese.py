@@ -184,7 +184,7 @@ def main():
     siamese_criterion = ContrastiveLoss()
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
-    best_loss = 1000
+    best_acc = 0
     start_time = time.time()
 
     try:
@@ -222,7 +222,7 @@ def main():
             for i, data in enumerate(zip(trainloader, s_trainloader)):
                 # print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
-                if i % 10 == 0:
+                if i % 100 == 0:
                     print(i, "/", len(trainloader), "Time:", time.time()-start_time)
 
                 (inputs, labels), (s_inputs, s_labels) = data
@@ -252,7 +252,7 @@ def main():
 
             # save model if achieve lower dev loss
             # i.e. early stopping
-            if best_loss > devloss:
+            if best_acc < devacc:
                 best_loss = devloss
                 torch.save(model.state_dict(), os.path.join(
                     MODEL_WEIGHT_PATH, weight_filename))
