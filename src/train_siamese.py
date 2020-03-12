@@ -261,7 +261,7 @@ def main():
         pass
 
     print()
-    print('Finished Training', 'best dev loss', best_loss)
+    print('Finished Training', 'best dev acc', best_acc)
     a_siamesex, a_siamesey = aug_concat_trim(
         train_s_x, train_s_y, keep_orig=False)
     a_siamesex, a_siamesey = data_augmentation.noise_stretch_rotate_augment(
@@ -327,6 +327,8 @@ def acc(net, pivot_data_loader, data_loader, criterion):
             _, vector = net(x.float())
             pivot_list[y.cpu()] += vector.squeeze(0)
             pivot_count[y.cpu()] += 1
+        print(pivot_list)
+        print(pivot_count)
         pivot_list = pivot_list/pivot_count.unsqueeze(1)
         for data in data_loader:
             x, y = data
