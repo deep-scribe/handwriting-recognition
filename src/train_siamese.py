@@ -17,7 +17,7 @@ CONCAT_TRIM_AUGMENT_PROP = 1
 NOISE_AUGMENT_PROP = 3
 DEV_PROP = 0.45
 TEST_PROP = 0.45
-NUM_EPOCH = 500
+NUM_EPOCH = 250
 USE_NONCLASS = True
 
 MODEL_WEIGHT_PATH = '../saved_model/siamese'
@@ -79,6 +79,9 @@ def main():
     print(' ', data_loader_upper.VERIFIED_SUBJECTS)
     print()
     input()
+
+    print('Number of epoches:')
+    NUM_EPOCH = int(input())
 
     # pick config as defined
     print('Select model config to train')

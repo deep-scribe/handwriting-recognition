@@ -50,6 +50,9 @@ def main():
     print()
     input()
 
+    print('Number of epoches:')
+    NUM_EPOCH = int(input())
+
     # pick config as defined
     print('Select model config to train')
     for idx, c in enumerate(lstm.config):
