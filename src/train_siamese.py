@@ -220,6 +220,8 @@ def main():
             for i, data in enumerate(zip(trainloader, s_trainloader)):
                 # print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
+                if i % 10 == 0:
+                    print(i, len(train_loader))
 
                 (inputs, labels), (s_inputs, s_labels) = data
                 if torch.cuda.is_available():
