@@ -159,16 +159,20 @@ def main():
         if "fc" in name:
             param.requires_grad = True
 
-    trainx, _, _, trainy, _, _ = data_loader_upper.load_subject_classic_random_split(
-        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = VERIFIED_SUBJECTS)
+    trainx, _, _, trainy, _, _ = data_loader_upper.load_all_classic_random_split(
+        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True)
+    # trainx, _, _, trainy, _, _ = data_loader_upper.load_subject_classic_random_split(
+    #     0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = VERIFIED_SUBJECTS)
     # print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     # print()
 
-    train_s_x, _, _, train_s_y, _, _ = data_loader_upper.load_subject_classic_random_split(
-        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = SIAMESE_SUBJECTS)
+    # train_s_x, _, _, train_s_y, _, _ = data_loader_upper.load_subject_classic_random_split(
+    #     0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = SIAMESE_SUBJECTS)
 
-    _, dev_s_x, test_s_x, _, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
+    train_s_x, dev_s_x, test_s_x, train_s_y, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
         0.499, 0.499, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
+    # _, dev_s_x, test_s_x, _, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
+    #     0.499, 0.499, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
@@ -328,7 +332,7 @@ def acc(net, pivot_data_loader, data_loader, criterion):
                 x = x.cuda()
                 y = y.cuda()
             # _, vector = net(x.float())
-            vector. _ = net(x.float())
+            vector, _ = net(x.float())
             pivot_list[y.cpu()] += vector.squeeze(0)
             pivot_count[y.cpu()] += 1
         # print(pivot_list)
