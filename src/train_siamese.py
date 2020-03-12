@@ -15,8 +15,8 @@ import torch.nn.functional as F
 BATCH_SIZE = 150
 CONCAT_TRIM_AUGMENT_PROP = 1
 NOISE_AUGMENT_PROP = 3
-DEV_PROP = 0.45
-TEST_PROP = 0.45
+DEV_PROP = 0.4
+TEST_PROP = 0.4
 NUM_EPOCH = 250
 USE_NONCLASS = True
 
@@ -184,7 +184,7 @@ def main():
     #     0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = SIAMESE_SUBJECTS)
 
     train_s_x, dev_s_x, test_s_x, train_s_y, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
-        0.4, 0.4, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
+        DEV_PROP, TEST_PROP, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
@@ -341,7 +341,7 @@ def acc(net, pivot_data_loader, data_loader, criterion):
             _, vector = net(x.float())
             pivot_list[int(y.cpu())] += vector.squeeze(0)
             pivot_count[int(y.cpu())] += 1
-        pivot_list = pivot_list/pivot_count
+        pivot_list = pivot_list/pivot_count.unsqueeze(1)
         for data in data_loader:
             x, y = data
             if torch.cuda.is_available():
