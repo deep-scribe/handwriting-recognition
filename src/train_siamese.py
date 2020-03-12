@@ -154,21 +154,21 @@ def main():
         model.load_state_dict(torch.load(
             selected_file_path[1], map_location=torch.device('cpu')))
 
-    # for name, param in model.named_parameters():
-    #     param.requires_grad = False
-    #     if "fc" in name:
-    #         param.requires_grad = True
+    for name, param in model.named_parameters():
+        param.requires_grad = False
+        if "fc" in name:
+            param.requires_grad = True
 
-    trainx, _, _, trainy, _, _ = data_loader_upper.load_all_classic_random_split(
-        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True)
+    trainx, _, _, trainy, _, _ = data_loader_upper.load_subject_classic_random_split(
+        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = VERIFIED_SUBJECTS)
     # print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     # print()
 
-    # train_s_x, _, _, train_s_y, _, _ = data_loader_upper.load_subject_classic_random_split(
-    #     0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = SIAMESE_SUBJECTS)
+    train_s_x, _, _, train_s_y, _, _ = data_loader_upper.load_subject_classic_random_split(
+        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = SIAMESE_SUBJECTS)
 
-    train_s_x, dev_s_x, test_s_x, train_s_y, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
-        DEV_PROP, TEST_PROP, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
+    _, dev_s_x, test_s_x, _, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
+        0.5, 0.5, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
@@ -224,7 +224,7 @@ def main():
                 # print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
                 if i % 100 == 0:
-                    print(i, "/", len(trainloader), "Time:", time.time()-start_time)
+                    print(" ", i, "/", len(trainloader), "Time:", time.time()-start_time)
 
                 (inputs, labels), (s_inputs, s_labels) = data
                 if torch.cuda.is_available():
