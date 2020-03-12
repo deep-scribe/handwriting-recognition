@@ -11,6 +11,7 @@ import data_flatten
 from collections import defaultdict
 from datetime import datetime
 import torch.nn.functional as F
+import time
 
 BATCH_SIZE = 150
 CONCAT_TRIM_AUGMENT_PROP = 1
@@ -184,6 +185,7 @@ def main():
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
     best_loss = 1000
+    start_time = time.time()
 
     try:
         for epoch in range(NUM_EPOCH):
@@ -221,7 +223,7 @@ def main():
                 # print('{}'.format([i//10] if i%10==0 else "", end=' ', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
                 if i % 10 == 0:
-                    print(i, "/", len(trainloader))
+                    print(i, "/", len(trainloader), "Time:", time.time()-start_time)
 
                 (inputs, labels), (s_inputs, s_labels) = data
                 if torch.cuda.is_available():
