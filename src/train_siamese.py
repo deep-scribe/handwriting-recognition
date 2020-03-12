@@ -30,6 +30,12 @@ VERIFIED_SUBJECTS = [
     'kevin_tip_char_2',
     'kevin_mar3'
 ]
+SIAMESE_SUBJECTS = [
+    'russell_upper_2',
+    'russell_upper_3',
+    'russell_upper_4',
+    'russell_upper_5',
+]
 
 
 class ContrastiveLoss(torch.nn.Module):
@@ -168,8 +174,11 @@ def main():
     # print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     # print()
 
-    train_s_x, dev_s_x, test_s_x, train_s_y, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
-        DEV_PROP, TEST_PROP, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
+    train_s_x, _, _, train_s_y, _, _ = data_loader_upper.load_subject_classic_random_split(
+        0.0001, 0.0001, resampled=False, flatten=False, keep_idx_and_td=True, subjects = SIAMESE_SUBJECTS)
+
+    _, dev_s_x, test_s_x, _, dev_s_y, test_s_y = data_loader_upper.load_subject_classic_random_split(
+        0.5, 0.5, resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(dev_s_x, dev_s_y)
@@ -238,15 +247,16 @@ def main():
                 optimizer.step()
                 trainloss += loss.item()
 
-            trainacc = acc(model, s_trainloader)
-            devacc, devloss = acc_loss(model, devloader, criterion)
+            trainacc = acc(model, s_trainloader, train_loader, siamese_criterion)
+            devacc = acc(model, s_trainloader, devloader, criterion)
+            # devacc, devloss = acc_loss(model, devloader, criterion)
             hist['trainacc'].append(trainacc)
             hist['trainloss'].append(trainloss/len(trainloader))
             hist['devacc'].append(devacc)
-            hist['devloss'].append(devloss)
+            # hist['devloss'].append(devloss)
 
             print('  trainacc={} devacc={}'.format(trainacc, devacc))
-            print('  trainloss={} devloss={}'.format(trainloss, devloss))
+            print('  trainloss={}'.format(trainloss))
 
             # save model if achieve lower dev loss
             # i.e. early stopping
@@ -260,10 +270,10 @@ def main():
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
-    testacc, testloss = acc_loss(model, testloader, criterion)
-    print("Test ACC:", testacc, "Test Loss:", testloss)
+    testacc = acc(model, s_trainloader, testloader, siamese_criterion)
+    print("Test ACC:", testacc)
     hist['testacc'] = testacc
-    hist['testloss'] = testloss
+    # hist['testloss'] = testloss
     # print(f'test loss={testloss} test acc={testacc}')
 
     with open(os.path.join(MODEL_HIST_PATH, hist_filename), 'w') as f:
@@ -303,18 +313,34 @@ def get_dataloader(x, y, batch_size):
 
 
 
-def acc(net, data_loader):
+def acc(net, pivot_data_loader, data_loader, criterion):
     correct = 0
     total = 0
     with torch.no_grad():
-        for data in data_loader:
+        pivot_list = torch.zeros(27, next(iter(pivot_data_loader)).shape[1])
+        pivot_count = torch.zeros(27)
+        for pivot_data in pivot_data_loader:
             x, y = data
             if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
+            _, vector = net(x.float())
+            pivot_list[y] += vector
+            pivot_count[y] += 1
+        pivot_list = pivot_list/pivot_count
+        for data in data_loader:
+            x, y = data
+            pivot_list = pivot_list.expand_as(x)
+            if torch.cuda.is_available():
+                x = x.cuda()
+                y = y.cuda()
 
-            outputs, _ = net(x.float())
-            _, predicted = torch.max(outputs.data, 1)
+            _, outputs = net(x.float())
+
+            predicted = -1*torch.ones_like(y)
+            for i in range(x.shape[0]):
+                o_i = x[i].expand_as(pivot_list)
+                _, predict[i] = torch.min(torch.norm(o_i-pivot_list, p = 2, dim = 1), dim = 0)
 
             w = torch.sum((predicted - y) != 0).item()
             r = len(y) - w

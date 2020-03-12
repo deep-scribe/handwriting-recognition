@@ -79,8 +79,8 @@ class LSTM_char_classifier(nn.Module):
             # cn_last_flat (batch, ndir * hiddensize)
             combined = torch.cat([c_n_last, h_n_last], dim=1)
 
-        out = self.fc(combined)
-        embedding = torch.nn.functional.relu(out)
+        embedding = self.fc(combined)
+        out = torch.nn.functional.relu(embedding)
         out = self.fc2(embedding)
         return out, embedding
 
