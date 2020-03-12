@@ -51,6 +51,7 @@ class ContrastiveLoss(torch.nn.Module):
 
     def forward(self, output1, output2, label1, label2):
         euclidean_distance = F.pairwise_distance(output1, output2, keepdim = True)
+        pinrt(euclidean_distance)
         loss_contrastive = torch.mean((label1==label2).float() * torch.pow(euclidean_distance, 2) +
                                       (1-(label1==label2).float()) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
 
@@ -328,7 +329,7 @@ def acc(net, pivot_data_loader, data_loader, criterion):
             pivot_list[y.cpu()] += vector.squeeze(0)
             pivot_count[y.cpu()] += 1
         # print(pivot_list)
-        print(pivot_count)
+        # print(pivot_count)
         pivot_list = pivot_list/pivot_count.unsqueeze(1)
         for data in data_loader:
             x, y = data
