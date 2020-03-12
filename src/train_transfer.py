@@ -111,7 +111,7 @@ def main():
             pass
     print()
 
-    model_class, model_param, train_param, train_time, _ = \
+    model_class, model_param, train_param, train_time, _, _ = \
         selected_file_path[0].split('.')
     model_param_list = model_param.split('-')
     for i in range(len(model_param_list)):
