@@ -76,7 +76,8 @@ def main():
     selected_config = None
     while not selected_config:
         try:
-            n = int(input('type a number: '))
+            # n = int(input('type a number: '))
+            n = 0
             selected_config = lstm_siamese.config[n]
         except KeyboardInterrupt:
             quit()
@@ -115,7 +116,8 @@ def main():
     selected_file_path = None
     while not selected_file_path:
         try:
-            n = int(input('type a number: '))
+            # n = int(input('type a number: '))
+            n = 1
             selected_file_path = pth_files_paths[n]
         except KeyboardInterrupt:
             quit()
