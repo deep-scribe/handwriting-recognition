@@ -331,8 +331,8 @@ def acc(net, pivot_data_loader, data_loader, criterion):
     correct = 0
     total = 0
     with torch.no_grad():
-        pivot_list = torch.zeros(27, 200)
-        pivot_count = torch.zeros(27)
+        pivot_list = torch.zeros(27, 200).cuda()
+        pivot_count = torch.zeros(27).cuda()
         for pivot_data in pivot_data_loader:
             x, y = pivot_data
             if torch.cuda.is_available():
