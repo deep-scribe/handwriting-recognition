@@ -342,7 +342,7 @@ def acc(net, pivot_data_loader, data_loader, criterion):
             for i in range(x.shape[0]):
                 o_i = outputs[i].expand_as(pivot_list)
                 _, predicted[i] = torch.min(torch.norm(o_i-pivot_list, p = 2, dim = 1), dim = 0)
-                print(predicted[i])
+                # print(predicted[i])
 
             w = torch.sum((predicted - y) != 0).item()
             r = len(y) - w
