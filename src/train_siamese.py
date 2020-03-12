@@ -253,7 +253,7 @@ def main():
             # save model if achieve lower dev loss
             # i.e. early stopping
             if best_acc < devacc:
-                best_loss = devloss
+                best_acc = devacc
                 torch.save(model.state_dict(), os.path.join(
                     MODEL_WEIGHT_PATH, weight_filename))
                 print('new best dev loss, weight saved')
