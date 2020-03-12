@@ -340,7 +340,7 @@ def acc(net, pivot_data_loader, data_loader, criterion):
                 y = y.cuda()
             _, vector = net(x.float())
             print(vector.shape)
-            pivot_list[int(y.cpu())] += vector
+            pivot_list[int(y.cpu())] += vector.squeeze(0)
             pivot_count[int(y.cpu())] += 1
         pivot_list = pivot_list/pivot_count
         for data in data_loader:
