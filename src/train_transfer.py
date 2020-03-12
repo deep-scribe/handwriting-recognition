@@ -73,6 +73,9 @@ def main():
     print()
 
     # define filename
+    description = 'rus_kev_upper'
+    while description == '':
+        description = input('input a model description (part of filename): ')
     config_strs = [str(int(c)) for c in selected_config]
     s = '-'.join(config_strs)
     now = datetime.now()
