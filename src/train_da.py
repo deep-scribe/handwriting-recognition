@@ -40,7 +40,7 @@ class DANet(torch.nn.Module):
         x = torch.nn.functional.relu(x)
         x = self.fc2(x)
         x = torch.nn.functional.sigmoid(x)
-        return x
+        return x.unsqueeze(1)
 
 def get_lambda(epoch, max_epoch):
     p = epoch / max_epoch
