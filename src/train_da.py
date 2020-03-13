@@ -213,6 +213,7 @@ def main():
         print('  train')
         trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
         print('  '.format(end=''))
+        lambda_epoch = get_lambda(epoch, NUM_EPOCH)
         for i, data in enumerate(trainloader):
             # print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
             # print('{}'.format(i % 10, end='', flush=True))
@@ -229,7 +230,7 @@ def main():
             optimizer.zero_grad()
             outputs, vectors = model(inputs.float())
             da_outputs = da_model(vectors)
-            loss = criterion(outputs, labels.long()) - get_lambda(epoch, NUM_EPOCH)*da_criterion(da_outputs, da_labels.float())
+            loss = criterion(outputs, labels.long()) - lambda_epoch*da_criterion(da_outputs, da_labels.float())
             loss.backward()
             optimizer.step()
 
