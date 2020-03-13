@@ -199,7 +199,7 @@ def main():
             a_trainy_da = np.stack((a_trainy_da, np.ones_like(a_trainy_da)), axis = 1)
             a_trainy_or = np.stack((a_trainy_or, np.zeros_like(a_trainy_or)), axis = 1)
 
-            print(a_trainx_or.shape, a_trainy_or.shape, a_trainx_da.shape, a_trainy_da.shape)
+            # print(a_trainx_or.shape, a_trainy_or.shape, a_trainx_da.shape, a_trainy_da.shape)
 
             trainx = np.concatenate((a_trainx_da, a_trainx_or), axis = 0)
             trainy = np.concatenate((a_trainy_da, a_trainy_or), axis = 0)
