@@ -153,16 +153,13 @@ def main():
     print('da_trainx', len(da_trainx), 'devx', len(devx), 'testx', len(testx))
     print()
 
-    trainx, _, _, trainy, _, _ = data_loader_upper.load_all_classic_random_split(
-        0.3, 0.3, resampled=False, flatten=False, keep_idx_and_td=True)
+    or_trainx, _, _, or_trainy, _, _ = data_loader_upper.load_all_classic_random_split(
+        0.45, 0.45, resampled=False, flatten=False, keep_idx_and_td=True)
     print('trainx', len(trainx))
     print()
 
     da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), axis = 1)
     trainy = np.stack((trainy, np.zeros_like(trainy)), axis = 1)
-
-    trainx = np.stack((da_trainx, trainx), axis = 0)
-    trainy = np.stack((da_trainy, trainy), axis = 0)
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
@@ -188,14 +185,23 @@ def main():
             # model should only overfit to true handwriting char part
             # but not any other unnecesary signal
             print('  augment')
-            a_trainx, a_trainy = aug_concat_trim(
-                trainx, trainy, keep_orig=False)
-            a_trainx, a_trainy = data_augmentation.noise_stretch_rotate_augment(
-                a_trainx, a_trainy, augment_prop=NOISE_AUGMENT_PROP,
+            a_trainx_or, a_trainy_or = aug_concat_trim(
+                or_trainx, or_trainy, keep_orig=False)
+            a_trainx_or, a_trainy_or = data_augmentation.noise_stretch_rotate_augment(
+                a_trainx_or, a_trainy_or, augment_prop=NOISE_AUGMENT_PROP,
                 is_already_flattened=False, resampled=True)
 
+            a_trainx_da, a_trainy_da = aug_concat_trim(
+                da_trainx, da_trainy, keep_orig=False)
+            a_trainx_da, a_trainy_da = data_augmentation.noise_stretch_rotate_augment(
+                a_trainx_da, a_trainy_da, augment_prop=NOISE_AUGMENT_PROP,
+                is_already_flattened=False, resampled=True)
+
+            trainx = np.stack((a_trainx_da, a_trainx_or), axis = 0)
+            trainy = np.stack((a_trainy_da, a_trainy_or), axis = 0)
+
             print('  train')
-            trainloader = get_dataloader(a_trainx, a_trainy, BATCH_SIZE)
+            trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
             print('  '.format(end=''))
             for i, data in enumerate(trainloader):
                 print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
