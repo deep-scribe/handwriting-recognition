@@ -39,6 +39,7 @@ class DANet(torch.nn.Module):
         x = self.fc1(x)
         x = torch.nn.functional.relu(x)
         x = self.fc2(x)
+        x = torch.nn.functional.sigmoid(x)
         return x
 
 
@@ -171,7 +172,7 @@ def main():
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
     criterion = nn.CrossEntropyLoss()
-    da_criterion = nn.BCEWithLogitsLoss()
+    da_criterion = nn.BCELoss()
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
     best_loss = 1000
