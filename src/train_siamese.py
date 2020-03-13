@@ -57,6 +57,7 @@ class ContrastiveLoss(torch.nn.Module):
         return loss_contrastive
 
 
+
 def main():
 
     model_class = lstm_siamese.LSTM_char_classifier

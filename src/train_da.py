@@ -1,4 +1,4 @@
-import lstm
+import lstm_siamese
 import torch
 import data_loader_upper
 import torch.nn as nn
@@ -28,44 +28,39 @@ MODEL_HIST_PATH = '../output/'
 WEIGHT_DIR = '../saved_model/'
 
 
+class DANet(torch.nn.Module):
+    def __init__(input_dim):
+        super(SiameseNet, self).__init__()
+        self.fc1 = nn.Linear(input_dim, input_dim/2, bias = True)
+        self.fc2 = nn.Linear(input_dim/2, 27, bias = True)
+
+    def forward(x):
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
+
 def main():
-    model_class = lstm.LSTM_char_classifier
+    model_class = lstm_siamese.LSTM_char_classifier
     print('Training model class [{}]'.format(model_class.__name__))
-    print()
-
-    # confirm hyperparam
-    print('CONFIRM following training parameter as defined on top of train_model.py')
-    print('  [BATCH_SIZE]               {}'.format(BATCH_SIZE))
-    print('  [CONCAT_TRIM_AUGMENT_PROP] {}'.format(CONCAT_TRIM_AUGMENT_PROP))
-    print('  [NOISE_AUGMENT_PROP]       {}'.format(NOISE_AUGMENT_PROP))
-    print('  [DEV_PROP]                 {}'.format(DEV_PROP))
-    print('  [TEST_PROP]                {}'.format(TEST_PROP))
-    print('  [USE_NONCLASS]             {}'.format(USE_NONCLASS))
-    print()
-    input()
-
-    # confirm data subject
-    print('CONFIRM following data subjects to be used as defined in data_laoder_upper.py')
-    print(' ', data_loader_upper.VERIFIED_SUBJECTS)
-    print()
-    input()
 
     print('Number of epoches:')
     NUM_EPOCH = int(input())
 
     # pick config as defined
     print('Select model config to train')
-    for idx, c in enumerate(lstm.config):
-        assert len(c) == len(lstm.config_keys)
+    for idx, c in enumerate(lstm_siamese.config):
+        assert len(c) == len(lstm_siamese.config_keys)
         print('[{}] '.format(idx, end=''))
-        for i, item in enumerate(lstm.config_keys):
+        for i, item in enumerate(lstm_siamese.config_keys):
             print('{}={} '.format(item, c[i], end=''))
         print()
     selected_config = None
     while not selected_config:
         try:
-            n = int(input('type a number: '))
-            selected_config = lstm.config[n]
+            # n = int(input('type a number: '))
+            n = 0
+            selected_config = lstm_siamese.config[n]
         except KeyboardInterrupt:
             quit()
         except:
@@ -103,7 +98,8 @@ def main():
     selected_file_path = None
     while not selected_file_path:
         try:
-            n = int(input('type a number: '))
+            # n = int(input('type a number: '))
+            n = 1
             selected_file_path = pth_files_paths[n]
         except KeyboardInterrupt:
             quit()
@@ -123,8 +119,8 @@ def main():
     print('[SELECTED MODEL]')
     print('  {}'.format(model_class))
     print('[MODEL PARAMS]')
-    assert len(model_param_list) == len(lstm.config_keys)
-    for i, c in enumerate(lstm.config_keys):
+    assert len(model_param_list) == len(lstm_siamese.config_keys)
+    for i, c in enumerate(lstm_siamese.config_keys):
         print('  {}: {}'.format(c, model_param_list[i]))
     print('[TRAIN PARAMS]')
     print('  batchsize {}'.format(train_param_list[0]))
@@ -145,13 +141,28 @@ def main():
         if "fc" in name:
             param.requires_grad = True
 
+    da_model = DANet(200)
+    if torch.cuda.is_available():
+        da_model.cuda()
+
     # load raw data
-    trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_subject_classic_random_split(
+    da_trainx, devx, testx, da_trainy, devy, testy = data_loader_upper.load_subject_classic_random_split(
         DEV_PROP, TEST_PROP,
         resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
     print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     print()
-    
+
+    trainx, _, _, trainy, _, _ = data_loader_upper.load_all_classic_random_split(
+        0.3, 0.3, resampled=False, flatten=False, keep_idx_and_td=True)
+    print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
+    print()
+
+    da_trainy = np.stack((da_trainy, np.ones_as(da_trainy)), dim = 1)
+    trainy = np.stack((trainy, np.ones_as(trainy)), dim = 1)
+
+    trainx = np.stack(da_trainx, trainx, axis = 0)
+    trainy = np.stack(da_trainy, trainy, axis = 0)
+
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
@@ -161,6 +172,7 @@ def main():
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
     criterion = nn.CrossEntropyLoss()
+    da_criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
     best_loss = 1000
@@ -188,13 +200,15 @@ def main():
                 print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
                 print('{}'.format(i % 10, end='', flush=True))
 
-                inputs, labels = data
+                inputs, (labels, da_labels) = data
                 if torch.cuda.is_available():
                     inputs = inputs.cuda()
                     labels = labels.cuda()
+                    da_labels = labels.cuda()
                 optimizer.zero_grad()
-                outputs = model(inputs.float())
-                loss = criterion(outputs, labels.long())
+                outputs, vectors = model(inputs.float())
+                da_outputs = da_model(vectors)
+                loss = criterion(outputs, labels.long()) - da_criterion(da_outputs, da_labels.long())
                 loss.backward()
                 optimizer.step()
             print()
