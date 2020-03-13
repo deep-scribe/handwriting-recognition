@@ -105,8 +105,8 @@ def main():
     selected_file_path = None
     while not selected_file_path:
         try:
-            # n = int(input('type a number: '))
-            n = 1
+            n = int(input('type a number: '))
+            # n = 1
             selected_file_path = pth_files_paths[n]
         except KeyboardInterrupt:
             quit()
