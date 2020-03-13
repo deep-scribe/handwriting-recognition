@@ -346,12 +346,12 @@ def acc_loss_da(net, da_model, data_loader, criterion):
             outputs = da_model(vectors)
             predicted = torch.round(outputs.data)
 
-            w = torch.sum((predicted - y) != 0).item()
+            w = torch.sum((predicted.float() - y.float()) != 0).item()
             r = len(y) - w
             correct += r
             total += len(y)
 
-            total_loss += criterion(outputs.long(), y.long()).item() * len(x)
+            total_loss += criterion(outputs, y.float()).item() * len(x)
     return correct / total, total_loss / total
 
 
