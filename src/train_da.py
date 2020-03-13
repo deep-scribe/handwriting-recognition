@@ -351,7 +351,7 @@ def acc_loss_da(net, da_model, data_loader, criterion):
             correct += r
             total += len(y)
 
-            total_loss += criterion(outputs.float(), y.float()).item() * len(x)
+            total_loss += criterion(outputs.long(), y.long()).item() * len(x)
     return correct / total, total_loss / total
 
 
