@@ -208,9 +208,11 @@ def main():
             trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
             print('  '.format(end=''))
             for i, data in enumerate(trainloader):
-                print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
-                print('{}'.format(i % 10, end='', flush=True))
+                # print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
+                # print('{}'.format(i % 10, end='', flush=True))
                 # print(data)
+                if i % 10 == 0:
+                    print(" ", i, "/", len(trainloader), "Time:", time.time()-start_time)
 
                 inputs, input_labels = data
                 labels, da_labels = input_labels[:, 0], input_labels[:, 1]
@@ -304,7 +306,8 @@ def acc_loss(net, data_loader, criterion):
     total_loss = 0.0
     with torch.no_grad():
         for data in data_loader:
-            x, (y,_) = data
+            x, input_labels = data
+            y = input_labels[:, 0]
             if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
@@ -327,7 +330,8 @@ def acc_loss_da(net, da_model, data_loader, criterion):
     total_loss = 0.0
     with torch.no_grad():
         for data in data_loader:
-            x, (_,y) = data
+            x, input_labels = data
+            y = input_labels[:, 1]
             if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
