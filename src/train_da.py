@@ -42,6 +42,9 @@ class DANet(torch.nn.Module):
         x = torch.nn.functional.sigmoid(x)
         return x
 
+def get_lambda(epoch, max_epoch):
+    p = epoch / max_epoch
+    return 2. / (1+np.exp(-10.*p)) - 1.
 
 def main():
     start_time = time.time()
@@ -175,7 +178,7 @@ def main():
     da_criterion = nn.BCELoss()
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
-    best_loss = 1000
+    best_acc = 0
 
     # try:
     for epoch in range(NUM_EPOCH):
@@ -226,7 +229,7 @@ def main():
             optimizer.zero_grad()
             outputs, vectors = model(inputs.float())
             da_outputs = da_model(vectors)
-            loss = criterion(outputs, labels.long()) - 0.1*da_criterion(da_outputs, da_labels.float())
+            loss = criterion(outputs, labels.long()) - get_lambda(epoch, NUM_EPOCH)*da_criterion(da_outputs, da_labels.float())
             loss.backward()
             optimizer.step()
 
@@ -248,8 +251,8 @@ def main():
 
         # save model if achieve lower dev loss
         # i.e. early stopping
-        if best_loss > devloss:
-            best_loss = devloss
+        if best_acc < devacc:
+            best_acc = devacc
             torch.save(model.state_dict(), os.path.join(
                 MODEL_WEIGHT_PATH, weight_filename))
             print('  new best dev loss, weight saved')
