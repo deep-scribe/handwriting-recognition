@@ -213,7 +213,7 @@ def main():
                 # print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
                 # print('{}'.format(i % 10, end='', flush=True))
                 # print(data)
-                if i % 10 == 0:
+                if i % 1 == 0:
                     print(" ", i, "/", len(trainloader), "Time:", time.time()-start_time)
 
                 inputs, input_labels = data
@@ -314,7 +314,7 @@ def acc_loss(net, data_loader, criterion):
                 x = x.cuda()
                 y = y.cuda()
 
-            outputs = net(x.float())
+            outputs, _ = net(x.float())
             _, predicted = torch.max(outputs.data, 1)
 
             w = torch.sum((predicted - y) != 0).item()
