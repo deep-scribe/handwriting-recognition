@@ -150,16 +150,17 @@ def main():
     da_trainx, devx, testx, da_trainy, devy, testy = data_loader_upper.load_subject_classic_random_split(
         DEV_PROP, TEST_PROP,
         resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
-    print('da_trainx', len(da_trainx), 'devx', len(devx), 'testx', len(testx))
+    print('da_trainx', len(da_trainx), 'da_trainy', len(da_trainy), 'devx', len(devx), 'testx', len(testx))
     print()
 
     or_trainx, _, _, or_trainy, _, _ = data_loader_upper.load_all_classic_random_split(
         0.45, 0.45, resampled=False, flatten=False, keep_idx_and_td=True)
-    print('or_trainx', len(or_trainx))
+    print('or_trainx', len(or_trainx), 'or_trainy', len(or_trainy))
     print()
 
     da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), axis = 1)
     or_trainy = np.stack((or_trainy, np.zeros_like(or_trainy)), axis = 1)
+    print(da_trainy.shape, or_trainy.shape)
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
