@@ -161,8 +161,8 @@ def main():
     da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), axis = 1)
     trainy = np.stack((trainy, np.zeros_like(trainy)), axis = 1)
 
-    trainx = np.stack(da_trainx, trainx, axis = 0)
-    trainy = np.stack(da_trainy, trainy, axis = 0)
+    trainx = np.stack((da_trainx, trainx), axis = 0)
+    trainy = np.stack((da_trainy, trainy), axis = 0)
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
