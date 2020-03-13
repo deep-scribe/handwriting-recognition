@@ -197,6 +197,8 @@ def main():
                 a_trainx_da, a_trainy_da, augment_prop=NOISE_AUGMENT_PROP,
                 is_already_flattened=False, resampled=True)
 
+            print(a_trainx_or.shape, a_trainx_da.shape)
+
             trainx = np.stack((a_trainx_da, a_trainx_or), axis = 0)
             trainy = np.stack((a_trainy_da, a_trainy_or), axis = 0)
 
