@@ -158,8 +158,8 @@ def main():
     print('trainx', len(trainx))
     print()
 
-    da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), dim = 1)
-    trainy = np.stack((trainy, np.zeros_like(trainy)), dim = 1)
+    da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), axis = 1)
+    trainy = np.stack((trainy, np.zeros_like(trainy)), axis = 1)
 
     trainx = np.stack(da_trainx, trainx, axis = 0)
     trainy = np.stack(da_trainy, trainy, axis = 0)
@@ -215,14 +215,20 @@ def main():
             print()
 
             trainacc, trainloss = acc_loss(model, trainloader, criterion)
+            trainacc_da, trainloss_da = acc_loss_da(model, da_model, trainloader, da_criterion)
             devacc, devloss = acc_loss(model, devloader, criterion)
+            devacc_da, devloss_da = acc_loss_da(model, da_model, devloader, da_criterion)
             hist['trainacc'].append(trainacc)
             hist['trainloss'].append(trainloss)
+            hist['trainacc_da'].append(trainacc_da)
+            hist['trainloss_da'].append(trainloss_da)
             hist['devacc'].append(devacc)
             hist['devloss'].append(devloss)
+            hist['devacc_da'].append(devacc_da)
+            hist['devloss_da'].append(devloss_da)
 
-            print('  trainacc={} devacc={}'.format(trainacc, devacc))
-            print('  trainloss={} devloss={}'.format(trainloss, devloss))
+            print('  trainacc={} devacc={} trainacc_da={} devacc_da={}'.format(trainacc, devacc, trainacc_da, devacc_da))
+            print('  trainloss={} devloss={} trainloss_da={} devloss_da={}'.format(trainloss, devloss, trainloss_da, devloss_da))
 
             # save model if achieve lower dev loss
             # i.e. early stopping
@@ -237,10 +243,12 @@ def main():
     print()
     print('Finished Training', 'best dev loss', best_loss)
     testacc, testloss = acc_loss(model, testloader, nn.CrossEntropyLoss())
-    testacc, testloss
+    testacc_da, testloss_da = acc_loss_da(model, da_model, testloader, nn.CrossEntropyLoss())
     hist['testacc'] = testacc
     hist['testloss'] = testloss
-    print('test loss={} test acc={}'.format(testloss, testacc))
+    hist['testacc_da'] = testacc_da
+    hist['testloss_da'] = testloss_da
+    print('test loss={} test acc={} test loss da={} test acc da={}'.format(testloss, testacc))
 
     with open(os.path.join(MODEL_HIST_PATH, hist_filename), 'w') as f:
         json.dump(hist, f)
@@ -290,6 +298,30 @@ def acc_loss(net, data_loader, criterion):
                 y = y.cuda()
 
             outputs = net(x.float())
+            _, predicted = torch.max(outputs.data, 1)
+
+            w = torch.sum((predicted - y) != 0).item()
+            r = len(y) - w
+            correct += r
+            total += len(y)
+
+            total_loss += criterion(outputs, y.long()).item() * len(x)
+    return correct / total, total_loss / total
+
+
+def acc_loss_da(net, da_model, data_loader, criterion):
+    correct = 0
+    total = 0
+    total_loss = 0.0
+    with torch.no_grad():
+        for data in data_loader:
+            x, (_,y) = data
+            if torch.cuda.is_available():
+                x = x.cuda()
+                y = y.cuda()
+
+            _, vectors = net(x.float())
+            outputs = da_model(vectors)
             _, predicted = torch.max(outputs.data, 1)
 
             w = torch.sum((predicted - y) != 0).item()
