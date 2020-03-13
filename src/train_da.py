@@ -261,7 +261,7 @@ def main():
     #     pass
 
     print()
-    print('Finished Training', 'best dev loss', best_loss)
+    print('Finished Training', 'best dev acc', best_acc)
     testacc, testloss = acc_loss(model, testloader, nn.CrossEntropyLoss())
     testacc_da, testloss_da = acc_loss_da(model, da_model, testloader, nn.BCELoss())
     hist['testacc'] = testacc
