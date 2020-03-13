@@ -344,7 +344,7 @@ def acc_loss_da(net, da_model, data_loader, criterion):
 
             _, vectors = net(x.float())
             outputs = da_model(vectors)
-            _, predicted = torch.round(output.data)
+            _, predicted = torch.round(outputs.data)
 
             w = torch.sum((predicted - y) != 0).item()
             r = len(y) - w
