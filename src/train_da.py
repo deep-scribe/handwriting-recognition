@@ -10,6 +10,7 @@ import numpy as np
 import data_flatten
 from collections import defaultdict
 from datetime import datetime
+import time
 
 # training hyperparameter
 # pertaining anything that does not modify the model structure
@@ -42,6 +43,7 @@ class DANet(torch.nn.Module):
 
 
 def main():
+    start_time = time.time()
     model_class = lstm_siamese.LSTM_char_classifier
     print('Training model class [{}]'.format(model_class.__name__))
 
