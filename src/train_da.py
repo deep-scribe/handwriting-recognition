@@ -26,7 +26,9 @@ USE_NONCLASS = True
 # should not change
 MODEL_WEIGHT_PATH = '../saved_model/da'
 MODEL_HIST_PATH = '../output/da'
-WEIGHT_DIR = '../saved_model/da'
+WEIGHT_DIR = '../saved_model/'
+torch.manual_seed(0)
+np.random.seed(0)
 
 
 class DANet(torch.nn.Module):
@@ -105,8 +107,8 @@ def main():
     selected_file_path = None
     while not selected_file_path:
         try:
-            n = int(input('type a number: '))
-            # n = 1
+            # n = int(input('type a number: '))
+            n = 1
             selected_file_path = pth_files_paths[n]
         except KeyboardInterrupt:
             quit()
@@ -262,6 +264,7 @@ def main():
 
     print()
     print('Finished Training', 'best dev acc', best_acc)
+    model.load_state_dict(torch.load(os.path.join(MODEL_WEIGHT_PATH, weight_filename)))
     testacc, testloss = acc_loss(model, testloader, nn.CrossEntropyLoss())
     testacc_da, testloss_da = acc_loss_da(model, da_model, testloader, nn.BCELoss())
     hist['testacc'] = testacc
