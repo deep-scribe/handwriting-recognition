@@ -137,10 +137,10 @@ def main():
         model.load_state_dict(torch.load(
             selected_file_path[1], map_location=torch.device('cpu')))
 
-    for name, param in model.named_parameters():
-        param.requires_grad = False
-        if "fc" in name:
-            param.requires_grad = True
+    # for name, param in model.named_parameters():
+    #     param.requires_grad = False
+    #     if "fc" in name:
+    #         param.requires_grad = True
 
     da_model = DANet(200)
     if torch.cuda.is_available():
@@ -158,8 +158,8 @@ def main():
     print('trainx', len(trainx))
     print()
 
-    da_trainy = np.stack((da_trainy, np.ones_as(da_trainy)), dim = 1)
-    trainy = np.stack((trainy, np.ones_as(trainy)), dim = 1)
+    da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), dim = 1)
+    trainy = np.stack((trainy, np.zeros_like(trainy)), dim = 1)
 
     trainx = np.stack(da_trainx, trainx, axis = 0)
     trainy = np.stack(da_trainy, trainy, axis = 0)
@@ -284,7 +284,7 @@ def acc_loss(net, data_loader, criterion):
     total_loss = 0.0
     with torch.no_grad():
         for data in data_loader:
-            x, y = data
+            x, (y,_) = data
             if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
