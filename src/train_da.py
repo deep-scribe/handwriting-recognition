@@ -26,7 +26,7 @@ USE_NONCLASS = True
 # should not change
 MODEL_WEIGHT_PATH = '../saved_model/da'
 MODEL_HIST_PATH = '../output/da'
-WEIGHT_DIR = '../saved_model/'
+WEIGHT_DIR = '../saved_model/da'
 
 
 class DANet(torch.nn.Module):
