@@ -29,13 +29,14 @@ WEIGHT_DIR = '../saved_model/'
 
 
 class DANet(torch.nn.Module):
-    def __init__(input_dim):
+    def __init__(self, input_dim):
         super(SiameseNet, self).__init__()
         self.fc1 = nn.Linear(input_dim, input_dim/2, bias = True)
         self.fc2 = nn.Linear(input_dim/2, 27, bias = True)
 
-    def forward(x):
+    def forward(self, x):
         x = self.fc1(x)
+        x = torch.nn.functional.relu(x)
         x = self.fc2(x)
         return x
 
