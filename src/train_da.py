@@ -45,8 +45,8 @@ def main():
     model_class = lstm_siamese.LSTM_char_classifier
     print('Training model class [{}]'.format(model_class.__name__))
 
-    print('Number of epoches:')
-    NUM_EPOCH = int(input())
+    # print('Number of epoches:')
+    # NUM_EPOCH = int(input())
 
     # pick config as defined
     print('Select model config to train')
