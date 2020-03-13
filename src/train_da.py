@@ -23,8 +23,8 @@ NUM_EPOCH = 500
 USE_NONCLASS = True
 
 # should not change
-MODEL_WEIGHT_PATH = '../saved_model/'
-MODEL_HIST_PATH = '../output/'
+MODEL_WEIGHT_PATH = '../saved_model/da'
+MODEL_HIST_PATH = '../output/da'
 WEIGHT_DIR = '../saved_model/'
 
 
@@ -150,12 +150,12 @@ def main():
     da_trainx, devx, testx, da_trainy, devy, testy = data_loader_upper.load_subject_classic_random_split(
         DEV_PROP, TEST_PROP,
         resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
-    print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
+    print('da_trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     print()
 
     trainx, _, _, trainy, _, _ = data_loader_upper.load_all_classic_random_split(
         0.3, 0.3, resampled=False, flatten=False, keep_idx_and_td=True)
-    print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
+    print('trainx', len(trainx))
     print()
 
     da_trainy = np.stack((da_trainy, np.ones_as(da_trainy)), dim = 1)
