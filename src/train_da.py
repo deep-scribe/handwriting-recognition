@@ -171,7 +171,7 @@ def main():
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
     criterion = nn.CrossEntropyLoss()
-    da_criterion = nn.BCELoss()
+    da_criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.AdamW(model.parameters(), weight_decay=0.005)
     hist = defaultdict(list)
     best_loss = 1000
