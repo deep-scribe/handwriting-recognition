@@ -252,8 +252,8 @@ def main():
             torch.save(model.state_dict(), os.path.join(
                 MODEL_WEIGHT_PATH, weight_filename))
             print('  new best dev loss, weight saved')
-    except KeyboardInterrupt:
-        pass
+    # except KeyboardInterrupt:
+    #     pass
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
