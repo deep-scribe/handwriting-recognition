@@ -158,16 +158,14 @@ def main():
     print('or_trainx', len(or_trainx), 'or_trainy', len(or_trainy))
     print()
 
-    da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), axis = 1)
-    or_trainy = np.stack((or_trainy, np.zeros_like(or_trainy)), axis = 1)
-    print(da_trainy.shape, or_trainy.shape)
-
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
+    devy = np.stack((devy, np.ones_like(devy)), axis = 1)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
 
     # dont augment test set
     testx = data_flatten.resample_dataset_list(testx)
+    testy = np.stack((testy, np.ones_like(testy)), axis = 1)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
     criterion = nn.CrossEntropyLoss()
@@ -197,6 +195,9 @@ def main():
             a_trainx_da, a_trainy_da = data_augmentation.noise_stretch_rotate_augment(
                 a_trainx_da, a_trainy_da, augment_prop=NOISE_AUGMENT_PROP,
                 is_already_flattened=False, resampled=True)
+
+            a_trainy_da = np.stack((a_trainy_da, np.ones_like(a_trainy_da)), axis = 1)
+            a_trainy_or = np.stack((a_trainy_or, np.zeros_like(a_trainy_or)), axis = 1)
 
             print(a_trainx_or.shape, a_trainy_or.shape, a_trainx_da.shape, a_trainy_da.shape)
 
