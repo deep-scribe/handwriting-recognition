@@ -155,7 +155,7 @@ def main():
 
     or_trainx, _, _, or_trainy, _, _ = data_loader_upper.load_all_classic_random_split(
         0.45, 0.45, resampled=False, flatten=False, keep_idx_and_td=True)
-    print('trainx', len(trainx))
+    print('or_trainx', len(or_trainx))
     print()
 
     da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), axis = 1)
