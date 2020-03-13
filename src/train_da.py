@@ -264,7 +264,7 @@ def main():
     hist['testloss'] = testloss
     hist['testacc_da'] = testacc_da
     hist['testloss_da'] = testloss_da
-    print('test loss={} test acc={} test loss da={} test acc da={}'.format(testloss, testacc))
+    print('test loss={} test acc={} test loss da={} test acc da={}'.format(testloss, testacc, testacc_da, testloss_da))
 
     with open(os.path.join(MODEL_HIST_PATH, hist_filename), 'w') as f:
         json.dump(hist, f)
