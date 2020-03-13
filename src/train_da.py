@@ -226,7 +226,7 @@ def main():
             optimizer.zero_grad()
             outputs, vectors = model(inputs.float())
             da_outputs = da_model(vectors)
-            loss = criterion(outputs, labels.long()) - 0.1*da_criterion(da_outputs, da_labels.long())
+            loss = criterion(outputs, labels.long()) - 0.1*da_criterion(da_outputs, da_labels.float())
             loss.backward()
             optimizer.step()
 
@@ -347,7 +347,7 @@ def acc_loss_da(net, da_model, data_loader, criterion):
             correct += r
             total += len(y)
 
-            total_loss += criterion(outputs, y.long()).item() * len(x)
+            total_loss += criterion(outputs, y.float()).item() * len(x)
     return correct / total, total_loss / total
 
 
