@@ -221,7 +221,7 @@ def main():
                 if torch.cuda.is_available():
                     inputs = inputs.cuda()
                     labels = labels.cuda()
-                    da_labels = labels.cuda()
+                    da_labels = da_labels.cuda()
                 optimizer.zero_grad()
                 outputs, vectors = model(inputs.float())
                 da_outputs = da_model(vectors)
