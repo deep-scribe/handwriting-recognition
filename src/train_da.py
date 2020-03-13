@@ -197,10 +197,10 @@ def main():
                 a_trainx_da, a_trainy_da, augment_prop=NOISE_AUGMENT_PROP,
                 is_already_flattened=False, resampled=True)
 
-            print(a_trainx_or.shape, a_trainx_da.shape)
+            # print(a_trainx_or.shape, a_trainx_da.shape)
 
-            trainx = np.stack((a_trainx_da, a_trainx_or), axis = 0)
-            trainy = np.stack((a_trainy_da, a_trainy_or), axis = 0)
+            trainx = np.concatenate((a_trainx_da, a_trainx_or), axis = 0)
+            trainy = np.concatenate((a_trainy_da, a_trainy_or), axis = 0)
 
             print('  train')
             trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
