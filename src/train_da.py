@@ -159,7 +159,7 @@ def main():
     print()
 
     da_trainy = np.stack((da_trainy, np.ones_like(da_trainy)), axis = 1)
-    trainy = np.stack((trainy, np.zeros_like(trainy)), axis = 1)
+    or_trainy = np.stack((or_trainy, np.zeros_like(trainy)), axis = 1)
 
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
