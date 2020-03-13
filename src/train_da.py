@@ -39,7 +39,7 @@ class DANet(torch.nn.Module):
         x = self.fc1(x)
         x = torch.nn.functional.relu(x)
         x = self.fc2(x)
-        x = torch.nn.functional.sigmoid(x)
+        x = torch.sigmoid(x)
         return x.squeeze(1)
 
 def get_lambda(epoch, max_epoch):
@@ -344,7 +344,7 @@ def acc_loss_da(net, da_model, data_loader, criterion):
 
             _, vectors = net(x.float())
             outputs = da_model(vectors)
-            _, predicted = torch.round(outputs.data)
+            predicted = torch.round(outputs.data)
 
             w = torch.sum((predicted - y) != 0).item()
             r = len(y) - w
