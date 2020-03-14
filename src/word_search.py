@@ -1,5 +1,5 @@
 import beam
-import rnn_bilstm
+# import rnn_bilstm
 import data_utils
 import segmentation
 import numpy as np
