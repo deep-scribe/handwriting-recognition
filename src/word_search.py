@@ -13,6 +13,7 @@ from pprint import pprint
 def get_prob(net, input):
     if torch.cuda.is_available():
         input = input.cuda()
+        net = net.cuda()
     else:
         net.cpu()
     net.eval()
