@@ -60,6 +60,7 @@ def main():
     model = globals()[model_class](*model_param_list)
     if torch.cuda.is_available():
         model.load_state_dict(torch.load(selected_file_path[1]))
+        model = model.cuda()
     else:
         model.load_state_dict(torch.load(
             selected_file_path[1], map_location=torch.device('cpu')))

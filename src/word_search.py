@@ -4,6 +4,8 @@ import data_utils
 import segmentation
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 import segmentation
 import math
 # import rnn_final
@@ -13,7 +15,7 @@ from pprint import pprint
 def get_prob(net, input):
     if torch.cuda.is_available():
         input = input.cuda()
-        net = net.cuda()
+        # net = net.cuda()
     else:
         net.cpu()
     net.eval()
