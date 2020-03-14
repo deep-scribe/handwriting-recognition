@@ -1,4 +1,4 @@
-import lstm
+import lstm_siamese
 import data_loader_upper
 import random
 import os
