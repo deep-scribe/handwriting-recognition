@@ -38,7 +38,7 @@ def word_search(x, g, k, model, is_flatten_ypr=False, feature_num=100):
     x_split = torch.tensor(x_split)
     probs = get_prob(model, x_split)
     logit_dict = {
-        bounds[i]: np.array(probs[i]) for i in range(len(bounds))
+        bounds[i]: np.array(probs[i].cpu()) for i in range(len(bounds))
     }
     trajectory_dict = beam.trajectory_search(logit_dict, k, n)
 
