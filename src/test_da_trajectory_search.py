@@ -21,7 +21,7 @@ def main():
     print('Select weight files to load')
     pth_files_paths = get_all_pth_files()
     for idx, path in enumerate(pth_files_paths):
-        print(f'[{idx}] {path[0]}')
+        print('[{}] {}'.format(idx, path[0]))
     selected_file_path = None
     while not selected_file_path:
         try:
