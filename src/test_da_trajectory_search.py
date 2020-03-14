@@ -42,16 +42,16 @@ def main():
     model_param_list[-2] = bool(model_param_list[-2])
     train_param_list = train_param.split('-')
 
-    print(f'[SELECTED MODEL]')
-    print(f'  {model_class}')
-    print(f'[MODEL PARAMS]')
-    assert len(model_param_list) == len(lstm.config_keys)
-    for i, c in enumerate(lstm.config_keys):
-        print(f'  {c}: {model_param_list[i]}')
-    print(f'[TRAIN PARAMS]')
-    print(f'  batchsize {train_param_list[0]}')
-    print(f'  concat_trim_aug_prop {train_param_list[1]}')
-    print(f'  noise_aug_prop {train_param_list[2]}')
+    print('[SELECTED MODEL]')
+    print('  {}'.format(model_class))
+    print('[MODEL PARAMS]')
+    assert len(model_param_list) == len(lstm_siamese.config_keys)
+    for i, c in enumerate(lstm_siamese.config_keys):
+        print('  {}: {}'.format(c, model_param_list[i]))
+    print('[TRAIN PARAMS]')
+    print('  batchsize {}'.format(train_param_list[0]))
+    print('  concat_trim_aug_prop {}'.format(train_param_list[1]))
+    print('  noise_aug_prop {}'.format(train_param_list[2]))
     print()
 
     # get the class, instantiate model, load weight
@@ -65,7 +65,7 @@ def main():
     print('Select uppercase word data to test with')
     word_data_dirs = get_all_word_data_dirs()
     for idx, path in enumerate(word_data_dirs):
-        print(f'[{idx}] {path[0]}')
+        print('[{}] {}'.format(idx, path[0]))
     selected_word_dir = None
     while not selected_word_dir:
         try:
@@ -88,13 +88,13 @@ def main():
         y = wordys[idx]
 
         trajs = word_search.word_search(x, G, K, model)
-        print(f'Predicting [{y}]')
+        print('Predicting [{}]'.format(y))
 
         for i, (likelihood, traj) in enumerate(trajs):
             word = ''
             for seg_begin, seg_end, pred, prob in traj:
                 word += chr(pred+ord('A'))
-            print(f'  ({i}) likelihood {likelihood}', word)
+            print('  ({}) likelihood {}'.format(i, likelihood), word)
 
 
 def get_all_word_data_dirs():
