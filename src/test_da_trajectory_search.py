@@ -4,6 +4,8 @@ import random
 import os
 import word_search
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 import data_utils
 
 from lstm import LSTM_char_classifier
