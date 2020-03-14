@@ -5,11 +5,19 @@ import segmentation
 import numpy as np
 import torch
 import segmentation
+import math
 import rnn_final
 from pprint import pprint
 
 
-def word_search(x, n, k, model, is_flatten_ypr=False, feature_num=100):
+def word_search(x, g, k, model, is_flatten_ypr=False, feature_num=100):
+    '''
+    @param x: the sample
+    @param g: granularity, how many parts to split per expected letter
+    @oaran k: keep top k choices
+    '''
+    n = math.ceil(len(x) / 75) * g
+
     x_split, bounds = segmentation.split_to_resampled_segments(
         x, n, is_flatten_ypr, feature_num
     )

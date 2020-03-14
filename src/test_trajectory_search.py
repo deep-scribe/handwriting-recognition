@@ -1,7 +1,6 @@
 import lstm
 import data_loader_upper
 import random
-import segmentation
 import os
 import word_search
 import torch
@@ -13,6 +12,9 @@ from pprint import pprint
 
 WEIGHT_DIR = '../saved_model/'
 WORD_DATA_DIR = '../data_words/'
+
+G = 7  # segment split granularity
+K = 10  # word search top k choices
 
 
 def main():
@@ -85,9 +87,7 @@ def main():
         x = wordxs[idx]
         y = wordys[idx]
 
-        N = len(x) // 10
-        K = 10
-        trajs = word_search.word_search(x, N, K, model)
+        trajs = word_search.word_search(x, G, K, model)
         print(f'Predicting [{y}]')
 
         for i, (likelihood, traj) in enumerate(trajs):
