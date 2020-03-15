@@ -6,8 +6,6 @@ import word_search
 import torch
 import data_utils
 
-from lstm import LSTM_char_classifier
-
 from pprint import pprint
 
 WEIGHT_DIR = '../saved_model/'
@@ -33,7 +31,7 @@ def main():
             pass
     print()
 
-    model_class, model_param, train_param, train_time, description, extension = \
+    model_class, description, model_param, train_param, train_time, extension = \
         selected_file_path[0].split('.')
     model_param_list = model_param.split('-')
     for i in range(len(model_param_list)):

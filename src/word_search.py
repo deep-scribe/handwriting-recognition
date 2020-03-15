@@ -1,14 +1,28 @@
 import beam
-import rnn_bilstm
+# import rnn_bilstm
 import data_utils
 import segmentation
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 import segmentation
 import math
-import rnn_final
+# import rnn_final
 from pprint import pprint
 
+
+def get_prob(net, input):
+    if torch.cuda.is_available():
+        input = input.cuda()
+        # net = net.cuda()
+    else:
+        net.cpu()
+    net.eval()
+    with torch.no_grad():
+        logit = net(input.float())
+        prob = F.log_softmax(logit, dim=-1)
+    return logit
 
 def word_search(x, g, k, model, is_flatten_ypr=False, feature_num=100):
     '''
@@ -22,9 +36,9 @@ def word_search(x, g, k, model, is_flatten_ypr=False, feature_num=100):
         x, n, is_flatten_ypr, feature_num
     )
     x_split = torch.tensor(x_split)
-    probs = rnn_final.get_prob(model, x_split)
+    probs = get_prob(model, x_split)
     logit_dict = {
-        bounds[i]: np.array(probs[i]) for i in range(len(bounds))
+        bounds[i]: np.array(probs[i].cpu()) for i in range(len(bounds))
     }
     trajectory_dict = beam.trajectory_search(logit_dict, k, n)
 
