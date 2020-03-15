@@ -49,6 +49,7 @@ class Autocorrect_kernel:
         return ratio * trajectory_score
 
     kernels = {
+        "top_1": None,
         "identity": identity,
         "confidence_only": confidence_only,
         "hard_freq_dist": hard_freq_dist,
@@ -241,6 +242,12 @@ class Pipeline():
     def summerize_final_word(self, confidence_map):
         predictor = self.autocorrector
         kernel_func = self.ac_kernel
+
+        # obtain just the top result
+        if self.ac_kernel == None:
+            ac_word, ac_dist, ac_freq = predictor.auto_correct(confidence_map[0][1])
+            # print("top_1:",confidence_map[0][1],ac_word)
+            return confidence_map[0][0], ac_word
 
         new_confidence_map = collections.defaultdict(float)
 
