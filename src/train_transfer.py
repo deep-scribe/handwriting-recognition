@@ -73,7 +73,7 @@ def main():
     print()
 
     # define filename
-    description = 'baseline'
+    description = 'transfer'
     while description == '':
         description = input('input a model description (part of filename): ')
     config_strs = [str(int(c)) for c in selected_config]
