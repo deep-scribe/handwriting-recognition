@@ -23,8 +23,8 @@ NUM_EPOCH = 500
 USE_NONCLASS = True
 
 # should not change
-MODEL_WEIGHT_PATH = '../saved_model/'
-MODEL_HIST_PATH = '../output/'
+MODEL_WEIGHT_PATH = '../saved_model/transfer'
+MODEL_HIST_PATH = '../output/transfer'
 WEIGHT_DIR = '../saved_model/'
 
 
@@ -73,7 +73,7 @@ def main():
     print()
 
     # define filename
-    description = 'rus_kev_upper'
+    description = 'baseline'
     while description == '':
         description = input('input a model description (part of filename): ')
     config_strs = [str(int(c)) for c in selected_config]
@@ -81,7 +81,7 @@ def main():
     now = datetime.now()
     time_str = now.strftime("%m-%d-%H-%M")
     file_prefix = '{}.{}.{}-{}-{}.{}.{}'.format(
-    model_class.__name__, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str, description
+    model_class.__name__, description, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str
     )
     weight_filename = file_prefix+'.pth'
     hist_filename = file_prefix+'.json'
@@ -111,7 +111,7 @@ def main():
             pass
     print()
 
-    model_class, model_param, train_param, train_time, _, _ = \
+    _, model_class, model_param, train_param, train_time, _ = \
         selected_file_path[0].split('.')
     model_param_list = model_param.split('-')
     for i in range(len(model_param_list)):
@@ -151,7 +151,7 @@ def main():
         resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
     print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     print()
-    
+
     # augment dev set, keeping raw sequences in
     devx, devy = aug_concat_trim(devx, devy)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
