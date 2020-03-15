@@ -23,7 +23,6 @@ def soft_freq_dist(trajectory_score, frequency, edit_distance, beta = 0.75):
 
     return ratio * trajectory_score
 
-
 def summerize_score(predictor, kernel_func, confidence_map):
     new_confidence_map = collections.defaultdict(float)
     for confidence, word in confidence_map:
