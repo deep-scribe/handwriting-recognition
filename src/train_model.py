@@ -76,7 +76,7 @@ def main():
     s = '-'.join(config_strs)
     now = datetime.now()
     time_str = now.strftime("%m-%d-%H-%M")
-    file_prefix = f'{model_class.__name__}.{s}.{BATCH_SIZE}-{CONCAT_TRIM_AUGMENT_PROP}-{NOISE_AUGMENT_PROP}.{time_str}.{description}'
+    file_prefix = f'{model_class.__name__}.{description}.{s}.{BATCH_SIZE}-{CONCAT_TRIM_AUGMENT_PROP}-{NOISE_AUGMENT_PROP}.{time_str}'
     weight_filename = file_prefix+'.pth'
     hist_filename = file_prefix+'.json'
     print(f'Model weights will be saved to [{MODEL_WEIGHT_PATH}]')
