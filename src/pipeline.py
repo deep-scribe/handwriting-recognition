@@ -1,7 +1,7 @@
 """
-
-Usage for realtime word prediction: 
-
+*****************************************
+** Usage for realtime word prediction: **
+*****************************************
     from pipeline import Pipeline
     
     # you can choose model you want if set to False, otherwise use default model
