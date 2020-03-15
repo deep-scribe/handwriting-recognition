@@ -26,7 +26,7 @@ USE_NONCLASS = True
 # should not change
 MODEL_WEIGHT_PATH = '../saved_model/da'
 MODEL_HIST_PATH = '../output/da'
-WEIGHT_DIR = '../saved_model/da'
+WEIGHT_DIR = '../saved_model/'
 torch.manual_seed(0)
 np.random.seed(0)
 
@@ -85,7 +85,7 @@ def main():
     now = datetime.now()
     time_str = now.strftime("%m-%d-%H-%M")
     file_prefix = '{}.{}.{}-{}-{}.{}.{}'.format(
-    model_class.__name__, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str, description
+    model_class.__name__, description, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str
     )
     weight_filename = file_prefix+'.pth'
     hist_filename = file_prefix+'.json'
@@ -116,7 +116,7 @@ def main():
             pass
     print()
 
-    model_class, model_param, train_param, train_time, _, _ = \
+    _, model_class, model_param, train_param, train_time, _ = \
         selected_file_path[0].split('.')
     model_param_list = model_param.split('-')
     for i in range(len(model_param_list)):
@@ -182,85 +182,85 @@ def main():
     hist = defaultdict(list)
     best_acc = 0
 
-    # try:
-    for epoch in range(NUM_EPOCH):
-        running_loss = 0.0
-        print('Epoch [{}]'.format(epoch))
+    try:
+        for epoch in range(NUM_EPOCH):
+            running_loss = 0.0
+            print('Epoch [{}]'.format(epoch))
 
-        # augment train set differently every epoch
-        # do not keep raw sequence
-        # model should only overfit to true handwriting char part
-        # but not any other unnecesary signal
-        print('  augment')
-        a_trainx_or, a_trainy_or = aug_concat_trim(
-            or_trainx, or_trainy, keep_orig=False)
-        a_trainx_or, a_trainy_or = data_augmentation.noise_stretch_rotate_augment(
-            a_trainx_or, a_trainy_or, augment_prop=NOISE_AUGMENT_PROP,
-            is_already_flattened=False, resampled=True)
+            # augment train set differently every epoch
+            # do not keep raw sequence
+            # model should only overfit to true handwriting char part
+            # but not any other unnecesary signal
+            print('  augment')
+            a_trainx_or, a_trainy_or = aug_concat_trim(
+                or_trainx, or_trainy, keep_orig=False)
+            a_trainx_or, a_trainy_or = data_augmentation.noise_stretch_rotate_augment(
+                a_trainx_or, a_trainy_or, augment_prop=NOISE_AUGMENT_PROP,
+                is_already_flattened=False, resampled=True)
 
-        a_trainx_da, a_trainy_da = aug_concat_trim(
-            da_trainx, da_trainy, keep_orig=False)
-        a_trainx_da, a_trainy_da = data_augmentation.noise_stretch_rotate_augment(
-            a_trainx_da, a_trainy_da, augment_prop=NOISE_AUGMENT_PROP,
-            is_already_flattened=False, resampled=True)
+            a_trainx_da, a_trainy_da = aug_concat_trim(
+                da_trainx, da_trainy, keep_orig=False)
+            a_trainx_da, a_trainy_da = data_augmentation.noise_stretch_rotate_augment(
+                a_trainx_da, a_trainy_da, augment_prop=NOISE_AUGMENT_PROP,
+                is_already_flattened=False, resampled=True)
 
-        a_trainy_da = np.stack((a_trainy_da, np.ones_like(a_trainy_da)), axis = 1)
-        a_trainy_or = np.stack((a_trainy_or, np.zeros_like(a_trainy_or)), axis = 1)
+            a_trainy_da = np.stack((a_trainy_da, np.ones_like(a_trainy_da)), axis = 1)
+            a_trainy_or = np.stack((a_trainy_or, np.zeros_like(a_trainy_or)), axis = 1)
 
-        # print(a_trainx_or.shape, a_trainy_or.shape, a_trainx_da.shape, a_trainy_da.shape)
+            # print(a_trainx_or.shape, a_trainy_or.shape, a_trainx_da.shape, a_trainy_da.shape)
 
-        trainx = np.concatenate((a_trainx_da, a_trainx_or), axis = 0)
-        trainy = np.concatenate((a_trainy_da, a_trainy_or), axis = 0)
+            trainx = np.concatenate((a_trainx_da, a_trainx_or), axis = 0)
+            trainy = np.concatenate((a_trainy_da, a_trainy_or), axis = 0)
 
-        print('  train')
-        trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
-        print('  '.format(end=''))
-        lambda_epoch = get_lambda(epoch, NUM_EPOCH)
-        for i, data in enumerate(trainloader):
-            # print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
-            # print('{}'.format(i % 10, end='', flush=True))
-            # print(data)
-            if i % 1 == 0:
-                print(" ", i, "/", len(trainloader), "Time:", time.time()-start_time)
+            print('  train')
+            trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
+            print('  '.format(end=''))
+            lambda_epoch = get_lambda(epoch, NUM_EPOCH)
+            for i, data in enumerate(trainloader):
+                # print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
+                # print('{}'.format(i % 10, end='', flush=True))
+                # print(data)
+                if i % 1 == 0:
+                    print(" ", i, "/", len(trainloader), "Time:", time.time()-start_time)
 
-            inputs, input_labels = data
-            labels, da_labels = input_labels[:, 0], input_labels[:, 1]
-            if torch.cuda.is_available():
-                inputs = inputs.cuda()
-                labels = labels.cuda()
-                da_labels = da_labels.cuda()
-            optimizer.zero_grad()
-            outputs, vectors = model(inputs.float())
-            da_outputs = da_model(vectors)
-            loss = criterion(outputs, labels.long()) - lambda_epoch*da_criterion(da_outputs, da_labels.float())
-            loss.backward()
-            optimizer.step()
+                inputs, input_labels = data
+                labels, da_labels = input_labels[:, 0], input_labels[:, 1]
+                if torch.cuda.is_available():
+                    inputs = inputs.cuda()
+                    labels = labels.cuda()
+                    da_labels = da_labels.cuda()
+                optimizer.zero_grad()
+                outputs, vectors = model(inputs.float())
+                da_outputs = da_model(vectors)
+                loss = criterion(outputs, labels.long()) - lambda_epoch*da_criterion(da_outputs, da_labels.float())
+                loss.backward()
+                optimizer.step()
 
-        trainacc, trainloss = acc_loss(model, trainloader, criterion)
-        trainacc_da, trainloss_da = acc_loss_da(model, da_model, trainloader, da_criterion)
-        devacc, devloss = acc_loss(model, devloader, criterion)
-        devacc_da, devloss_da = acc_loss_da(model, da_model, devloader, da_criterion)
-        hist['trainacc'].append(trainacc)
-        hist['trainloss'].append(trainloss)
-        hist['trainacc_da'].append(trainacc_da)
-        hist['trainloss_da'].append(trainloss_da)
-        hist['devacc'].append(devacc)
-        hist['devloss'].append(devloss)
-        hist['devacc_da'].append(devacc_da)
-        hist['devloss_da'].append(devloss_da)
+            trainacc, trainloss = acc_loss(model, trainloader, criterion)
+            trainacc_da, trainloss_da = acc_loss_da(model, da_model, trainloader, da_criterion)
+            devacc, devloss = acc_loss(model, devloader, criterion)
+            devacc_da, devloss_da = acc_loss_da(model, da_model, devloader, da_criterion)
+            hist['trainacc'].append(trainacc)
+            hist['trainloss'].append(trainloss)
+            hist['trainacc_da'].append(trainacc_da)
+            hist['trainloss_da'].append(trainloss_da)
+            hist['devacc'].append(devacc)
+            hist['devloss'].append(devloss)
+            hist['devacc_da'].append(devacc_da)
+            hist['devloss_da'].append(devloss_da)
 
-        print('  trainacc={} devacc={} trainacc_da={} devacc_da={}'.format(trainacc, devacc, trainacc_da, devacc_da))
-        print('  trainloss={} devloss={} trainloss_da={} devloss_da={}'.format(trainloss, devloss, trainloss_da, devloss_da))
+            print('  trainacc={} devacc={} trainacc_da={} devacc_da={}'.format(trainacc, devacc, trainacc_da, devacc_da))
+            print('  trainloss={} devloss={} trainloss_da={} devloss_da={}'.format(trainloss, devloss, trainloss_da, devloss_da))
 
-        # save model if achieve lower dev loss
-        # i.e. early stopping
-        if best_acc < devacc:
-            best_acc = devacc
-            torch.save(model.state_dict(), os.path.join(
-                MODEL_WEIGHT_PATH, weight_filename))
-            print('  new best dev loss, weight saved')
-    # except KeyboardInterrupt:
-    #     pass
+            # save model if achieve lower dev loss
+            # i.e. early stopping
+            if best_acc < devacc:
+                best_acc = devacc
+                torch.save(model.state_dict(), os.path.join(
+                    MODEL_WEIGHT_PATH, weight_filename))
+                print('  new best dev loss, weight saved')
+    except KeyboardInterrupt:
+        pass
 
     print()
     print('Finished Training', 'best dev acc', best_acc)
