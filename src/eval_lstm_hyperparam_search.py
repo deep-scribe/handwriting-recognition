@@ -14,7 +14,7 @@ MODEL_HIST_PATH = '../output/'
 
 def main():
     files = get_filepaths()
-    populate_devacc(files)
+    populate_acc(files)
     populate_model_param(files)
     files = sorted(files, key=lambda file: file['devacc'], reverse=True)
     files = files[:50]
@@ -52,13 +52,14 @@ def populate_model_param(files):
         file['fc_hidden_dim'] = int(fc_hidden_dim)
 
 
-def populate_devacc(files):
+def populate_acc(files):
     for file in files:
         json_path = file['json_path']
         with open(json_path) as f:
             j = json.load(f)
             # print()
             file['devacc'] = max(j['devacc'])
+            file['trainacc'] = max(j['trainacc'])
 
 
 def get_filepaths():
