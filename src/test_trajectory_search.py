@@ -71,6 +71,7 @@ def main():
         try:
             n = int(input('type a number: '))
             selected_word_dir = word_data_dirs[n]
+            print(selected_word_dir)
         except KeyboardInterrupt:
             quit()
         except:
