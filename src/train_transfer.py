@@ -221,6 +221,7 @@ def main():
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
+    model.load_state_dict(torch.load(os.path.join(MODEL_WEIGHT_PATH, weight_filename)))
     testacc, testloss = acc_loss(model, testloader, nn.CrossEntropyLoss())
     testacc, testloss
     hist['testacc'] = testacc
