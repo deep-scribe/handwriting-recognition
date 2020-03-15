@@ -1,16 +1,17 @@
 """
 
-Usage: 
+Usage for realtime word prediction: 
 
-from pipeline import Pipeline
+    from pipeline import Pipeline
+    
+    # you can choose model you want if set to False, otherwise use default model
+    pipl = Pipeline(use_default_model = False) 
 
-pipl = Pipeline()
+    word_df = data_utils.load_subject(path_to_realtime_foldername)
 
-word_df = data_utils.load_subject(path_to_realtime_foldername)
+    predicted_word = pipl.predict_realtime(word_df, G = 7, K = 10)
 
-predicted_word = pipl.predict_realtime(word_df, G = 7, K = 10)
-
-print("Predicted word is", predicted_word)
+    print("Predicted word is", predicted_word)
 
 """
 
@@ -55,17 +56,21 @@ class Autocorrect_kernel:
     }
     
 
-DEFAULT_PTH_FILE = ('LSTM_char_classifier.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.rus_kev_upper.pth', '../saved_model/LSTM_char_classifier.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.rus_kev_upper.pth')
+DEFAULT_PTH_FILE = ('LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth', '../saved_model/LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth')
 DEFAULT_WORD_FILE = ('russell_new_2', '../data_words/russell_new')
 DEFAULT_KERNEL = Autocorrect_kernel.hard_freq_dist
 
 class Pipeline():
 
-    def __init__(self, pth_filepath = DEFAULT_PTH_FILE, word_filepath = DEFAULT_WORD_FILE, ac_kernel_name = 'hard_freq_dist', use_default=True):
+    def __init__(self, pth_filepath = DEFAULT_PTH_FILE, word_filepath = DEFAULT_WORD_FILE, ac_kernel_name = 'hard_freq_dist', use_default_model=True):
         
-        self.autocorrector = sym_spell.initialize()
-        self.model = self.load_model(pth_filepath)
+        if use_default_model:
+            self.model = self.load_model(pth_filepath)
+        else:
+            self.change_model()
+
         self.word_data = self.load_wordfile(word_filepath)
+        self.autocorrector = sym_spell.initialize()
         self.ac_kernel = Autocorrect_kernel.kernels[ac_kernel_name]
 
 
@@ -153,6 +158,7 @@ class Pipeline():
                 try:
                     n = int(input('type a number: '))
                     selected_file_path = pth_files_paths[n]
+                    print(selected_file_path)
                 except KeyboardInterrupt:
                     quit()
                 except:
@@ -200,7 +206,7 @@ class Pipeline():
 
     def load_model(self, selected_file_path):
 
-        model_class, model_param, train_param, train_time, description, extension = \
+        model_class, description, model_param, train_param, train_time, extension = \
             selected_file_path[0].split('.')
         model_param_list = model_param.split('-')
         for i in range(len(model_param_list)):

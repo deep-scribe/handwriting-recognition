@@ -14,7 +14,7 @@ realtime_file = '../output/realtime_test'
 
 
 def realtime_experiment():
-    pipl = Pipeline()
+    pipl = Pipeline(use_default_model = True)
 
     word_df = data_utils.load_subject(realtime_file)
     predicted_word = pipl.predict_realtime(word_df, G = 7, K = 10)
