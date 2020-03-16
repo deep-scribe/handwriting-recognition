@@ -21,7 +21,7 @@ def realtime_experiment():
     pipl = Pipeline(use_default_model = False, ac_kernel_name="hard_freq_dist")
 
     word_df = data_utils.load_subject(realtime_file)
-    predicted_word = pipl.predict_realtime(word_df, G = 7, K = 10)
+    predicted_word = pipl.predict_realtime(word_df, G = 7, K = 10, verbose=False)
 
     print("Predicted word is", predicted_word)
 
@@ -55,6 +55,6 @@ def kernel_experiment():
 
 if __name__ == "__main__":
     
-    kernel_experiment()
+    # kernel_experiment()
 
-    # realtime_experiment()
+    realtime_experiment()

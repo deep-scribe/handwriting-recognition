@@ -75,7 +75,7 @@ class Pipeline():
         self.ac_kernel = Autocorrect_kernel.kernels[ac_kernel_name]
 
 
-    def predict_realtime(self, word_df, G = 7, K = 10):
+    def predict_realtime(self, word_df, G = 7, K = 10, verbose=False):
         """
         Run the entire prediction pipeline and predict the word
 
@@ -104,8 +104,11 @@ class Pipeline():
                 # print(f'  ({i}) likelihood {likelihood}', word)
                 confidence_map.append((likelihood, word))
 
-            alpha_score, final_word = self.summerize_final_word(confidence_map)
-            print("Prediction:", final_word)
+            alpha_score, final_word = self.summerize_final_word(confidence_map, verbose=verbose)
+            
+            if verbose:
+                print("Prediction:", final_word)
+                
             predictions.append(final_word)
 
         return predictions
@@ -135,7 +138,7 @@ class Pipeline():
                 # print(f'  ({i}) likelihood {likelihood}', word)
                 confidence_map.append((likelihood, word))
 
-            alpha_score, final_word = self.summerize_final_word(confidence_map)
+            alpha_score, final_word = self.summerize_final_word(confidence_map, verbose=True)
             print(f'    result: alpha_score {alpha_score}', final_word)
 
             if y.lower() == final_word.lower():
@@ -239,20 +242,20 @@ class Pipeline():
 
         return model
 
-    def summerize_final_word(self, confidence_map):
+    def summerize_final_word(self, confidence_map, verbose=False):
         predictor = self.autocorrector
         kernel_func = self.ac_kernel
 
         # obtain just the top result
         if self.ac_kernel == None:
-            ac_word, ac_dist, ac_freq = predictor.auto_correct(confidence_map[0][1])
+            ac_word, ac_dist, ac_freq = predictor.auto_correct(confidence_map[0][1], verbose=verbose)
             # print("top_1:",confidence_map[0][1],ac_word)
             return confidence_map[0][0], ac_word
 
         new_confidence_map = collections.defaultdict(float)
 
         for confidence, word in confidence_map:
-            ac_word, ac_dist, ac_freq = predictor.auto_correct(word)
+            ac_word, ac_dist, ac_freq = predictor.auto_correct(word, verbose=verbose)
             alpha_score = kernel_func(confidence, ac_freq, ac_dist, beta = 1)
             new_confidence_map[ac_word] += alpha_score
 
