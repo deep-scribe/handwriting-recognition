@@ -33,16 +33,16 @@ String[] az = new String[]{
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "russell_30";
+String FOLDER_NAME = "kevin_30";
 String[] word_list = words_30.clone();
 
 //String FOLDER_NAME = "kevin_mar3";
 //String[] word_list = az.clone();
 
-//boolean start_from_first_word = true;
-//String word_to_start_at = "NO_WORD_DEFINED";
-boolean start_from_first_word = false;
-String word_to_start_at = "A";
+boolean start_from_first_word = true;
+String word_to_start_at = "NO_WORD_DEFINED";
+//boolean start_from_first_word = false;
+//String word_to_start_at = "A";
 
 boolean addCalibration = true;
 
