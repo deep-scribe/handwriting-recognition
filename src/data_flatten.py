@@ -402,5 +402,5 @@ def visualization_example():
 
 
 if __name__ == "__main__":
-    visualization_example()
-    # visualization_example_words()
+    # visualization_example()
+    visualization_example_words()
