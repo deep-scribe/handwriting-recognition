@@ -33,7 +33,7 @@ String[] az = new String[]{
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "kevin_30";
+String FOLDER_NAME = "kelly_30";
 String[] word_list = words_30.clone();
 
 //String FOLDER_NAME = "kevin_mar3";

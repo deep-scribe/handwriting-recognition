@@ -3,12 +3,16 @@ import csv
 import collections
 import data_utils
 
-test_files = [('kelly', '../data_words/kelly'),
-            ('kelly_new', '../data_words/kelly_new'),
-            ('kevin_quick_brown_fox', '../data_words/kevin_quick_brown_fox'),
-            ('kevin_tip', '../data_words/kevin_tip'),
-            ('russell_new', '../data_words/russell_new'),
-            ('russell_new_2', '../data_words/russell_new_2')]
+# test_files = [('kelly', '../data_words/kelly'),
+#             ('kelly_new', '../data_words/kelly_new'),
+#             ('kevin_quick_brown_fox', '../data_words/kevin_quick_brown_fox'),
+#             ('kevin_tip', '../data_words/kevin_tip'),
+#             ('russell_new', '../data_words/russell_new'),
+#             ('russell_new_2', '../data_words/russell_new_2')]
+
+test_files = [('kelly_30', '../data_words/kelly_30'),
+            ('kevin_30', '../data_words/kevin_30'),
+            ('russell_30', '../data_words/russell_30')]
 
 realtime_file = '../output/realtime_test'
 
@@ -38,7 +42,6 @@ def kernel_experiment():
             table[word_filepath[0]]['Test_files'] = word_filepath[0]
             table[word_filepath[0]]['total'] = len(pipl.word_data[1])
 
-
     with open('../ac_experiment.csv', 'w', newline='') as f:
 
         thewriter = csv.DictWriter(f, fieldnames=fieldnames)
@@ -52,6 +55,6 @@ def kernel_experiment():
 
 if __name__ == "__main__":
     
-    # kernel_experiment()
+    kernel_experiment()
 
-    realtime_experiment()
+    # realtime_experiment()
