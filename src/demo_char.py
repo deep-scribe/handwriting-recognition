@@ -8,34 +8,24 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from art import tprint, text2art
 import time
+import lstm
+import lstm_siamese
 
 DEMO_FILEPATH = 'demo_data'
-PTH_PATH = 'rnn.pth'
+PTH_PATH = '../saved_model/da/'
+# PTH_FILENAME = 'LSTM_char_classifier.best.3-275-8-88-27-0-1.1500-3-3.03-15-09-25.pth'
+# PTH_FILENAME = 'LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth'
+# PTH_FILENAME = 'LSTM_char_classifier.transfer.3-200-3-200-27-0-1-1500-1.3.03-15-19-04.pth'
+PTH_FILENAME = 'LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-1-3.03-13-02-20.pth'
+# MODEL_CONFIG = (3, 275, 8, 88, 27, False, True)
+MODEL_CONFIG = (3, 200, 3, 200, 27, False, True)
 
 
-class Net(torch.nn.Module):
-    def __init__(self, input_dim, hidden_dim, n_layers):
-        super(Net, self).__init__()
-        self.input_dim = input_dim
-        self.hidden_dim = hidden_dim
-        self.n_layers = n_layers
-        self.lstm = torch.nn.LSTM(
-            input_dim, hidden_dim, n_layers, batch_first=True)
-        self.fc = torch.nn.Linear(hidden_dim, 26, bias=True)
-
-    def forward(self, x):
-        # init_h = torch.randn(self.n_layers, x.shape[0], self.hidden_dim).cuda()
-        # init_c = torch.randn(self.n_layers, x.shape[0], self.hidden_dim).cuda()
-        init_h = torch.randn(self.n_layers, x.shape[0], self.hidden_dim)
-        init_c = torch.randn(self.n_layers, x.shape[0], self.hidden_dim)
-        x = x.permute(0, 2, 1)
-        out, _ = self.lstm(x, (init_h, init_c))
-        out = self.fc(out[:, -1, :])
-        return out
-
-
-MODEL = Net(input_dim=3, hidden_dim=100, n_layers=5)
-MODEL.load_state_dict(torch.load(PTH_PATH, map_location=torch.device('cpu')))
+# MODEL = lstm.LSTM_char_classifier(*MODEL_CONFIG)
+MODEL = lstm_siamese.LSTM_char_classifier(*MODEL_CONFIG)
+MODEL.load_state_dict(torch.load(
+    os.path.join(PTH_PATH, PTH_FILENAME),
+    map_location=torch.device('cpu')))
 
 
 class Handler(FileSystemEventHandler):
@@ -58,10 +48,10 @@ def re_eval():
 
         with torch.no_grad():
             for x, y in dataloader:
-                output = MODEL(x.float())
+                output, _ = MODEL(x.float())
                 _, pred = torch.max(output.data, 1)
                 char = data_utils.LEGAL_LABELS[pred.data]
-                art = text2art(char)
+                art = text2art(char.upper())
                 s = str(art)
 
         print('\n' * 100)
