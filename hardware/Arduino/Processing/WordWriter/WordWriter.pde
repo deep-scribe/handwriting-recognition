@@ -18,6 +18,12 @@ String[] words_27 = new String[]{
 "EXAMS", "FOCUS", "SAUCE", "COAX", "SAME", "SEX", "AWE", "FEM", "AXE", "AGE", "KANJI", "FLICK", "BEACH", "CABIN", "HACK", "LACK", "KAMI", "KID" , "BAN", "BAD", "QUICK", "BROWN", "FOX", "JUMPS", "OVER", "LAZY", "DOG"
 };
 
+String[] words_30 = new String[]{
+"PACK", "MY", "BOX", "WITH", "FIVE", "DOZEN", "LIQUOR", "JUGS", "THE", "QUICK", "BROWN", "FOX", 
+"JUMPS", "OVER", "LAZY", "DOG", "OF", "AND" , "A", "TO", "WOULD", "YEAR", "OTHER", "COME", "WANT", 
+"THINK", "WATER", "POSTS", "EVENT", "CLASS"
+};
+
 String[] az = new String[]{
   "QUICK", "BROWN", "FOX", "JUMPS", "OVER", "LAZY", "DOG"
 };
@@ -27,8 +33,8 @@ String[] az = new String[]{
 /* Custom Field Start */
 String DIR_NAME = "words_data";
 
-String FOLDER_NAME = "russell_new_2";
-String[] word_list = words_27.clone();
+String FOLDER_NAME = "kelly_30";
+String[] word_list = words_30.clone();
 
 //String FOLDER_NAME = "kevin_mar3";
 //String[] word_list = az.clone();
@@ -36,7 +42,7 @@ String[] word_list = words_27.clone();
 boolean start_from_first_word = true;
 String word_to_start_at = "NO_WORD_DEFINED";
 //boolean start_from_first_word = false;
-//String word_to_start_at = "AXE";
+//String word_to_start_at = "A";
 
 boolean addCalibration = true;
 
