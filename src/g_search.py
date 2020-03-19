@@ -3,13 +3,16 @@ import data_utils
 import pandas as pd
 import numpy as np
 import json
+import os
 from pprint import pprint
 
-SAVE_PATH = '../output/g_search/acc.json'
-G_RANGE = (3, 11)
+G_RANGE = (3, 10)
+K = 10
+SAVE_PATH = '../output/g_search/'
+FILENAME = f'k_{K}.json'
 
 
-def main():
+def search():
     xs = []
     ys = []
     for subject in [
@@ -34,7 +37,7 @@ def main():
 
         preds = []
         for i, x in enumerate(xs):
-            yhat = p.predict_single(x, G, K=10, verbose=False).upper()
+            yhat = p.predict_single(x, G, K=K, verbose=False).upper()
             preds.append(yhat)
             w[G].append((yhat, ys[i]))
             print(f'y=[{ys[i]}] yhat=[{yhat}]')
@@ -45,9 +48,16 @@ def main():
 
     pprint(d)
 
-    with open(SAVE_PATH, 'w+') as f:
-        json.dump(d, f)
+    with open(os.path.join(SAVE_PATH, FILENAME), 'w+') as f:
+        json.dump({
+            'acc': d,
+            'words': w
+        }, f)
+
+
+def plot():
+    pass
 
 
 if __name__ == "__main__":
-    main()
+    search()
