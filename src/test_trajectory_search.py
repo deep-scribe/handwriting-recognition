@@ -1,4 +1,5 @@
 import lstm
+from lstm import LSTM_char_classifier
 import data_loader_upper
 import random
 import os
@@ -13,6 +14,7 @@ WORD_DATA_DIR = '../data_words/'
 
 G = 7  # segment split granularity
 K = 10  # word search top k choices
+DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
 def main():
@@ -53,7 +55,7 @@ def main():
     print()
 
     # get the class, instantiate model, load weight
-    model = globals()[model_class](*model_param_list)
+    model = globals()[model_class](*model_param_list).to(DEVICE)
     if torch.cuda.is_available():
         model.load_state_dict(torch.load(selected_file_path[1]))
     else:
