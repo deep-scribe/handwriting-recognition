@@ -1,13 +1,13 @@
 """
-Usage:
+====== auto_correct Usage ======
+import sym_spell
+predictor = sym_spell.initialize()
+predictor.auto_correct("perfct", verbose=1)
 
-$ python
-
->>> import sym_spell
-
->>> predictor = sym_spell.initialize()
-
->>> predictor.auto_correct("perfct", verbose=1)
+====== editDistance Usage ======
+import sym_spell
+distance = sym_spell.editDistance("fox", "focus")
+print("Edit distance between fox and focus is:",distance)
 
 """
 
@@ -15,6 +15,37 @@ import pkg_resources
 
 from symspellpy.symspellpy import SymSpell, Verbosity  # import the module
 
+def editDistance(str1, str2):
+    return __editDistance(str1, str2, len(str1), len(str2))
+
+# A Naive recursive Python program to fin minimum number 
+# operations to convert str1 to str2 
+def __editDistance(str1, str2, m, n): 
+  
+    # If first string is empty, the only option is to 
+    # insert all characters of second string into first 
+    if m == 0: 
+         return n 
+  
+    # If second string is empty, the only option is to 
+    # remove all characters of first string 
+    if n == 0: 
+        return m 
+  
+    # If last characters of two strings are same, nothing 
+    # much to do. Ignore last characters and get count for 
+    # remaining strings. 
+    if str1[m-1]== str2[n-1]: 
+        return __editDistance(str1, str2, m-1, n-1) 
+  
+    # If last characters are not same, consider all three 
+    # operations on last character of first string, recursively 
+    # compute minimum cost for all three operations and take 
+    # minimum of three values. 
+    return 1 + min(__editDistance(str1, str2, m, n-1),    # Insert 
+                   __editDistance(str1, str2, m-1, n),    # Remove 
+                   __editDistance(str1, str2, m-1, n-1)    # Replace 
+                   ) 
 
 def initialize(max_edit_distance_dictionary = 2, prefix_length = 7):
 
@@ -92,7 +123,12 @@ class AutoCorrect():
         return suggestions
 
 
-
+def test_editdistance():
+    # Driver program to test the above function 
+    str1 = "posts"
+    str2 = "poses"
+    print (editDistance(str1, str2))
+      
 def main():
     # maximum edit distance per dictionary precalculation
     max_edit_distance_dictionary = 2
@@ -129,5 +165,5 @@ def main():
 
 if __name__ == "__main__":
     
-    main()
-    # test_trajectory()
+    # main()
+    test_editdistance()
