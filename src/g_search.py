@@ -30,7 +30,7 @@ def search():
 
     p = pipeline.Pipeline(use_default_model=False)
 
-    d = {}  # G:acc
+    a = {}  # G:acc
     w = {G: [] for G in range(*G_RANGE)}  # G:[(yhat, y),...]
     for G in range(*G_RANGE):
         print(f'running G={G}')
@@ -44,13 +44,13 @@ def search():
 
         acc = sum(np.array(preds) == ys) / len(ys)
         print(f'G={G} acc={acc}')
-        d[G] = acc
+        a[G] = acc
 
-    pprint(d)
+    pprint(a)
 
     with open(os.path.join(SAVE_PATH, FILENAME), 'w+') as f:
         json.dump({
-            'acc': d,
+            'acc': a,
             'words': w
         }, f)
 
