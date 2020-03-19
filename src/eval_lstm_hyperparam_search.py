@@ -17,7 +17,7 @@ def main():
     populate_acc(files)
     populate_model_param(files)
     files = sorted(files, key=lambda file: file['devacc'], reverse=True)
-    # files = files[:50]
+    files = files[:-10]
     pprint(files)
     pprint(files[0])
     show_plot(files)
