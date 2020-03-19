@@ -7,7 +7,7 @@ import os
 from pprint import pprint
 
 G_RANGE = (3, 10)
-K = 10
+K = 20 
 SAVE_PATH = '../output/g_search/'
 FILENAME = f'k_{K}.json'
 
