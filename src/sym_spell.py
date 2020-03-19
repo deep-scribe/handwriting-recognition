@@ -16,7 +16,7 @@ import pkg_resources
 from symspellpy.symspellpy import SymSpell, Verbosity  # import the module
 
 def editDistance(str1, str2):
-    return __editDistance(str1, str2, len(str1), len(str2))
+    return __editDistance(str1.lower(), str2.lower(), len(str1), len(str2))
 
 # A Naive recursive Python program to fin minimum number 
 # operations to convert str1 to str2 
@@ -125,8 +125,8 @@ class AutoCorrect():
 
 def test_editdistance():
     # Driver program to test the above function 
-    str1 = "posts"
-    str2 = "poses"
+    str1 = "BENE"
+    str2 = "bene"
     print (editDistance(str1, str2))
       
 def main():
