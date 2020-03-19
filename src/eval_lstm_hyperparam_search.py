@@ -17,7 +17,8 @@ def main():
     populate_acc(files)
     populate_model_param(files)
     files = sorted(files, key=lambda file: file['devacc'], reverse=True)
-    files = files[:50]
+    files = files[:-10]
+    pprint(files)
     pprint(files[0])
     show_plot(files)
 
@@ -39,6 +40,13 @@ def show_plot(files):
         cmap='Reds',
         depthshade=0,
     )
+
+    best = (
+        files[0]['lstm_hidden_dim'],
+        files[0]['lstm_n_layers'],
+        files[0]['fc_hidden_dim'],
+    )
+    ax.text(*best, f' best model: {best}')
     plt.show()
 
 

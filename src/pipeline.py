@@ -31,20 +31,23 @@ from pprint import pprint
 
 WEIGHT_DIR = '../saved_model/'
 WORD_DATA_DIR = '../data_words/'
+DEVICE = torch.device(
+    'cuda') if torch.cuda.is_available() else torch.device('cpu')
+
 
 class Autocorrect_kernel:
 
-    def identity(trajectory_score, frequency, edit_distance, beta = 0.75):
+    def identity(trajectory_score, frequency, edit_distance, beta=0.75):
         return 1
-    
-    def confidence_only(trajectory_score, frequency, edit_distance, beta = 0.75):
+
+    def confidence_only(trajectory_score, frequency, edit_distance, beta=0.75):
         return trajectory_score
-    
-    def hard_freq_dist(trajectory_score, frequency, edit_distance, beta = 0.75):
+
+    def hard_freq_dist(trajectory_score, frequency, edit_distance, beta=0.75):
         ratio = np.log(frequency) * 1.0 / (edit_distance * 100.0 + 1)
         return ratio * trajectory_score
-    
-    def soft_freq_dist(trajectory_score, frequency, edit_distance, beta = 0.75):
+
+    def soft_freq_dist(trajectory_score, frequency, edit_distance, beta=0.75):
         ratio = np.power(np.log(frequency), beta / (edit_distance+1))
         return ratio * trajectory_score
 
@@ -55,16 +58,18 @@ class Autocorrect_kernel:
         "hard_freq_dist": hard_freq_dist,
         "soft_freq_dist": soft_freq_dist,
     }
-    
 
-DEFAULT_PTH_FILE = ('LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth', '../saved_model/LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth')
+
+DEFAULT_PTH_FILE = ('LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth',
+                    '../saved_model/LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth')
 DEFAULT_WORD_FILE = ('russell_new_2', '../data_words/russell_new')
 DEFAULT_KERNEL = Autocorrect_kernel.hard_freq_dist
 
+
 class Pipeline():
 
-    def __init__(self, pth_filepath = DEFAULT_PTH_FILE, word_filepath = DEFAULT_WORD_FILE, ac_kernel_name = 'hard_freq_dist', use_default_model=True):
-        
+    def __init__(self, pth_filepath=DEFAULT_PTH_FILE, word_filepath=DEFAULT_WORD_FILE, ac_kernel_name='hard_freq_dist', use_default_model=True):
+
         if use_default_model:
             self.model = self.load_model(pth_filepath)
         else:
@@ -74,15 +79,14 @@ class Pipeline():
         self.autocorrector = sym_spell.initialize()
         self.ac_kernel = Autocorrect_kernel.kernels[ac_kernel_name]
 
-
-    def predict_realtime(self, word_df, G = 7, K = 10, verbose=False):
+    def predict_realtime(self, word_df, G=7, K=10, verbose=False):
         """
         Run the entire prediction pipeline and predict the word
 
         @param word_df (panda object): the raw input loaded using utils.load_subject
         @return predictions (list): a list of predictions depending number of words in word_df
         """
-        
+
         model = self.model
         wordxs, _ = data_utils.get_calibrated_yprs_samples(
             word_df, resampled=False, flatten=False,
@@ -90,30 +94,32 @@ class Pipeline():
         )
 
         predictions = []
-
         for idx in range(len(wordxs)):
             x = wordxs[idx]
-            confidence_map = []
-
-            trajs = word_search.word_search(x, G, K, model)
-
-            for i, (likelihood, traj) in enumerate(trajs):
-                word = ''
-                for seg_begin, seg_end, pred, prob in traj:
-                    word += chr(pred+ord('A'))
-                # print(f'  ({i}) likelihood {likelihood}', word)
-                confidence_map.append((likelihood, word))
-
-            alpha_score, final_word = self.summerize_final_word(confidence_map, verbose=verbose)
-            
+            final_word = self.predict_single(
+                x, G, K, verbose
+            )
             if verbose:
                 print("Prediction:", final_word)
-                
+
             predictions.append(final_word)
 
         return predictions
 
-    def predict_testfiles(self, G = 7, K = 10):
+    def predict_single(self, x, G=7, K=10, verbose=False):
+        confidence_map = []
+        trajs = word_search.word_search(x, G, K, self.model)
+        for i, (likelihood, traj) in enumerate(trajs):
+            word = ''
+            for seg_begin, seg_end, pred, prob in traj:
+                word += chr(pred+ord('A'))
+            confidence_map.append((likelihood, word))
+
+        alpha_score, final_word = self.summerize_final_word(
+            confidence_map, verbose=verbose)
+        return final_word
+
+    def predict_testfiles(self, G=7, K=10):
         """
         @param G(int): segment split granularity
         @param K(int): word search top k choices
@@ -138,7 +144,8 @@ class Pipeline():
                 # print(f'  ({i}) likelihood {likelihood}', word)
                 confidence_map.append((likelihood, word))
 
-            alpha_score, final_word = self.summerize_final_word(confidence_map, verbose=True)
+            alpha_score, final_word = self.summerize_final_word(
+                confidence_map, verbose=True)
             print(f'    result: alpha_score {alpha_score}', final_word)
 
             if y.lower() == final_word.lower():
@@ -146,11 +153,11 @@ class Pipeline():
 
         total_accuracy = correct * 1.0 / len(wordys)
         print("Correct: {}, Total: {}".format(correct, len(wordys)))
-        print ("Total accuracy: {}".format(total_accuracy))
+        print("Total accuracy: {}".format(total_accuracy))
 
         return total_accuracy
 
-    def change_model(self, new_file_path = None):
+    def change_model(self, new_file_path=None):
 
         if not new_file_path:
             print('Select weight files to load')
@@ -172,7 +179,7 @@ class Pipeline():
 
         self.model = self.load_model(new_file_path)
 
-    def change_wordfile(self, new_word_dir = None):
+    def change_wordfile(self, new_word_dir=None):
 
         if not new_word_dir:
             print('Select uppercase word data to test with')
@@ -231,9 +238,8 @@ class Pipeline():
         print(f'  noise_aug_prop {train_param_list[2]}')
         print()
 
-
         # get the class, instantiate model, load weight
-        model = globals()[model_class](*model_param_list)
+        model = globals()[model_class](*model_param_list).to(DEVICE)
         if torch.cuda.is_available():
             model.load_state_dict(torch.load(selected_file_path[1]))
         else:
@@ -248,15 +254,17 @@ class Pipeline():
 
         # obtain just the top result
         if self.ac_kernel == None:
-            ac_word, ac_dist, ac_freq = predictor.auto_correct(confidence_map[0][1], verbose=verbose)
+            ac_word, ac_dist, ac_freq = predictor.auto_correct(
+                confidence_map[0][1], verbose=verbose)
             # print("top_1:",confidence_map[0][1],ac_word)
             return confidence_map[0][0], ac_word
 
         new_confidence_map = collections.defaultdict(float)
 
         for confidence, word in confidence_map:
-            ac_word, ac_dist, ac_freq = predictor.auto_correct(word, verbose=verbose)
-            alpha_score = kernel_func(confidence, ac_freq, ac_dist, beta = 1)
+            ac_word, ac_dist, ac_freq = predictor.auto_correct(
+                word, verbose=verbose)
+            alpha_score = kernel_func(confidence, ac_freq, ac_dist, beta=1)
             new_confidence_map[ac_word] += alpha_score
 
             # print (ac_word, alpha_score)
@@ -287,11 +295,13 @@ def get_all_pth_files():
             l.append((name, os.path.join(WEIGHT_DIR, name)))
     return l
 
+
 def main():
     pipeline = Pipeline()
     pipeline.change_model()
     pipeline.change_wordfile()
     pipeline.predict_testfiles()
+
 
 if __name__ == "__main__":
     main()
