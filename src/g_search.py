@@ -10,17 +10,19 @@ G_RANGE = (3, 11)
 
 
 def main():
-    dfs = [data_utils.load_subject(subject) for subject in [
+    xs = []
+    ys = []
+    for subject in [
         '../data_words/kevin_30',
         '../data_words/russell_30'
-    ]]
-    df = pd.concat(dfs)
-    # df = data_utils.load_subject('../data_words/small')
-    xs, ys = data_utils.get_calibrated_yprs_samples(
-        df,
-        resampled=False, flatten=False,
-        is_word_samples=True, keep_idx_and_td=True
-    )
+    ]:
+        xss, yss = data_utils.get_calibrated_yprs_samples(
+            data_utils.load_subject(subject),
+            resampled=False, flatten=False,
+            is_word_samples=True, keep_idx_and_td=True
+        )
+        xs.extend(xss)
+        ys.extend(yss)
     ys = np.array(ys)
 
     p = pipeline.Pipeline(use_default_model=False)
