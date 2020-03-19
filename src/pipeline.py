@@ -94,29 +94,30 @@ class Pipeline():
         )
 
         predictions = []
-
         for idx in range(len(wordxs)):
             x = wordxs[idx]
-            confidence_map = []
-
-            trajs = word_search.word_search(x, G, K, model)
-
-            for i, (likelihood, traj) in enumerate(trajs):
-                word = ''
-                for seg_begin, seg_end, pred, prob in traj:
-                    word += chr(pred+ord('A'))
-                # print(f'  ({i}) likelihood {likelihood}', word)
-                confidence_map.append((likelihood, word))
-
-            alpha_score, final_word = self.summerize_final_word(
-                confidence_map, verbose=verbose)
-
+            final_word = self.predict_single(
+                x, G, K, verbose
+            )
             if verbose:
                 print("Prediction:", final_word)
 
             predictions.append(final_word)
 
         return predictions
+
+    def predict_single(self, x, G=7, K=10, verbose=False):
+        confidence_map = []
+        trajs = word_search.word_search(x, G, K, self.model)
+        for i, (likelihood, traj) in enumerate(trajs):
+            word = ''
+            for seg_begin, seg_end, pred, prob in traj:
+                word += chr(pred+ord('A'))
+            confidence_map.append((likelihood, word))
+
+        alpha_score, final_word = self.summerize_final_word(
+            confidence_map, verbose=verbose)
+        return final_word
 
     def predict_testfiles(self, G=7, K=10):
         """
