@@ -18,27 +18,21 @@ def main():
     ds = load()  # {K: {acc: [], words: []}}
 
     acc_plot(ds)
-    edit_dist_plot(ds)
+    # edit_dist_plot(ds)
 
 
 def acc_plot(ds):
     plt.clf()
-    fig, ax = plt.subplots()
+    fig, (ax1, ax2) = plt.subplots(2)
     for i, K in enumerate(reversed(sorted(ds))):
         acc = ds[K]['acc']
         xs = [G for G in acc]
         ys = [acc[G] for G in acc]
-        ax.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
-    ax.set(xlabel='G', ylabel='accuracy (higher is better)',
-           title='Test Accuracy')
-    ax.legend()
-    fig.savefig(os.path.join(SAVE_PATH, 'gk_acc.png'))
-    plt.clf()
+        ax1.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
+    ax1.set(xlabel='G', ylabel='accuracy (higher is better)',
+            title='Test Accuracy')
+    ax1.legend()
 
-
-def edit_dist_plot(ds):
-    plt.clf()
-    fig, ax = plt.subplots()
     for i, K in enumerate(reversed(sorted(ds))):
         words = ds[K]['words']
         xs = [int(G) for G in words]
@@ -47,12 +41,31 @@ def edit_dist_plot(ds):
                 for yhat, y in words[G]) / len(words[G])
             for G in words
         ]
-        ax.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
-    ax.set(xlabel='G', ylabel='mean edit distance to label (lower is better)',
-           title='Edit Distance')
-    ax.legend()
-    fig.savefig(os.path.join(SAVE_PATH, 'gk_edit_dist.png'))
+        ax2.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
+    ax2.set(xlabel='G', ylabel='mean edit distance to label (lower is better)',
+            title='Edit Distance')
+    ax2.legend()
+    fig.savefig(os.path.join(SAVE_PATH, 'gk_metric.png'))
     plt.clf()
+
+
+# def edit_dist_plot(ds):
+#     plt.clf()
+#     fig, ax = plt.subplots()
+#     for i, K in enumerate(reversed(sorted(ds))):
+#         words = ds[K]['words']
+#         xs = [int(G) for G in words]
+#         ys = [
+#             sum(sym_spell.editDistance(yhat, y)
+#                 for yhat, y in words[G]) / len(words[G])
+#             for G in words
+#         ]
+#         ax.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
+#     ax.set(xlabel='G', ylabel='mean edit distance to label (lower is better)',
+#            title='Edit Distance')
+#     ax.legend()
+#     fig.savefig(os.path.join(SAVE_PATH, 'gk_edit_dist.png'))
+#     plt.clf()
 
 
 def load():
