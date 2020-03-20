@@ -29,9 +29,10 @@ def acc_plot(ds):
         xs = [G for G in acc]
         ys = [acc[G] for G in acc]
         ax1.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
-    ax1.set(xlabel='G', ylabel='accuracy (higher is better)',
-            title='Test Accuracy')
-    ax1.legend()
+        print(f'max acc={max(ys)}')
+    ax1.set(ylabel='accuracy',
+            title='Test Accuracy and Edit Distance')
+    ax1.legend(loc='upper right')
 
     for i, K in enumerate(reversed(sorted(ds))):
         words = ds[K]['words']
@@ -42,9 +43,9 @@ def acc_plot(ds):
             for G in words
         ]
         ax2.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
-    ax2.set(xlabel='G', ylabel='mean edit distance to label (lower is better)',
-            title='Edit Distance')
-    ax2.legend()
+        print(f'min dist={min(ys)}')
+    ax2.set(xlabel='G', ylabel='mean edit distance',)
+    ax2.legend(loc='lower right')
     fig.savefig(os.path.join(SAVE_PATH, 'gk_metric.png'))
     plt.clf()
 
