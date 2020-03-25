@@ -4,10 +4,11 @@ import data_utils
 import data_flatten
 import random
 import data_augmentation
+import paths
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-# modify this list to match dirs in ../data that contain
+# modify this list to match dirs in data dir that contain
 # valid data, one subject per dir
 VERIFIED_SUBJECTS = [
     'albert',
@@ -34,7 +35,7 @@ VERIFIED_SUBJECTS = [
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
-DATA_PATH = '../data/'
+DATA_PATH = paths.DATA_LOWER_LETTER_TAIL
 
 
 def verified_subjects_calibrated_yprs(resampled=True, flatten=True, subjects=None):
@@ -107,7 +108,7 @@ def load_all_subject_split(resampled=True, flatten=True):
     return trainx, devx, testx, trainy, devy, testy
 
 
-def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True, resampled = True):
+def augment_train_set(train_x, train_y, augment_prop=1, is_flattened=True, resampled=True):
     '''
     use default data augmentation setting to append to the TRAIN_SET
     augment_prop * len(train_set) number of samples

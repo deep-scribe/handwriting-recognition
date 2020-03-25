@@ -8,7 +8,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from art import tprint, text2art
 import time
-import lstm
+import lstm_char_classifier
 import lstm_siamese
 
 DEMO_FILEPATH = 'demo_data'
@@ -21,7 +21,7 @@ PTH_FILENAME = 'LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-1-3.0
 MODEL_CONFIG = (3, 200, 3, 200, 27, False, True)
 
 
-# MODEL = lstm.LSTM_char_classifier(*MODEL_CONFIG)
+# MODEL = lstm_char_classifier.LSTM_char_classifier(*MODEL_CONFIG)
 MODEL = lstm_siamese.LSTM_char_classifier(*MODEL_CONFIG)
 MODEL.load_state_dict(torch.load(
     os.path.join(PTH_PATH, PTH_FILENAME),

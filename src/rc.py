@@ -34,7 +34,7 @@ def draw_curve(confidence, prediction, label, output_dir='.'):
 
     zipped = zip(confidence, prediction, label, correctness)
 
-    sorted_res = sorted(zipped, key=lambda x:x[0], reverse=True)
+    sorted_res = sorted(zipped, key=lambda x: x[0], reverse=True)
 
     risk = []
     coverage = []
@@ -43,7 +43,7 @@ def draw_curve(confidence, prediction, label, output_dir='.'):
     total_count = len(label)
 
     for conf, pred, lab, correct in sorted_res[:1000]:
-        
+
         curr_count += 1
 
         if correct == False:
@@ -54,15 +54,11 @@ def draw_curve(confidence, prediction, label, output_dir='.'):
 
     fig, ax = plt.subplots()
 
-    line1, = ax.plot(coverage, risk, label = "risk-coverage curve")
+    line1, = ax.plot(coverage, risk, label="risk-coverage curve")
 
-    ax.fill_between(coverage, risk, alpha = 0.5)
+    ax.fill_between(coverage, risk, alpha=0.5)
     ax.legend()
     plt.show()
-
-
-
-
 
 
 
@@ -83,13 +79,15 @@ def example():
     from sklearn.metrics import confusion_matrix
     import string
 
-    trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(resampled = True, flatten=False)
+    trainx, devx, testx, trainy, devy, testy = data_loader.load_all_classic_random_split(
+        resampled=True, flatten=False)
     print(testy.shape)
 
     BATCH_SIZE = 1050
 
     testloader = rnn_bilstm.get_dataloader(testx, testy, BATCH_SIZE)
-    net = rnn_bilstm.get_net("../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth")
+    net = rnn_bilstm.get_net(
+        "../saved_model/rnn_bilstm/rnn_bilstm_random_resampled_0.pth")
     print(rnn_bilstm.acc(net, testloader))
 
     input, label = next(iter(testloader))

@@ -1,15 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
-import lstm
 import torch
 import json
 import os
+import paths
 from pprint import pprint
 
 FILENAME_DESCRIPTION = 'hyperparam_search_1'
-MODEL_WEIGHT_PATH = '../saved_model/'
-MODEL_HIST_PATH = '../output/'
+MODEL_WEIGHT_PATH = os.path.join(paths.SAVED_MODEL, 'lstm_char_classifier')
+MODEL_HIST_PATH = os.path.join(paths.OUTPUT, 'lstm_char_classifier')
 
 
 def main():
@@ -80,7 +80,7 @@ def get_filepaths():
                 json_filename = no_ext+'.json'
                 json_path = os.path.join(MODEL_HIST_PATH, json_filename)
                 pth_path = os.path.join(MODEL_HIST_PATH, name)
-                print(json_filename)
+                print(json_path)
                 if os.path.exists(json_path):
                     l.append({
                         'prefix': no_ext,

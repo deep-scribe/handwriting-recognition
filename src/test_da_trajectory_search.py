@@ -13,7 +13,7 @@ from lstm import LSTM_char_classifier
 from pprint import pprint
 
 WEIGHT_DIR = '../saved_model/da/'
-WORD_DATA_DIR = '../data_words/'
+WORD_DATA_DIR = '../data/upper_words_head'
 
 G = 7  # segment split granularity
 K = 10  # word search top k choices

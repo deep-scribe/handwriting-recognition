@@ -243,7 +243,8 @@ def dump_augmented_yprs_pngs(subject_path):
     if calibrationdf.empty:
         print('!' * 80)
         print(
-            'WARN: no {}, using default [0,0,0] to calibrate yprs.'.format(data_utils.CALIBRATION_FILENAME)
+            'WARN: no {}, using default [0,0,0] to calibrate yprs.'.format(
+                data_utils.CALIBRATION_FILENAME)
         )
         print('!' * 80)
         calibrationyprs = np.zeros(3)

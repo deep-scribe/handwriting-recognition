@@ -1,29 +1,30 @@
 import numpy as np
 import os
+import paths
 from pprint import pprint
 import matplotlib.pyplot as plt
 import json
 import sym_spell
 
-SAVE_PATH = '../output/g_search/'
+SAVE_PATH = os.path.join(paths.OUTPUT, 'g_search')
+SAVE_FILEPATH = os.path.join(SAVE_PATH, 'gk_metric.png')
 COLORS = [
-    '#8c1515',
-    '#003262',
-    '#000000',
-    '#888888',
+    '#8c1515',  # stanford cardinal
+    '#003262',  # berkeley blue
+    '#000000',  # black
+    '#888888',  # gray
 ]
 
 
 def main():
     ds = load()  # {K: {acc: [], words: []}}
-
     plot(ds)
 
 
 def plot(ds):
     plt.clf()
     fig, (ax1, ax2) = plt.subplots(2)
-    fig.set_size_inches(10, 6)
+    fig.set_size_inches(10, 7)
 
     for i, K in enumerate(reversed(sorted(ds))):
         acc = ds[K]['acc']
@@ -47,7 +48,7 @@ def plot(ds):
         print(f'min dist={min(ys)}')
     ax2.set(xlabel='G', ylabel='mean edit distance',)
     ax2.legend(loc='lower right')
-    fig.savefig(os.path.join(SAVE_PATH, 'gk_metric.png'))
+    fig.savefig(SAVE_FILEPATH)
     plt.clf()
 
 

@@ -4,21 +4,23 @@ import pandas as pd
 import numpy as np
 import json
 import os
+import paths
 from pprint import pprint
 
 G_RANGE = (3, 10)
-K = 20 
-SAVE_PATH = '../output/g_search/'
+K = 20
+SAVE_PATH = os.path.join(paths.OUTPUT, 'g_search')
 FILENAME = f'k_{K}.json'
 
 
 def search():
     xs = []
     ys = []
-    for subject in [
-        '../data_words/kevin_30',
-        '../data_words/russell_30'
+    for subject_name in [
+        'kevin_30',
+        'russell_30'
     ]:
+        subject = os.path.join(paths.DATA_UPPER_WORDS_HEAD, subject_name)
         xss, yss = data_utils.get_calibrated_yprs_samples(
             data_utils.load_subject(subject),
             resampled=False, flatten=False,

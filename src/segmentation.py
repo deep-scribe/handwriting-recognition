@@ -39,9 +39,12 @@ def split_to_resampled_segments(x, n, is_flatten_ypr=False, feature_num=100):
 
 if __name__ == "__main__":
     import time
+    import paths
+    import os
     NUM_PART = 15
 
-    df = data_utils.load_subject('../data_words/words_mini_easy')
+    df = data_utils.load_subject(os.path.join(
+        paths.DATA_UPPER_WORDS_HEAD, 'words_mini_easy'))
     xs, ys = data_utils.get_calibrated_yprs_samples(
         df=df,
         resampled=False,

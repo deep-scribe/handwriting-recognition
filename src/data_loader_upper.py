@@ -4,14 +4,13 @@ import data_utils
 import data_flatten
 import random
 import data_augmentation
+import paths
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-# modify this list to match dirs in ../data that contain
+# modify this list to match dirs in the data folder that contain
 # valid data, one subject per dir
 VERIFIED_SUBJECTS = [
-    # 'kevin',
-    # 'russell',
     'kevin_tip_first',
     'kevin_tip_second',
     'kevin_tip_char_2',
@@ -23,7 +22,7 @@ VERIFIED_SUBJECTS = [
 ]
 
 YPRS_COLUMNS = ['yaw', 'pitch', 'roll', ]
-DATA_PATH = '../data_upper/'
+DATA_PATH = paths.DATA_UPPER_LETTER_HEAD
 
 
 def verified_subjects_calibrated_yprs(resampled=True, flatten=True, keep_idx_and_td=False, subjects=None):
@@ -40,7 +39,7 @@ def verified_subjects_calibrated_yprs(resampled=True, flatten=True, keep_idx_and
     allys = []
 
     for subject in dfs:
-        print('Processing', subject)
+        # print('Processing', subject)
         df = dfs[subject]
         xs, ys = data_utils.get_calibrated_yprs_samples(
             df, resampled=resampled, flatten=flatten, keep_idx_and_td=keep_idx_and_td)
@@ -77,3 +76,13 @@ def load_subject_classic_random_split(dev_prop, test_prop, subjects=None, resamp
         devtestx, devtesty, test_size=(test_prop/(test_prop+dev_prop)))
 
     return trainx, devx, testx, trainy, devy, testy
+
+
+if __name__ == "__main__":
+    xs, ys = verified_subjects_calibrated_yprs(
+        resampled=False,
+        flatten=False,
+        keep_idx_and_td=True
+    )
+    print(len(xs))
+    print(len(ys))
