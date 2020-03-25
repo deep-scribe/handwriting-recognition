@@ -17,13 +17,14 @@ COLORS = [
 def main():
     ds = load()  # {K: {acc: [], words: []}}
 
-    acc_plot(ds)
-    # edit_dist_plot(ds)
+    plot(ds)
 
 
-def acc_plot(ds):
+def plot(ds):
     plt.clf()
     fig, (ax1, ax2) = plt.subplots(2)
+    fig.set_size_inches(10, 6)
+
     for i, K in enumerate(reversed(sorted(ds))):
         acc = ds[K]['acc']
         xs = [G for G in acc]
@@ -48,25 +49,6 @@ def acc_plot(ds):
     ax2.legend(loc='lower right')
     fig.savefig(os.path.join(SAVE_PATH, 'gk_metric.png'))
     plt.clf()
-
-
-# def edit_dist_plot(ds):
-#     plt.clf()
-#     fig, ax = plt.subplots()
-#     for i, K in enumerate(reversed(sorted(ds))):
-#         words = ds[K]['words']
-#         xs = [int(G) for G in words]
-#         ys = [
-#             sum(sym_spell.editDistance(yhat, y)
-#                 for yhat, y in words[G]) / len(words[G])
-#             for G in words
-#         ]
-#         ax.plot(xs, ys, label=f'K={K}', marker='.', color=COLORS[i])
-#     ax.set(xlabel='G', ylabel='mean edit distance to label (lower is better)',
-#            title='Edit Distance')
-#     ax.legend()
-#     fig.savefig(os.path.join(SAVE_PATH, 'gk_edit_dist.png'))
-#     plt.clf()
 
 
 def load():
