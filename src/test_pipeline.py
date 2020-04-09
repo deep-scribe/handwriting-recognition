@@ -55,6 +55,6 @@ def kernel_experiment():
 
 if __name__ == "__main__":
     
-    # kernel_experiment()
+    kernel_experiment()
 
-    realtime_experiment()
+    # realtime_experiment()

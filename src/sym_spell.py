@@ -125,8 +125,8 @@ class AutoCorrect():
 
 def test_editdistance():
     # Driver program to test the above function 
-    str1 = "BENE"
-    str2 = "bene"
+    str1 = "POSES"
+    str2 = "posts"
     print (editDistance(str1, str2))
       
 def main():

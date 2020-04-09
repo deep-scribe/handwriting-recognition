@@ -79,7 +79,7 @@ class Pipeline():
         self.autocorrector = sym_spell.initialize()
         self.ac_kernel = Autocorrect_kernel.kernels[ac_kernel_name]
 
-    def predict_realtime(self, word_df, G=7, K=10, verbose=False):
+    def predict_realtime(self, word_df, G=4, K=20, verbose=False):
         """
         Run the entire prediction pipeline and predict the word
 
@@ -106,7 +106,7 @@ class Pipeline():
 
         return predictions
 
-    def predict_single(self, x, G=7, K=10, verbose=False):
+    def predict_single(self, x, G=4, K=20, verbose=False):
         confidence_map = []
         trajs = word_search.word_search(x, G, K, self.model)
         for i, (likelihood, traj) in enumerate(trajs):
@@ -119,7 +119,7 @@ class Pipeline():
             confidence_map, verbose=verbose)
         return final_word
 
-    def predict_testfiles(self, G=7, K=10):
+    def predict_testfiles(self, G=4, K=20):
         """
         @param G(int): segment split granularity
         @param K(int): word search top k choices
@@ -145,7 +145,7 @@ class Pipeline():
                 confidence_map.append((likelihood, word))
 
             alpha_score, final_word = self.summerize_final_word(
-                confidence_map, verbose=True)
+                confidence_map, verbose=False)
             print(f'    result: alpha_score {alpha_score}', final_word)
 
             if y.lower() == final_word.lower():
