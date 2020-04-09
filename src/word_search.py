@@ -1,5 +1,4 @@
-import beam
-# import rnn_bilstm
+import trajectory_search
 import data_utils
 import segmentation
 import numpy as np
@@ -8,7 +7,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import segmentation
 import math
-# import rnn_final
 from pprint import pprint
 
 
@@ -23,6 +21,7 @@ def get_prob(net, input):
         logit = net(input.float())
         prob = F.log_softmax(logit, dim=-1)
     return logit
+
 
 def word_search(x, g, k, model, is_flatten_ypr=False, feature_num=100):
     '''
@@ -40,6 +39,6 @@ def word_search(x, g, k, model, is_flatten_ypr=False, feature_num=100):
     logit_dict = {
         bounds[i]: np.array(probs[i].cpu()) for i in range(len(bounds))
     }
-    trajectory_dict = beam.trajectory_search(logit_dict, k, n)
+    trajectory_dict = trajectory_search.trajectory_search(logit_dict, k, n)
 
     return trajectory_dict[0]

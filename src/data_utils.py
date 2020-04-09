@@ -210,7 +210,8 @@ def get_calibrated_yprs_samples(df, resampled, flatten, feature_num=100, is_word
 
 
 def main():
-    df = load_subject('../data/kelly_11_7')
+    import paths
+    df = load_subject(os.path.join(paths.DATA_LOWER_LETTER_TAIL, 'kelly_11_7'))
     print(df)
     s = get_random_sample_by_label(df, 'a')
     print(s)

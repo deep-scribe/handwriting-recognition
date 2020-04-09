@@ -1,7 +1,8 @@
 import numpy as np
 
+
 class KMeans:
-    def __init__(self, k, distance_function, medoids = True):
+    def __init__(self, k, distance_function, medoids=True):
         self.k = k
         self.distance_function = distance_function
         self.medoids = medoids
@@ -10,8 +11,8 @@ class KMeans:
         self.data_shape = None
         self.data_length = None
         self.centroids = []
-        self.clusters = {i:[] for i in range(self.k)}
-        self.clusters_idx = {i:[] for i in range(self.k)}
+        self.clusters = {i: [] for i in range(self.k)}
+        self.clusters_idx = {i: [] for i in range(self.k)}
         self.assignment = None
         self.labels = None
 
@@ -24,7 +25,7 @@ class KMeans:
 
     def _initialization(self):
         self.centroids = [np.zeros(self.data_shape)]*self.k
-        self.assignment = {i:-1 for i in range(self.data_length)}
+        self.assignment = {i: -1 for i in range(self.data_length)}
         for i in range(self.k):
             rand_index = np.random.randint(0, self.data_length, 1)
             self.centroids[i] = self.data[rand_index].reshape(self.data_shape)
@@ -33,12 +34,10 @@ class KMeans:
         dist = np.zeros((len(data), len(data)))
         for i in range(len(data)):
             for j in range(len(data)):
-                dist[i,j] = self.distance_function(data[i],data[j])
-        dist = np.sum(dist, axis = 1)
+                dist[i, j] = self.distance_function(data[i], data[j])
+        dist = np.sum(dist, axis=1)
         return np.where(dist == np.amin(dist))
-
-
-    def fit(self, data, label_data, verbos = True, print_freq = 10):
+    def fit(self, data, label_data, verbos=True, print_freq=10):
         self._load_data(data, label_data)
         self._initialization()
 
@@ -46,14 +45,14 @@ class KMeans:
         change_count = -1
 
         while change_count != 0:
-            if verbos and iter%print_freq == 0:
+            if verbos and iter % print_freq == 0:
                 print("Iteration: ", iter)
                 # print(" Centroids: ", self.centroids)
                 print("Last Iteration Changed ", change_count, " Centroids.")
             change_count = 0
             iter += 1
 
-            self.clusters = {i:[] for i in range(self.k)}
+            self.clusters = {i: [] for i in range(self.k)}
 
             for i in range(self.data_length):
                 dist_min = float("inf")
@@ -70,10 +69,11 @@ class KMeans:
 
             for j in range(self.k):
                 if not self.medoids:
-                    new_centroid = np.mean(np.array(self.clusters[j]), axis = 0)
+                    new_centroid = np.mean(np.array(self.clusters[j]), axis=0)
                 else:
                     try:
-                        new_centroid_index = int(self._calculate_medoid(self.clusters[j])[0])
+                        new_centroid_index = int(
+                            self._calculate_medoid(self.clusters[j])[0])
                         new_centroid = self.clusters[j][new_centroid_index]
                     except:
                         new_centroid = self.centroids[j]
@@ -96,14 +96,15 @@ class KMeans:
             assignment.append(cluster_assignemnt)
         return assignment
 
-    def fit_predict(self, train_data, test_data, verbos = True, print_freq = 10):
+    def fit_predict(self, train_data, test_data, verbos=True, print_freq=10):
         self.fit(train_data, verbos, print_freq)
         return(test_data)
 
     def generate_label_for_clusters(self):
         for j in range(self.k):
             # print(j, len(self.clusters[j]))
-            values,counts = np.unique(self.label_data[self.clusters_idx[j]], return_counts=True)
+            values, counts = np.unique(
+                self.label_data[self.clusters_idx[j]], return_counts=True)
             # print(values,counts)
             try:
                 idx = np.argmax(counts)

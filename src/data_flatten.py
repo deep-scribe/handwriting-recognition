@@ -73,7 +73,8 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
     if calibrationdf.empty:
         print('!' * 80)
         print(
-            'WARN: no {}, using default [0,0,0] to calibrate yprs.'.format(data_utils.CALIBRATION_FILENAME)
+            'WARN: no {}, using default [0,0,0] to calibrate yprs.'.format(
+                data_utils.CALIBRATION_FILENAME)
         )
         print('!' * 80)
         calibrationyprs = np.zeros(3)
@@ -106,7 +107,8 @@ def load_data_dict_from_file(subject_path, calibrate=True, verbose=False):
             num_samples = sampleids.shape[0]
 
             if verbose:
-                print('Processing label {}, with {} samples, from {} lines...'.format(label_name, num_samples, total_lines))
+                print('Processing label {}, with {} samples, from {} lines...'.format(
+                    label_name, num_samples, total_lines))
 
             data_sequences = []
 
@@ -218,7 +220,7 @@ def visualization_example_words():
     loaded_dataset = load_data_dict_from_file(
         subject_path, calibrate=True, verbose=True)
     resampled_dataset = resample_dataset(
-    loaded_dataset, is_flatten_ypr=False, feature_num=500)
+        loaded_dataset, is_flatten_ypr=False, feature_num=500)
 
     print("\nSanity check for Word Example, ypr data is NOT flattened...")
     # the shape of should be (20, 100, 3)
@@ -227,7 +229,8 @@ def visualization_example_words():
 
     # peek one data sequence from letter m, should be ypr in 100 rows
     assert(resampled_dataset['age'][1].shape == (500, 3))
-    print("one data sequence from word age:", resampled_dataset['age'][1].shape)
+    print("one data sequence from word age:",
+          resampled_dataset['age'][1].shape)
 
     # peek first three ypr from letter o
     print("first three ypr from word cabin:",
@@ -247,7 +250,6 @@ def visualization_example_words():
         plt.ylim(-40, 60)
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
-
 
         plt.subplot(2, 1, 2)
         plt.plot(resampled_dataset[key][1].T[1],
@@ -292,7 +294,7 @@ def visualization_example():
         loaded_dataset, is_flatten_ypr=True, feature_num=100)
 
     quit()
-    
+
     print("\nSanity check for Example 1, ypr data is flattened...")
     # the shape of should be (20, 3 * 100)
     assert(flattened_dataset['a'].shape == (20, 300))
@@ -365,7 +367,6 @@ def visualization_example():
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
 
-
         plt.subplot(2, 2, 2)
         plt.plot(resampled_dataset[key][7].T[1],
                  label='Resampled', color=color_red)
@@ -373,7 +374,6 @@ def visualization_example():
         plt.ylim(-40, 60)
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
-
 
         plt.subplot(2, 2, 3)
         plt.plot(resampled_dataset[key][4].T[1],
@@ -383,7 +383,6 @@ def visualization_example():
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
 
-
         plt.subplot(2, 2, 4)
         plt.plot(resampled_dataset[key][8].T[1],
                  label='Resampled', color=color_red)
@@ -391,7 +390,6 @@ def visualization_example():
         plt.ylim(-40, 60)
         plt.gca().set_aspect('equal', adjustable='box')
         plt.legend(loc="upper right")
-
 
         sub_title = 'Letter ' + key + '. Pitch data'
         plt.suptitle(sub_title)

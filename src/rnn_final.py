@@ -1,4 +1,3 @@
-# cell 0
 import torch
 import data_loader_upper
 import torch.nn as nn
@@ -7,14 +6,13 @@ import torch.optim as optim
 import os
 import json
 from collections import defaultdict
-# import autoencoder
 import numpy as np
 import sys
 from torch.nn.utils.rnn import pad_sequence
 import data_augmentation
 import data_flatten
 
-# cell 1
+BATCH_SIZE = 3000
 
 
 def get_dataloader(x, y, batch_size):
@@ -66,8 +64,6 @@ def acc_loss(net, data_loader, criterion):
             total_loss += criterion(outputs, y.long()).item() * len(x)
     return correct / total, total_loss / total
 
-# cell 7
-
 
 class Net(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_layers):
@@ -91,13 +87,11 @@ class Net(nn.Module):
         x = x.permute(0, 2, 1)
         out, _ = self.lstm(x, (init_h, init_c))
         # out = self.dropout(out)
-        # print("inter: ", out.shape)
         out = self.fc(out[:, -1, :])
         out = torch.nn.functional.relu(out)
         out = self.fc2(out)
         out = torch.nn.functional.relu(out)
         out = self.fc3(out)
-        # print("out: ", out.shape)
         return out
 
 
@@ -162,16 +156,6 @@ def main():
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
-    #
-    # trainx = encode(trainx, encoder)
-    # devx = encode(devx, encoder)
-    # testx = encode(testx, encoder)
-    # print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-    # del encoder
-
-    # cell 4
-    BATCH_SIZE = 3000
-
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
@@ -188,7 +172,6 @@ def main():
 
     # cell 8
     criterion = nn.CrossEntropyLoss()
-    # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.005)
 
     hist = defaultdict(list)
@@ -204,11 +187,7 @@ def main():
                 inputs = inputs.cuda()
                 labels = labels.cuda()
 
-            # zero the parameter gradients
             optimizer.zero_grad()
-
-            # forward + backward + optimize
-
             outputs = net(inputs.float())
             loss = criterion(outputs, labels.long())
             loss.backward()

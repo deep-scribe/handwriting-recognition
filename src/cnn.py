@@ -1,4 +1,3 @@
-# cell 0
 import torch
 import data_loader
 import torch.nn as nn
@@ -6,10 +5,13 @@ import torch.nn.functional as F
 import torch.optim as optim
 import os
 import json
-from collections import defaultdict
-# import autoencoder
 import numpy as np
 import data_loader_upper
+from collections import defaultdict
+
+DEVICE = torch.device('cuda') \
+    if torch.cuda.is_available() else torch.device('cpu')
+BATCH_SIZE = 500
 
 
 def get_dataloader(x, y, batch_size):
@@ -19,9 +21,6 @@ def get_dataloader(x, y, batch_size):
     return dataloader
 
 
-# cell 10
-
-
 def acc_loss(data_loader, criterion):
     correct = 0
     total = 0
@@ -29,9 +28,8 @@ def acc_loss(data_loader, criterion):
     with torch.no_grad():
         for data in data_loader:
             x, y = data
-            if torch.cuda.is_available():
-                x = x.cuda()
-                y = y.cuda()
+            x = x.to(DEVICE)
+            y = y.to(DEVICE)
 
             outputs = net(x.float())
             _, predicted = torch.max(outputs.data, 1)
@@ -44,27 +42,15 @@ def acc_loss(data_loader, criterion):
             total_loss += criterion(outputs, y.long()).item() * len(x)
     return correct / total, total_loss / total
 
-# cell 11
-
 
 def get_net(checkpoint_path):
     net = Net()
-    if torch.cuda.is_available():
-        net.load_state_dict(torch.load(checkpoint_path))
-    else:
-        net.load_state_dict(torch.load(
-            checkpoint_path, map_location=torch.device('cpu')))
+    net.load_state_dict(torch.load(checkpoint_path, map_location=DEVICE))
     return net
-
-# cell 18
 
 
 def get_prob(net, input):
-    if torch.cuda.is_available():
-        input = input.cuda()
-    else:
-        net.cpu()
-    net.eval()
+    net = net.to(DEVICE)
     with torch.no_grad():
         logit = net(input.float())
         prob = F.log_softmax(logit, dim=-1)
@@ -109,75 +95,33 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
+    print(f'torch.cuda.is_available()={torch.cuda.is_available()}')
 
-    # cell 1
-    torch.cuda.is_available()
-
-    # cell 2
     trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_all_classic_random_split(
         flatten=False)
-    # trainx, devx, testx, trainy, devy, testy = data_loader.load_all_subject_split(flatten=False)
-
-    # cell 3
     trainx, trainy = data_loader.augment_train_set(
         trainx, trainy, augment_prop=4, is_flattened=False)
-    trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape
-
-    # cell 4
-    # def split_ypr(x):
-    #     return x[:,:,0],x[:,:,1], x[:,:,2]
-
-    # cell 5
-    # _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
-
-    # cell 6
-    # def encode(x, encoder):
-    #     y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
-    #     return np.stack((y,p,r), axis=2)
-
-    # trainx = encode(trainx, encoder)
-    # devx = encode(devx, encoder)
-    # testx = encode(testx, encoder)
-
-    # cell 7
-    trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape
-
-    # cell 8
-    BATCH_SIZE = 500
 
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
 
-    # cell 9
     _, num_feature, num_channel = trainx.shape
     num_feature, num_channel
+    net = Net().to(DEVICE)
 
-    net = Net()
-    if torch.cuda.is_available():
-        net.cuda()
-    net
-
-    # cell 12
     criterion = nn.CrossEntropyLoss()
-    # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
-    # optimizer = optim.Adam(net.parameters(), lr=0.001)
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
-
     hist = defaultdict(list)
     for epoch in range(40):  # loop over the dataset multiple times
         running_loss = 0.0
         for i, data in enumerate(trainloader):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data
-            if torch.cuda.is_available():
-                inputs = inputs.cuda()
-                labels = labels.cuda()
+            inputs = inputs.to(DEVICE)
+            labels = labels.to(DEVICE)
 
-            # zero the parameter gradients
             optimizer.zero_grad()
-
-            # forward + backward + optimize
             outputs = net(inputs.float())
             loss = criterion(outputs, labels.long())
             loss.backward()
@@ -197,29 +141,7 @@ if __name__ == "__main__":
 
     print('Finished Training')
 
-    # cell 13
     acc_loss(testloader, nn.CrossEntropyLoss())
-
-    # cell 14
     testacc, testloss = acc_loss(testloader, nn.CrossEntropyLoss())
-    testacc, testloss
     hist['testacc'] = testacc
     hist['testloss'] = testloss
-
-    # cell 15
-    hist
-
-
-# cell 19
-
-
-# cell 20
-
-
-# cell 21
-
-
-# cell 22
-
-
-# cell 23

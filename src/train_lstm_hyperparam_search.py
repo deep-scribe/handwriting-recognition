@@ -1,10 +1,11 @@
-import lstm
+import lstm_char_classifier
 import torch
 import data_loader_upper
 import torch.nn as nn
 import torch.optim as optim
 import data_augmentation
 import os
+import paths
 import json
 import numpy as np
 import data_flatten
@@ -29,9 +30,9 @@ LSTM_HIDDEN_DIM_RANGE = [50, 300]
 FC_HIDDEN_DIM_RANGE = [50, 400]
 
 # should not change
-MODEL_WEIGHT_PATH = '../saved_model/'
-MODEL_HIST_PATH = '../output/'
-MODEL_CLASS = lstm.LSTM_char_classifier
+MODEL_WEIGHT_PATH = os.path.join(paths.SAVED_MODEL, 'lstm_char_classifier')
+MODEL_HIST_PATH = os.path.join(paths.OUTPUT, 'lstm_char_classifier')
+MODEL_CLASS = lstm_char_classifier.LSTM_char_classifier
 
 
 def main():

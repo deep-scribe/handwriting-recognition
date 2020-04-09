@@ -1,4 +1,4 @@
-import lstm
+import lstm_char_classifier
 import torch
 import data_loader_upper
 import torch.nn as nn
@@ -25,11 +25,11 @@ USE_NONCLASS = True
 # should not change
 MODEL_WEIGHT_PATH = '../saved_model/transfer'
 MODEL_HIST_PATH = '../output/transfer'
-WEIGHT_DIR = '../saved_model/'
+WEIGHT_DIR = '../saved_model/lstm_char_classifier'
 
 
 def main():
-    model_class = lstm.LSTM_char_classifier
+    model_class = lstm_char_classifier.LSTM_char_classifier
     print('Training model class [{}]'.format(model_class.__name__))
     print()
 
@@ -55,17 +55,17 @@ def main():
 
     # pick config as defined
     print('Select model config to train')
-    for idx, c in enumerate(lstm.config):
-        assert len(c) == len(lstm.config_keys)
+    for idx, c in enumerate(lstm_char_classifier.config):
+        assert len(c) == len(lstm_char_classifier.config_keys)
         print('[{}] '.format(idx, end=''))
-        for i, item in enumerate(lstm.config_keys):
+        for i, item in enumerate(lstm_char_classifier.config_keys):
             print('{}={} '.format(item, c[i], end=''))
         print()
     selected_config = None
     while not selected_config:
         try:
             n = int(input('type a number: '))
-            selected_config = lstm.config[n]
+            selected_config = lstm_char_classifier.config[n]
         except KeyboardInterrupt:
             quit()
         except:
@@ -81,7 +81,7 @@ def main():
     now = datetime.now()
     time_str = now.strftime("%m-%d-%H-%M")
     file_prefix = '{}.{}.{}-{}-{}.{}.{}'.format(
-    model_class.__name__, description, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str
+        model_class.__name__, description, s, BATCH_SIZE, CONCAT_TRIM_AUGMENT_PROP, NOISE_AUGMENT_PROP, time_str
     )
     weight_filename = file_prefix+'.pth'
     hist_filename = file_prefix+'.json'
@@ -123,8 +123,8 @@ def main():
     print('[SELECTED MODEL]')
     print('  {}'.format(model_class))
     print('[MODEL PARAMS]')
-    assert len(model_param_list) == len(lstm.config_keys)
-    for i, c in enumerate(lstm.config_keys):
+    assert len(model_param_list) == len(lstm_char_classifier.config_keys)
+    for i, c in enumerate(lstm_char_classifier.config_keys):
         print('  {}: {}'.format(c, model_param_list[i]))
     print('[TRAIN PARAMS]')
     print('  batchsize {}'.format(train_param_list[0]))
@@ -148,7 +148,7 @@ def main():
     # load raw data
     trainx, devx, testx, trainy, devy, testy = data_loader_upper.load_subject_classic_random_split(
         DEV_PROP, TEST_PROP,
-        resampled=False, flatten=False, keep_idx_and_td=True, subjects = ["Kelly_new"])
+        resampled=False, flatten=False, keep_idx_and_td=True, subjects=["Kelly_new"])
     print('trainx', len(trainx), 'devx', len(devx), 'testx', len(testx))
     print()
 
@@ -185,7 +185,8 @@ def main():
             trainloader = get_dataloader(a_trainx, a_trainy, BATCH_SIZE)
             print('  '.format(end=''))
             for i, data in enumerate(trainloader):
-                print('{}'.format([i//10] if i%10==0 else "", end='', flush=True))
+                print('{}'.format([i//10] if i %
+                                  10 == 0 else "", end='', flush=True))
                 print('{}'.format(i % 10, end='', flush=True))
 
                 inputs, labels = data
@@ -221,7 +222,8 @@ def main():
 
     print()
     print('Finished Training', 'best dev loss', best_loss)
-    model.load_state_dict(torch.load(os.path.join(MODEL_WEIGHT_PATH, weight_filename)))
+    model.load_state_dict(torch.load(
+        os.path.join(MODEL_WEIGHT_PATH, weight_filename)))
     testacc, testloss = acc_loss(model, testloader, nn.CrossEntropyLoss())
     testacc, testloss
     hist['testacc'] = testacc

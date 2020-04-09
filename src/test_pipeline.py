@@ -11,26 +11,26 @@ import data_utils
 #             ('russell_new_2', '../data_words/russell_new_2')]
 
 test_files = [('kelly_30', '../data_words/kelly_30'),
-            ('kevin_30', '../data_words/kevin_30'),
-            ('russell_30', '../data_words/russell_30')]
+              ('kevin_30', '../data_words/kevin_30'),
+              ('russell_30', '../data_words/russell_30')]
 
 realtime_file = '../output/realtime_test'
 
 
 def realtime_experiment():
-    pipl = Pipeline(use_default_model = False, ac_kernel_name="hard_freq_dist")
+    pipl = Pipeline(use_default_model=False, ac_kernel_name="hard_freq_dist")
 
     word_df = data_utils.load_subject(realtime_file)
-    predicted_word = pipl.predict_realtime(word_df, G = 7, K = 10, verbose=False)
-
+    predicted_word = pipl.predict_realtime(word_df, G=7, K=10, verbose=False)
     print("Predicted word is", predicted_word)
 
-def kernel_experiment():
 
+def kernel_experiment():
     table = collections.defaultdict(dict)
-    fieldnames = ['Test_files', 'top_1','identity', 'confidence_only', 'hard_freq_dist', 'soft_freq_dist', 'total']
-    
-    pipl = Pipeline(use_default_model = False)
+    fieldnames = ['Test_files', 'top_1', 'identity',
+                  'confidence_only', 'hard_freq_dist', 'soft_freq_dist', 'total']
+
+    pipl = Pipeline(use_default_model=False)
 
     for word_filepath in test_files:
         for ac_kernel_name in Autocorrect_kernel.kernels:
@@ -53,8 +53,7 @@ def kernel_experiment():
 
         f.close()
 
-if __name__ == "__main__":
-    
-    kernel_experiment()
 
-    # realtime_experiment()
+if __name__ == "__main__":
+    # kernel_experiment()
+    realtime_experiment()

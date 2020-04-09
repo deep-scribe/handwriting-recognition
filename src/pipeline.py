@@ -15,7 +15,7 @@
 
 """
 
-import lstm
+import lstm_char_classifier
 import data_loader_upper
 import random
 import os
@@ -24,13 +24,14 @@ import torch
 import data_utils
 import sym_spell
 import collections
+import paths
 import numpy as np
 
-from lstm import LSTM_char_classifier
+from lstm_char_classifier import LSTM_char_classifier
 from pprint import pprint
 
-WEIGHT_DIR = '../saved_model/'
-WORD_DATA_DIR = '../data_words/'
+WEIGHT_DIR = os.path.join(paths.SAVED_MODEL, 'lstm_char_classifier')
+WORD_DATA_DIR = paths.DATA_UPPER_WORDS_HEAD
 DEVICE = torch.device(
     'cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -62,7 +63,7 @@ class Autocorrect_kernel:
 
 DEFAULT_PTH_FILE = ('LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth',
                     '../saved_model/LSTM_char_classifier.rus_kev_upper.3-200-3-200-27-0-1.1500-3-3.03-11-03-57.pth')
-DEFAULT_WORD_FILE = ('russell_new_2', '../data_words/russell_new')
+DEFAULT_WORD_FILE = ('russell_new_2', '../data/upper_words_head/russell_new')
 DEFAULT_KERNEL = Autocorrect_kernel.hard_freq_dist
 
 
@@ -229,8 +230,8 @@ class Pipeline():
         print(f'\n[CURRENT MODEL]')
         print(f'  {model_class}')
         print(f'[MODEL PARAMS]')
-        assert len(model_param_list) == len(lstm.config_keys)
-        for i, c in enumerate(lstm.config_keys):
+        assert len(model_param_list) == len(lstm_char_classifier.config_keys)
+        for i, c in enumerate(lstm_char_classifier.config_keys):
             print(f'  {c}: {model_param_list[i]}')
         print(f'[TRAIN PARAMS]')
         print(f'  batchsize {train_param_list[0]}')

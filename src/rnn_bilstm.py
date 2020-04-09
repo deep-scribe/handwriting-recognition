@@ -1,4 +1,3 @@
-# cell 0
 import torch
 import data_loader
 import torch.nn as nn
@@ -7,20 +6,16 @@ import torch.optim as optim
 import os
 import json
 from collections import defaultdict
-# import autoencoder
 import numpy as np
 import sys
 from torch.nn.utils.rnn import pad_sequence
 
-# cell 1
+
+BATCH_SIZE = 500
 
 
 def split_ypr(x):
     return x[:, :, 0], x[:, :, 1], x[:, :, 2]
-#
-# def encode(x, encoder):
-#     y,p,r = autoencoder.ae_predict(*split_ypr(x), encoder)
-#     return np.stack((y,p,r), axis=2)
 
 
 def get_dataloader(x, y, batch_size):
@@ -40,17 +35,6 @@ def pad_x(input):
 
 def pad_all_x(trainx, devx, testx):
     return pad_x(trainx), pad_x(devx), pad_x(testx)
-#
-# def pad_y(input):
-#     max_length = max(len(input[i]) for i in range(input.shape[0]))
-#     for i in range(len(input)):
-#         result = np.zeros((max_length, 3))
-#         result[:len(input[i]), :] = input[i]
-#         input[i] = result
-#     return input
-#
-# def pad_all_y(trainy, devy, testy):
-#     return pad_y(trainy), pad_y(devy), pad_y(testy)
 
 
 def acc(net, data_loader):
@@ -95,34 +79,8 @@ def acc_loss(net, data_loader, criterion):
             total_loss += criterion(outputs, y.long()).item() * len(x)
     return correct / total, total_loss / total
 
-# cell 7
-
 
 class Net(nn.Module):
-    # def __init__(self, input_dim, hidden_dim, n_layers):
-    #     super(Net, self).__init__()
-    #     self.input_dim = input_dim
-    #     self.hidden_dim = hidden_dim
-    #     self.n_layers = n_layers
-    #     self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers,
-    #                         batch_first=True, bidirectional=True)
-    #     # self.dropout = nn.Dropout(0.1)
-    #     self.fc = nn.Linear(hidden_dim*2, 26, bias=True)
-
-    # def forward(self, x):
-    #     init_h = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
-    #     init_c = torch.randn(self.n_layers*2, x.shape[0], self.hidden_dim)
-    #     if torch.cuda.is_available():
-    #         init_h = init_h.cuda()
-    #         init_c = init_c.cuda()
-    #     x = x.permute(0, 2, 1)
-    #     out, _ = self.lstm(x, (init_h, init_c))
-    #     # out = self.dropout(out)
-    #     # print("inter: ", out.shape)
-    #     out = self.fc(out[:, -1, :])
-    #     # print("out: ", out.shape)
-    #     return out
-        
     def __init__(self, input_dim, hidden_dim, n_layers):
         super(Net, self).__init__()
         self.input_dim = input_dim
@@ -210,35 +168,17 @@ def main():
     print(trainx.shape, devx.shape, testx.shape,
           trainy.shape, devy.shape, testy.shape)
 
-    # _,_,_,encoder = autoencoder.ae_denoise(*split_ypr(trainx))
-    #
-    #
-    # trainx = encode(trainx, encoder)
-    # devx = encode(devx, encoder)
-    # testx = encode(testx, encoder)
-    # print(trainx.shape, devx.shape, testx.shape, trainy.shape, devy.shape, testy.shape)
-    # del encoder
-
-    # cell 4
-    BATCH_SIZE = 500
-
     trainloader = get_dataloader(trainx, trainy, BATCH_SIZE)
     devloader = get_dataloader(devx, devy, BATCH_SIZE)
     testloader = get_dataloader(testx, testy, BATCH_SIZE)
-
-    # cell 5
     sample_size, num_feature, num_channel = trainx.shape
     print(sample_size, num_feature, num_channel)
-
-    # cell 6
 
     net = Net(num_channel, 100, 5)
     if torch.cuda.is_available():
         net.cuda()
 
-    # cell 8
     criterion = nn.CrossEntropyLoss(size_average=True)
-    # optimizer = optim.SGD(net.parameters(), lr=0.00001, momentum=0.9)
     optimizer = optim.AdamW(net.parameters(), weight_decay=0.01)
 
     hist = defaultdict(list)
@@ -253,11 +193,7 @@ def main():
                 inputs = inputs.cuda()
                 labels = labels.cuda()
 
-            # zero the parameter gradients
             optimizer.zero_grad()
-
-            # forward + backward + optimize
-
             outputs = net(inputs.float())
             loss = criterion(outputs, labels.long())
             loss.backward()

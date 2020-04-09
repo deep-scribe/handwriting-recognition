@@ -1,20 +1,22 @@
-import lstm
-from lstm import LSTM_char_classifier
+import lstm_char_classifier
+from lstm_char_classifier import LSTM_char_classifier
 import data_loader_upper
 import random
 import os
+import paths
 import word_search
 import torch
 import data_utils
 
 from pprint import pprint
 
-WEIGHT_DIR = '../saved_model/'
-WORD_DATA_DIR = '../data_words/'
+WEIGHT_DIR = os.path.join(paths.SAVED_MODEL, 'lstm_char_classifier')
+WORD_DATA_DIR = paths.DATA_UPPER_WORDS_HEAD
 
-G = 7  # segment split granularity
-K = 10  # word search top k choices
-DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+G = 4  # segment split granularity
+K = 20  # word search top k choices
+DEVICE = torch.device(
+    'cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
 def main():
@@ -45,8 +47,8 @@ def main():
     print(f'[SELECTED MODEL]')
     print(f'  {model_class}')
     print(f'[MODEL PARAMS]')
-    assert len(model_param_list) == len(lstm.config_keys)
-    for i, c in enumerate(lstm.config_keys):
+    assert len(model_param_list) == len(lstm_char_classifier.config_keys)
+    for i, c in enumerate(lstm_char_classifier.config_keys):
         print(f'  {c}: {model_param_list[i]}')
     print(f'[TRAIN PARAMS]')
     print(f'  batchsize {train_param_list[0]}')
