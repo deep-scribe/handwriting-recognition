@@ -1,0 +1,16 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Related Work}{}% 2
+\BOOKMARK [1][-]{section.3}{Dataset }{}% 3
+\BOOKMARK [1][-]{section.4}{Method}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{Segmentation}{section.4}% 5
+\BOOKMARK [2][-]{subsection.4.2}{Character classifier}{section.4}% 6
+\BOOKMARK [2][-]{subsection.4.3}{Trajectory Search}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.4}{Auto-Correction}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.5}{Domain Adaptation for Character Classification}{section.4}% 9
+\BOOKMARK [1][-]{section.5}{Experiments and Evaluation}{}% 10
+\BOOKMARK [2][-]{subsection.5.1}{Character classifier hyperparameter optimization}{section.5}% 11
+\BOOKMARK [2][-]{subsection.5.2}{Word reconstruction hyperparameter optimization}{section.5}% 12
+\BOOKMARK [2][-]{subsection.5.3}{Auto-Correction Kernel Experiment}{section.5}% 13
+\BOOKMARK [2][-]{subsection.5.4}{Out-of-domain character classification}{section.5}% 14
+\BOOKMARK [1][-]{section.6}{Analysis and Discussion}{}% 15
+\BOOKMARK [1][-]{section.7}{Conclusion and Future Work}{}% 16

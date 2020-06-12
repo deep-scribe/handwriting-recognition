@@ -1,0 +1,163 @@
+\begin{thebibliography}{10}
+
+\bibitem{ocr}
+Sargur~N. Srihari, Ajay Shekhawat, and Stephen~W. Lam.
+\newblock Optical character recognition (ocr).
+\newblock In {\em Encyclopedia of Computer Science}, pages 1326--1333. John
+  Wiley and Sons Ltd., Chichester, UK.
+
+\bibitem{petroski2019fully}
+Felipe Petroski~Such, Dheeraj Peri, Frank Brockler, Paul Hutkowski, and Raymond
+  Ptucha.
+\newblock Fully convolutional networks for handwriting recognition.
+\newblock {\em arXiv preprint arXiv:1907.04888}, 2019.
+
+\bibitem{jo2019handwritten}
+Junho Jo, Hyung~Il Koo, Jae~Woong Soh, and Nam~Ik Cho.
+\newblock Handwritten text segmentation via end-to-end learning of
+  convolutional neural network.
+\newblock {\em arXiv preprint arXiv:1906.05229}, 2019.
+
+\bibitem{bib2}
+Jacob~O. Wobbrock, Brad~A. Myers, and John~A. Kembel.
+\newblock Edgewrite: A stylus-based text entry method designed for high
+  accuracy and stability of motion.
+\newblock In {\em Proceedings of the 16th Annual ACM Symposium on User
+  Interface Software and Technology}, UIST '03, pages 61--70, New York, NY,
+  USA, 2003. ACM.
+
+\bibitem{bib3}
+R.~Reeve Ingle, Yasuhisa Fujii, Thomas Deselaers, Jonathan Baccash, and
+  Ashok~C. Popat.
+\newblock A scalable handwritten text recognition system.
+\newblock {\em CoRR}, abs/1904.09150, 2019.
+
+\bibitem{bib4}
+I.~Poupyrev, N.~Tomokazu, and S.~Weghorst.
+\newblock Virtual notepad: Handwriting in immersive vr.
+\newblock In {\em Proceedings of the Virtual Reality Annual International
+  Symposium}, VRAIS '98, pages 126--, Washington, DC, USA, 1998. IEEE Computer
+  Society.
+
+\bibitem{amma2012airwriting}
+Christoph Amma, Marcus Georgi, and Tanja Schultz.
+\newblock Airwriting: Hands-free mobile text input by spotting and continuous
+  recognition of 3d-space handwriting with inertial sensors.
+\newblock In {\em 2012 16th International Symposium on Wearable Computers},
+  pages 52--59. IEEE, 2012.
+
+\bibitem{ours}
+Junshen~Kevin Chen, Wanze Xie, and Yutong~Kelly He.
+\newblock Motion-based handwriting recognition.
+\newblock {\em Reports. CS229: Machine Learning Autumn 2019 Best Poster Award
+  Projects}, page~1, 2019.
+
+\bibitem{lstm}
+Sepp Hochreiter and Jurgen Schmidhuber.
+\newblock Long short-term memory.
+\newblock {\em Neural Comput.}, 9(8):1735--1780, November 1997.
+
+\bibitem{Kim_2019}
+Minwoo Kim, Jaechan Cho, Seongjoo Lee, and Yunho Jung.
+\newblock Imu sensor-based hand gesture recognition for human-machine
+  interfaces.
+\newblock {\em Sensors}, 19(18):3827, Sep 2019.
+
+\bibitem{ganguly2018kinect}
+Biswarup Ganguly and Amit Konar.
+\newblock Kinect sensor based gesture recognition for surveillance application,
+  2018.
+
+\bibitem{7418327}
+F.~{Grützmacher}, J.~{Wolff}, and C.~{Haubelt}.
+\newblock Sensor-based online hand gesture recognition on multi-core dsps.
+\newblock In {\em 2015 IEEE Global Conference on Signal and Information
+  Processing (GlobalSIP)}, pages 898--902, Dec 2015.
+
+\bibitem{6470686}
+Z.~{Ren}, J.~{Yuan}, J.~{Meng}, and Z.~{Zhang}.
+\newblock Robust part-based hand gesture recognition using kinect sensor.
+\newblock {\em IEEE Transactions on Multimedia}, 15(5):1110--1120, Aug 2013.
+
+\bibitem{6208895}
+L.~{Chen}, J.~{Hoey}, C.~D. {Nugent}, D.~J. {Cook}, and Z.~{Yu}.
+\newblock Sensor-based activity recognition.
+\newblock {\em IEEE Transactions on Systems, Man, and Cybernetics, Part C
+  (Applications and Reviews)}, 42(6):790--808, Nov 2012.
+
+\bibitem{1363896}
+J.~K. {Oh}, {Sung-Jung Cho}, {Won-Chul Bang}, {Wook Chang}, {Eunseok Choi},
+  {Jing Yang}, {Joonkee Cho}, and {Dong Yoon Kim}.
+\newblock Inertial sensor based recognition of 3-d character gestures with an
+  ensemble classifiers.
+\newblock In {\em Ninth International Workshop on Frontiers in Handwriting
+  Recognition}, pages 112--117, Oct 2004.
+
+\bibitem{bib1}
+Maximilian Schrapel, Max-Ludwig Stadler, and Michael Rohs.
+\newblock Pentelligence: Combining pen tip motion and writing sounds for
+  handwritten digit recognition.
+\newblock In {\em Proceedings of the 2018 CHI Conference on Human Factors in
+  Computing Systems}, CHI '18, pages 131:1--131:11, New York, NY, USA, 2018.
+  ACM.
+
+\bibitem{yoshimura2020end}
+Takenori Yoshimura, Tomoki Hayashi, Kazuya Takeda, and Shinji Watanabe.
+\newblock End-to-end automatic speech recognition integrated with ctc-based
+  voice activity detection.
+\newblock {\em arXiv preprint arXiv:2002.00551}, 2020.
+
+\bibitem{chiu2018state}
+Chung-Cheng Chiu, Tara~N Sainath, Yonghui Wu, Rohit Prabhavalkar, Patrick
+  Nguyen, Zhifeng Chen, Anjuli Kannan, Ron~J Weiss, Kanishka Rao, Ekaterina
+  Gonina, et~al.
+\newblock State-of-the-art speech recognition with sequence-to-sequence models.
+\newblock In {\em 2018 IEEE International Conference on Acoustics, Speech and
+  Signal Processing (ICASSP)}, pages 4774--4778. IEEE, 2018.
+
+\bibitem{moritz2020streaming}
+Niko Moritz, Takaaki Hori, and Jonathan~Le Roux.
+\newblock Streaming automatic speech recognition with the transformer model.
+\newblock {\em arXiv preprint arXiv:2001.02674}, 2020.
+
+\bibitem{chang2020end}
+Xuankai Chang, Wangyou Zhang, Yanmin Qian, Jonathan~Le Roux, and Shinji
+  Watanabe.
+\newblock End-to-end multi-speaker speech recognition with transformer.
+\newblock {\em arXiv preprint arXiv:2002.03921}, 2020.
+
+\bibitem{SymSpell}
+Avishek Bose, Vahid Behzadan, Carlos Aguirre, and William~H. Hsu.
+\newblock A novel approach for detection and ranking of trendy and emerging
+  cyber threat events in twitter streams.
+\newblock In {\em Proceedings of the 2019 IEEE/ACM International Conference on
+  Advances in Social Networks Analysis and Mining}, ASONAM ’19, page
+  871–878, New York, NY, USA, 2019. Association for Computing Machinery.
+
+\bibitem{knn}
+T.~Cover and P.~Hart.
+\newblock Nearest neighbor pattern classification.
+\newblock {\em IEEE Trans. Inf. Theor.}, 13(1):21--27, September 2006.
+
+\bibitem{kmeans}
+J.~A. Hartigan and M.~A. Wong.
+\newblock A k-means clustering algorithm.
+\newblock {\em JSTOR: Applied Statistics}, 28(1):100--108, 1979.
+
+\bibitem{lenet}
+Y.~{Lecun}, L.~{Bottou}, Y.~{Bengio}, and P.~{Haffner}.
+\newblock Gradient-based learning applied to document recognition.
+\newblock {\em Proceedings of the IEEE}, 86(11):2278--2324, Nov 1998.
+
+\bibitem{dann}
+Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pascal Germain, Hugo
+  Larochelle, Francois Laviolette, Mario Marchand, and Victor Lempitsky.
+\newblock Domain-adversarial training of neural networks.
+\newblock {\em J. Mach. Learn. Res.}, 17(1):2096–2030, January 2016.
+
+\bibitem{kingma2014adam}
+Diederik~P Kingma and Jimmy Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock {\em arXiv preprint arXiv:1412.6980}, 2014.
+
+\end{thebibliography}

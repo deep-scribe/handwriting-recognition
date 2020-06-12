@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2019)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: main.aux
+The style file: unsrt.bst
+Database file #1: reference.bib
+Warning--empty year in ocr
+You've used 26 entries,
+            1791 wiz_defined-function locations,
+            618 strings with 8842 characters,
+and the built_in function-call counts, 7395 in all, are:
+= -- 663
+> -- 367
+< -- 10
++ -- 131
+- -- 105
+* -- 508
+:= -- 1122
+add.period$ -- 84
+call.type$ -- 26
+change.case$ -- 26
+chr.to.int$ -- 0
+cite$ -- 27
+duplicate$ -- 349
+empty$ -- 667
+format.name$ -- 105
+if$ -- 1706
+int.to.chr$ -- 0
+int.to.str$ -- 26
+missing$ -- 25
+newline$ -- 132
+num.names$ -- 26
+pop$ -- 81
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 213
+stack$ -- 0
+substring$ -- 473
+swap$ -- 128
+text.length$ -- 10
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 1
+while$ -- 61
+width$ -- 28
+write$ -- 294
+(There was 1 warning)
